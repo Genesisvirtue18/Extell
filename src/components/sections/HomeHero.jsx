@@ -20,7 +20,7 @@ function HomeHero() {
         className="relative mx-auto max-w-7xl px-6 py-24 md:py-32"
       >
         <p className="accent-chip text-xs font-semibold uppercase tracking-[0.24em]">Enterprise Infrastructure</p>
-        <h1 className="headline-glow mt-4 max-w-3xl text-4xl font-extrabold leading-tight md:text-6xl">
+        <h1 className="headline-glow mt-4 max-w-3xl text-xl font-extrabold leading-tight md:text-4xl">
           <span className="text-[#ed2125]">Power Electronics</span>{' '}
           <span className="accent-title">and ICT Network Solutions</span>
         </h1>
