@@ -1,0 +1,7 @@
+<svg width="400" height="260" viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="260" rx="20" fill="#08142B"/>
+  <path d="M60 186L160 86L220 146L310 56" stroke="#1F7BFF" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="160" cy="86" r="8" fill="#E53935"/>
+  <circle cx="220" cy="146" r="8" fill="#E53935"/>
+  <text x="60" y="228" fill="#FFFFFF" font-family="Inter" font-size="22" font-weight="700">Extell Placeholder Asset</text>
+</svg>

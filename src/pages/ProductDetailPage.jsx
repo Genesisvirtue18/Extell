@@ -1,0 +1,181 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { Download, FileText } from 'lucide-react';
+import placeholderImage from '../assets/placeholder-tech.svg';
+import { getProductById, getProducts } from '../lib/api';
+
+const toDetailRows = (product) => {
+  if (Array.isArray(product.detailRows) && product.detailRows.length) return product.detailRows;
+  if (product.specs && typeof product.specs === 'object') {
+    return Object.entries(product.specs).map(([parameter, value]) => ({ parameter, value }));
+  }
+  return [];
+};
+
+const pickBestProductImage = (item) => {
+  const imageList = Array.isArray(item?.imageList) ? item.imageList : [];
+  const candidates = [item?.heroImage, ...imageList].filter(Boolean);
+  if (!candidates.length) return placeholderImage;
+
+  const scoreImage = (entry) => {
+    const value = String(entry || '').toLowerCase();
+    let score = 0;
+    if (value.includes('/elementor/thumbs/')) score -= 40;
+    if (value.includes('front-hero') || value.includes('hero')) score -= 20;
+    if (value.includes('iso')) score += 18;
+    if (value.includes('side') || value.includes('rear') || value.includes('front')) score += 8;
+    return score;
+  };
+
+  return [...candidates].sort((a, b) => scoreImage(b) - scoreImage(a))[0] || placeholderImage;
+};
+
+function ProductDetailPage() {
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [activeImage, setActiveImage] = useState(placeholderImage);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const [productResponse, relatedResponse] = await Promise.all([getProductById(id), getProducts({ limit: 8 })]);
+        if (!mounted) return;
+
+        const selected = productResponse.item;
+        const relatedItems = (relatedResponse.items || [])
+          .filter((item) => item.id !== selected.id)
+          .slice(0, 4);
+
+        setProduct(selected);
+        setRelated(relatedItems);
+      } catch (err) {
+        if (!mounted) return;
+        setError(err.message || 'Unable to load product');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
+
+  const gallery = useMemo(() => {
+    if (!product) return [];
+    const list = product.imageList?.length ? product.imageList : [];
+    return [product.heroImage, ...list].filter(Boolean).slice(0, 6);
+  }, [product]);
+
+  useEffect(() => {
+    setActiveImage(gallery[0] || '');
+  }, [gallery]);
+
+  const detailRows = useMemo(() => (product ? toDetailRows(product) : []), [product]);
+  const features = product?.features || [];
+  const name = product?.Name || product?.name || 'Product';
+  const sku = product?.SKU || product?.sku || product?.id || '';
+  const description = product?.descriptionText || product?.description || product?.short || '';
+  const category = product?.topCategory || product?.Categories || product?.category || 'Products';
+  const datasheet = product?.datasheet || '';
+
+  if (loading) return <section className="mx-auto mt-6 max-w-[1220px]">Loading product...</section>;
+  if (error || !product) return <section className="mx-auto mt-6 max-w-[1220px]">{error || 'Product not found'}</section>;
+
+  return (
+    <section className="product-detail-shell mx-auto mt-6 max-w-[1220px] overflow-hidden rounded-md border border-white/10">
+      <div className="product-detail-top">
+        <div className="product-detail-gallery">
+          <div className="product-detail-main-image">
+            {activeImage ? <img src={activeImage} alt={name} /> : <div className="product-detail-no-image">No image available</div>}
+          </div>
+          {gallery.length ? (
+            <div className="product-detail-thumbs">
+              {gallery.map((src, index) => (
+                <button key={`${product.id}-thumb-${index + 1}`} type="button" onClick={() => setActiveImage(src)}>
+                  <img src={src} alt={`${name} thumb ${index + 1}`} />
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="product-detail-summary">
+          <p className="product-detail-kicker">{category}</p>
+          <h1>{name}</h1>
+          <h2>{sku}</h2>
+          <p className="product-detail-copy">{description}</p>
+          <ul>
+            {features.length ? features.map((feature) => <li key={feature}>{feature}</li>) : <li>No feature list available.</li>}
+          </ul>
+        </div>
+      </div>
+
+      {detailRows.length ? (
+        <div className="product-detail-tabs">
+          <button type="button" className="active">
+            Technical Specifications
+          </button>
+        </div>
+      ) : null}
+
+      <div className={`product-detail-lower ${detailRows.length ? '' : 'no-specs'}`}>
+        {detailRows.length ? (
+          <div className="product-detail-specs">
+            <h3>Detailed Specifications</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {detailRows.map((row) => (
+                  <tr key={`${row.parameter}-${row.value}`}>
+                    <td>{row.parameter}</td>
+                    <td>{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
+
+        <aside className="product-detail-side">
+          <div className="download-card">
+            <h4>Quick Downloads</h4>
+            <a href={datasheet || '#'} target={datasheet ? '_blank' : undefined} rel="noreferrer">
+              <FileText size={14} />
+              <span>Product Datasheet PDF</span>
+              <Download size={14} />
+            </a>
+          </div>
+        </aside>
+      </div>
+
+      <div className="product-detail-related">
+        <h3>You might also be interested in</h3>
+        <div>
+          {related.map((item) => (
+            <article key={item.id}>
+              <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
+              <p>{item.Name || item.name}</p>
+              <Link to={`/product/${item.id}`}>View Details</Link>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default ProductDetailPage;
