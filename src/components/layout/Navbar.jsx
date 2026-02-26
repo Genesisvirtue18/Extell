@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { ChevronDown, Linkedin, Menu, Phone, X } from 'lucide-react';
 import { navLinks } from '../../data/siteData';
 import SearchBar from '../ui/SearchBar';
 import logo from '../../assets/logo.png';
@@ -40,6 +40,13 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
+  const filteredNavLinks = navLinks.filter(
+    (item) =>
+      item.label !== 'Downloads' &&
+      item.label !== 'Case Studies' &&
+      item.label !== 'Certifications'
+  );
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#161b58]/95 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -54,7 +61,7 @@ function Navbar() {
           {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
         <nav className="hidden items-center gap-6 md:flex">
-          {navLinks.filter((item) => item.label !== 'Downloads').map((item) =>
+          {filteredNavLinks.map((item) =>
             item.label === 'Products' ? (
               <div key={item.path} className="relative" ref={productMenuRef}>
                 <button
@@ -99,6 +106,22 @@ function Navbar() {
               </NavLink>
             )
           )}
+          <a
+            href="tel:+13658895555"
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1.5 text-sm font-medium text-slate-200 hover:border-[#ff4a66] hover:text-[#ff4a66]"
+          >
+            <Phone size={14} />
+            +1 365 889 5555
+          </a>
+          <a
+            href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Extell on LinkedIn"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-slate-200 hover:border-[#ff4a66] hover:text-[#ff4a66]"
+          >
+            <Linkedin size={16} />
+          </a>
         </nav>
       </div>
 
@@ -106,7 +129,7 @@ function Navbar() {
         <div className="space-y-4 border-t border-white/10 px-6 py-4 md:hidden">
           <SearchBar placeholder="Search" />
           <div className="grid gap-2">
-            {navLinks.filter((item) => item.label !== 'Downloads').map((item) => (
+            {filteredNavLinks.map((item) => (
               <div key={item.path}>
                 <Link to={item.path} onClick={() => setIsOpen(false)} className="text-sm text-slate-200">
                   {item.label}
@@ -127,6 +150,22 @@ function Navbar() {
                 ) : null}
               </div>
             ))}
+            <a
+              href="tel:+13658895555"
+              className="mt-1 inline-flex items-center gap-2 text-sm text-slate-200"
+            >
+              <Phone size={14} />
+              +1 365 889 5555
+            </a>
+            <a
+              href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-slate-200"
+            >
+              <Linkedin size={14} />
+              LinkedIn
+            </a>
           </div>
         </div>
       ) : null}

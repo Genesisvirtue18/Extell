@@ -9,10 +9,34 @@ import {
   Send,
   ShieldCheck,
   Upload,
-  Ticket
+  Ticket,
+  ArrowUpRight
 } from 'lucide-react';
 
 function SupportPage() {
+  const supportServices = [
+    {
+      title: 'Product Warranty Registration',
+      link: 'https://extellsystems.com/product-warranty-registration/'
+    },
+    {
+      title: 'Software Download Center',
+      link: 'https://extellsystems.com/software-download-center/'
+    },
+    {
+      title: 'UPS Runtime Calculator',
+      link: 'https://extellsystems.com/ups-runtime-calculator/'
+    },
+    {
+      title: 'UPS Selector',
+      link: 'https://extellsystems.com/ups-runtime-calculator/'
+    },
+    {
+      title: 'FAQ',
+      link: 'https://extellsystems.com/faq/'
+    }
+  ];
+
   const supportCards = [
     {
       icon: <Headphones size={16} />,
@@ -53,7 +77,19 @@ function SupportPage() {
         </div>
       </div>
 
-      <div className="support-cards">
+      <div className="support-service-shortcuts mb-5">
+        <h2>Support Services</h2>
+        <div className="support-service-cards">
+          {supportServices.map((item) => (
+            <a key={item.title} href={item.link} target="_blank" rel="noopener noreferrer">
+              <span>{item.title}</span>
+              <ArrowUpRight size={14} />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div className="support-cards ">
         {supportCards.map((item) => (
           <article key={item.title}>
             <span>{item.icon}</span>
@@ -177,4 +213,3 @@ function SupportPage() {
 }
 
 export default SupportPage;
-
