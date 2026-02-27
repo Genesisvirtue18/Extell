@@ -2,11 +2,11 @@ const getProductName = (product) => product?.Name || product?.name || '';
 
 export const slugifyProductName = (name) =>
   String(name || '')
-    .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
 export const getProductSlug = (product) => slugifyProductName(getProductName(product));
 
@@ -17,4 +17,3 @@ export const getProductPath = (product) => {
 
 export const findProductBySlug = (items, slug) =>
   (items || []).find((item) => slugifyProductName(getProductName(item)) === slug);
-
