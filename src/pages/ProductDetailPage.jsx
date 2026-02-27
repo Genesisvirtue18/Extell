@@ -99,16 +99,7 @@ function ProductDetailPage() {
     .map((part) => part.trim())
     .filter(Boolean);
   const breadcrumbItems = ['Home', ...categoryPath, name];
-  const accessories = [
-    {
-      title: 'SNMP Network Card',
-      description: 'Remote management card for network monitoring and shutdown.'
-    },
-    {
-      title: 'External Battery Pack',
-      description: 'Extended runtime module for selected UPS rackmount units.'
-    }
-  ];
+  const similarProducts = related.slice(0, 3);
 
   if (loading) return <section className="mx-auto mt-6 max-w-[1220px]">Loading product...</section>;
   if (error || !product) return <section className="mx-auto mt-6 max-w-[1220px]">{error || 'Product not found'}</section>;
@@ -173,9 +164,22 @@ function ProductDetailPage() {
           <button type="button" className="active">
             Technical Specifications
           </button>
-          <button type="button">Downloads &amp; Manuals</button>
-          <button type="button">Certifications</button>
-          <button type="button">Accessories</button>
+          <a
+            href={datasheet || '#'}
+            target={datasheet ? '_blank' : undefined}
+            rel={datasheet ? 'noreferrer' : undefined}
+            className={!datasheet ? 'disabled' : ''}
+          >
+            Downloads &amp; Manuals
+          </a>
+          <a
+            href={datasheet || '#'}
+            target={datasheet ? '_blank' : undefined}
+            rel={datasheet ? 'noreferrer' : undefined}
+            className={!datasheet ? 'disabled' : ''}
+          >
+            Certifications
+          </a>
         </div>
       ) : null}
 
@@ -211,14 +215,14 @@ function ProductDetailPage() {
               <Download size={14} />
             </a>
           </div>
-          <div className="accessories-card">
-            <h4>Compatible Accessories</h4>
-            {accessories.map((item) => (
-              <article key={item.title}>
-                <img src={placeholderImage} alt={item.title} />
+          <div className="similar-products-card">
+            <h4>Similar Products</h4>
+            {similarProducts.map((item) => (
+              <article key={item.id}>
+                <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
                 <div>
-                  <p>{item.title}</p>
-                  <small>{item.description}</small>
+                  <p>{item.Name || item.name}</p>
+                  <Link to={getProductPath(item)}>View Details</Link>
                 </div>
               </article>
             ))}

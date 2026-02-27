@@ -753,6 +753,27 @@ button {
   padding: 0.34rem 0.52rem;
 }
 
+.product-detail-tabs a {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #adadad;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0.34rem 0.52rem;
+  text-decoration: none;
+}
+
+.product-detail-tabs a:hover {
+  color: #ff4a65;
+}
+
+.product-detail-tabs a.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .product-detail-tabs button.active {
   color: #ff4a65;
   text-shadow: 0 0 8px rgba(237, 33, 37, 0.35);
@@ -872,6 +893,57 @@ button {
 .accessories-card a {
   color: #ff526d;
   font-size: 0.62rem;
+}
+
+.similar-products-card {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 9px;
+  background: #171717;
+  padding: 0.62rem;
+}
+
+.similar-products-card h4 {
+  margin: 0 0 0.55rem;
+  color: #ff5a73;
+  font-size: 0.79rem;
+}
+
+.similar-products-card article {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 7px;
+  padding: 0.36rem;
+  margin-bottom: 0.4rem;
+}
+
+.similar-products-card article:last-child {
+  margin-bottom: 0;
+}
+
+.similar-products-card img {
+  width: 56px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: #101010;
+}
+
+.similar-products-card p {
+  margin: 0;
+  color: #dfdfdf;
+  font-size: 0.64rem;
+  line-height: 1.35;
+}
+
+.similar-products-card a {
+  display: inline-block;
+  margin-top: 0.2rem;
+  color: #ff526d;
+  font-size: 0.6rem;
+  font-weight: 700;
 }
 
 .product-detail-related {
