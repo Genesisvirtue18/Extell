@@ -538,6 +538,14 @@ button {
   padding: 1rem;
 }
 
+.product-detail-breadcrumb {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.65rem 1rem;
+  font-size: 0.65rem;
+  color: #b3b3b3;
+  letter-spacing: 0.04em;
+}
+
 .product-detail-gallery {
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: #141414;
@@ -601,6 +609,32 @@ button {
   padding: 0.9rem;
 }
 
+.product-status-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.45rem;
+}
+
+.product-status-row span {
+  border-radius: 999px;
+  padding: 0.18rem 0.46rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.product-status-row .is-new {
+  background: rgba(255, 45, 69, 0.14);
+  border: 1px solid rgba(255, 62, 86, 0.72);
+  color: #ff6f86;
+}
+
+.product-status-row .in-stock {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #d4d4d4;
+}
+
 .product-detail-kicker {
   margin: 0;
   color: #ff5a73;
@@ -641,6 +675,15 @@ button {
   margin-bottom: 0.32rem;
 }
 
+.feature-title {
+  margin: 0.85rem 0 0.2rem;
+  color: #f3f3f3;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
 .product-detail-quote {
   margin-top: 0.9rem;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
@@ -663,6 +706,12 @@ button {
   font-size: 0.7rem;
   margin-bottom: 0.4rem;
   padding: 0.52rem 0.58rem;
+}
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
 }
 
 .product-detail-quote button {
@@ -695,11 +744,13 @@ button {
 }
 
 .product-detail-tabs button {
-  border: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
   background: transparent;
   color: #adadad;
   font-size: 0.7rem;
   cursor: pointer;
+  padding: 0.34rem 0.52rem;
 }
 
 .product-detail-tabs button.active {
@@ -812,6 +863,12 @@ button {
   font-size: 0.67rem;
 }
 
+.accessories-card small {
+  color: #b3b3b3;
+  font-size: 0.56rem;
+  line-height: 1.3;
+}
+
 .accessories-card a {
   color: #ff526d;
   font-size: 0.62rem;
@@ -890,6 +947,10 @@ button {
 
   .product-detail-top,
   .product-detail-lower {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-grid {
     grid-template-columns: 1fr;
   }
 }

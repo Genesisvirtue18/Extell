@@ -94,12 +94,36 @@ function ProductDetailPage() {
   const description = product?.descriptionText || product?.description || product?.short || '';
   const category = product?.topCategory || product?.Categories || product?.category || 'Products';
   const datasheet = product?.datasheet || '';
+  const categoryPath = String(product?.Categories || category || '')
+    .split('>')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const breadcrumbItems = ['Home', ...categoryPath, name];
+  const accessories = [
+    {
+      title: 'SNMP Network Card',
+      description: 'Remote management card for network monitoring and shutdown.'
+    },
+    {
+      title: 'External Battery Pack',
+      description: 'Extended runtime module for selected UPS rackmount units.'
+    }
+  ];
 
   if (loading) return <section className="mx-auto mt-6 max-w-[1220px]">Loading product...</section>;
   if (error || !product) return <section className="mx-auto mt-6 max-w-[1220px]">{error || 'Product not found'}</section>;
 
   return (
     <section className="product-detail-shell mx-auto mt-6 max-w-[1220px] overflow-hidden rounded-md border border-white/10">
+      <div className="product-detail-breadcrumb">
+        {breadcrumbItems.map((item, index) => (
+          <span key={`${item}-${index}`}>
+            {item}
+            {index < breadcrumbItems.length - 1 ? ' / ' : ''}
+          </span>
+        ))}
+      </div>
+
       <div className="product-detail-top">
         <div className="product-detail-gallery">
           <div className="product-detail-main-image">
@@ -117,13 +141,30 @@ function ProductDetailPage() {
         </div>
 
         <div className="product-detail-summary">
+          <div className="product-status-row">
+            <span className="is-new">New</span>
+            {product?.inStock ? <span className="in-stock">In Stock</span> : null}
+          </div>
           <p className="product-detail-kicker">{category}</p>
           <h1>{name}</h1>
-          <h2>{sku}</h2>
+          <h2>Model: {sku}</h2>
           <p className="product-detail-copy">{description}</p>
+          <p className="feature-title">Key Features</p>
           <ul>
             {features.length ? features.map((feature) => <li key={feature}>{feature}</li>) : <li>No feature list available.</li>}
           </ul>
+
+          <div className="product-detail-quote">
+            <h3>Request Custom Quote</h3>
+            <div className="quote-grid">
+              <input type="text" placeholder="Full Name" />
+              <input type="email" placeholder="Work Email" />
+            </div>
+            <input type="text" placeholder="Company Name" />
+            <textarea rows={3} placeholder="Describe your project requirements..." />
+            <button type="button">Get a Quote</button>
+            <small>Usually responds within 2 hours during business days.</small>
+          </div>
         </div>
       </div>
 
@@ -132,6 +173,9 @@ function ProductDetailPage() {
           <button type="button" className="active">
             Technical Specifications
           </button>
+          <button type="button">Downloads &amp; Manuals</button>
+          <button type="button">Certifications</button>
+          <button type="button">Accessories</button>
         </div>
       ) : null}
 
@@ -166,6 +210,18 @@ function ProductDetailPage() {
               <span>Product Datasheet PDF</span>
               <Download size={14} />
             </a>
+          </div>
+          <div className="accessories-card">
+            <h4>Compatible Accessories</h4>
+            {accessories.map((item) => (
+              <article key={item.title}>
+                <img src={placeholderImage} alt={item.title} />
+                <div>
+                  <p>{item.title}</p>
+                  <small>{item.description}</small>
+                </div>
+              </article>
+            ))}
           </div>
         </aside>
       </div>
