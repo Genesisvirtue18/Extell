@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Download, FileText } from 'lucide-react';
 import placeholderImage from '../assets/placeholder-tech.svg';
-import { getProductById, getProducts } from '../lib/api';
-import { findProductBySlug, getProductPath } from '../lib/productUrl';
+import { getProductById, getProductBySlug, getProducts } from '../lib/api';
+import { getProductPath } from '../lib/productUrl';
 
 const toDetailRows = (product) => {
   if (Array.isArray(product.detailRows) && product.detailRows.length) return product.detailRows;
@@ -47,15 +47,14 @@ function ProductDetailPage() {
         setLoading(true);
         setError('');
         const normalizedSlug = String(slug || '').toLowerCase().trim();
-        const searchTerm = normalizedSlug.replace(/-/g, ' ');
-        const [matchingResponse, relatedResponse] = await Promise.all([getProducts({ q: searchTerm, limit: 24 }), getProducts({ limit: 8 })]);
+        const [slugResponse, relatedResponse] = await Promise.all([
+          getProductBySlug(normalizedSlug).catch(() => null),
+          getProducts({ limit: 8 })
+        ]);
         if (!mounted) return;
 
-        let selected = findProductBySlug(matchingResponse.items || [], normalizedSlug);
-        if (!selected && normalizedSlug) {
-          const byIdResponse = await getProductById(normalizedSlug).catch(() => null);
-          selected = byIdResponse?.item || null;
-        }
+        let selected = slugResponse?.item || null;
+        if (!selected && normalizedSlug) selected = (await getProductById(normalizedSlug).catch(() => null))?.item || null;
         if (!selected) throw new Error('Product not found');
 
         const relatedItems = (relatedResponse.items || [])

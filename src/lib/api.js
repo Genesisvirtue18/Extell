@@ -23,5 +23,6 @@ const getJson = async (path, params) => {
 
 export const getProducts = (params) => getJson('/api/products', params);
 export const getProductById = (id) => getJson(`/api/products/${id}`);
+export const getProductBySlug = (slug) => getJson(`/api/products/slug/${encodeURIComponent(slug)}`);
 export const getCategories = () => getJson('/api/categories');
 export const getProductsGroupedByCategory = (params) => getJson('/api/products/grouped-by-category', params);
