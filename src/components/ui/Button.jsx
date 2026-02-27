@@ -3,9 +3,9 @@ import { ArrowRight } from 'lucide-react';
 
 function Button({ children, variant = 'primary', className = '', ...props }) {
   const variants = {
-    primary: 'bg-gradient-to-r from-electric to-blue-500 text-white shadow-[0_10px_28px_rgba(31,123,255,0.45)] hover:shadow-[0_12px_30px_rgba(229,57,53,0.35)]',
-    secondary: 'bg-white text-navy hover:bg-blue-50 border border-white/20',
-    ghost: 'border border-white/35 hover:border-accent/70 hover:text-red-100 text-white'
+    primary: 'bg-[#ed2125] text-white shadow-[0_10px_28px_rgba(237,33,37,0.45)] hover:bg-[#d31c20] hover:shadow-[0_12px_30px_rgba(237,33,37,0.5)]',
+    secondary: 'bg-white text-black hover:bg-[#f3f3f3] border border-white/25',
+    ghost: 'border border-white/35 text-white hover:border-[#ed2125] hover:text-white hover:bg-white/5'
   };
 
   return (

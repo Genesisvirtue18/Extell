@@ -20,19 +20,19 @@ function AboutPage() {
         className="relative border-b border-white/10"
         style={{
           backgroundImage:
-            "linear-gradient(90deg, rgba(8,17,44,0.9) 0%, rgba(8,17,44,0.85) 42%, rgba(8,17,44,0.55) 100%), url('https://source.unsplash.com/1800x900/?global,technology,network')",
+            "linear-gradient(90deg, rgba(6,6,6,0.92) 0%, rgba(10,10,10,0.88) 42%, rgba(14,14,14,0.72) 100%), url('https://source.unsplash.com/1800x900/?global,technology,network')",
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
         <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
-          <p className="text-sm text-slate-200">About Us</p>
+          <p className="text-sm text-neutral-200">About Us</p>
           <h1 className="mt-4 text-3xl font-semibold leading-tight text-white md:text-5xl">
             <span className="text-[#ff304a]">Global Clients</span>
             <br />
             World Class Projects
           </h1>
-          <p className="mt-5 max-w-3xl text-lg text-slate-100 md:text-2xl">
+          <p className="mt-5 max-w-3xl text-lg text-neutral-100 md:text-2xl">
             Office Locations <span className="text-[#ff304a]">USA, UAE</span> and{' '}
             <span className="text-[#ff304a]">India</span>
           </p>
@@ -45,9 +45,9 @@ function AboutPage() {
         </div>
       </div>
 
-      <div className="bg-[#f7f8fc]">
+      <div className="bg-[#0f0f0f]">
         <section className="mx-auto max-w-7xl px-6 py-12 md:py-16">
-          <div className="space-y-6 text-base leading-relaxed text-[#18264d] md:text-lg">
+          <div className="space-y-6 text-base leading-relaxed text-[#d4d4d4] md:text-lg">
             <p className="text-base leading-relaxed md:text-[1 rem] md:leading-snug">
               ExTell Systems is an international Power Backup Solutions and ICT manufacturer with
               office locations in USA, UAE and India. We are positioned as a competitive,
@@ -69,15 +69,15 @@ function AboutPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-6 pb-8">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8">
-            <h2 className="text-xl font-semibold text-[#0f1f4d] md:text-3xl">
+          <div className="rounded-2xl border border-white/10 bg-[#171717] p-6 md:p-8">
+            <h2 className="text-xl font-semibold text-[#f3f3f3] md:text-3xl">
               What We Deliver
             </h2>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               {strengths.map((item) => (
                 <article
                   key={item}
-                  className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-medium text-[#22325f] md:text-base"
+                  className="rounded-xl border border-white/10 bg-[#1f1f1f] p-4 text-sm font-medium text-[#d4d4d4] md:text-base"
                 >
                   {item}
                 </article>
@@ -87,9 +87,9 @@ function AboutPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-6 py-8">
-          <div className="rounded-2xl bg-[#0d1740] p-6 md:p-8">
+          <div className="rounded-2xl bg-[#131313] p-6 md:p-8">
             <h2 className="text-xl font-semibold text-white md:text-3xl">Global Presence</h2>
-            <p className="mt-3 max-w-4xl text-sm leading-relaxed text-slate-200 md:text-base">
+            <p className="mt-3 max-w-4xl text-sm leading-relaxed text-neutral-200 md:text-base">
               Our teams across USA, UAE, and India collaborate to provide strategic guidance,
               responsive operations, and execution support for regional and global projects.
             </p>
@@ -100,7 +100,7 @@ function AboutPage() {
                   className="rounded-xl border border-white/20 bg-white/5 p-4"
                 >
                   <h3 className="text-lg font-semibold text-[#ff4b64]">{office.country}</h3>
-                  <p className="mt-2 text-sm text-slate-200">{office.detail}</p>
+                  <p className="mt-2 text-sm text-neutral-200">{office.detail}</p>
                 </article>
               ))}
             </div>
@@ -108,9 +108,9 @@ function AboutPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-6 py-8 md:pb-16">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8">
-            <h2 className="text-xl font-semibold text-[#0f1f4d] md:text-3xl">Why Clients Work with ExTell</h2>
-            <div className="mt-5 space-y-4 text-sm leading-relaxed text-[#22325f] md:text-base">
+          <div className="rounded-2xl border border-white/10 bg-[#171717] p-6 md:p-8">
+            <h2 className="text-xl font-semibold text-[#f3f3f3] md:text-3xl">Why Clients Work with ExTell</h2>
+            <div className="mt-5 space-y-4 text-sm leading-relaxed text-[#d4d4d4] md:text-base">
               <p>
                 We combine product quality with practical implementation thinking. This allows us
                 to support projects from concept to operation with fewer integration gaps and better
@@ -135,3 +135,4 @@ function AboutPage() {
 }
 
 export default AboutPage;
+

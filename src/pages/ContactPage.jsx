@@ -28,24 +28,24 @@ function ContactPage() {
           <aside className="rounded-xl border border-white/10 bg-white/5 p-6">
             <h2 className="text-3xl font-semibold text-accent">Our Offices</h2>
 
-            <div className="mt-6 space-y-8 text-slate-200">
+            <div className="mt-6 space-y-8 text-neutral-200">
               <div>
-                <h3 className="text-3xl font-semibold text-slate-100">US</h3>
+                <h3 className="text-3xl font-semibold text-neutral-100">US</h3>
                 <p className="mt-3 text-lg">Phone: +1 365 889 5555</p>
                 <p className="text-lg">
                   Email:{' '}
-                  <a className="text-slate-100 hover:text-accent" href="mailto:sales@extellsystems.com">
+                  <a className="text-neutral-100 hover:text-accent" href="mailto:sales@extellsystems.com">
                     sales@extellsystems.com
                   </a>
                 </p>
               </div>
 
               <div>
-                <h3 className="text-3xl font-semibold text-slate-100">UAE</h3>
+                <h3 className="text-3xl font-semibold text-neutral-100">UAE</h3>
                 <p className="mt-3 text-lg">Phone: +971 6 779 4299</p>
                 <p className="text-lg">
                   Email:{' '}
-                  <a className="text-slate-100 hover:text-accent" href="mailto:sales.imea@extellsystems.com">
+                  <a className="text-neutral-100 hover:text-accent" href="mailto:sales.imea@extellsystems.com">
                     sales.imea@extellsystems.com
                   </a>
                 </p>
@@ -59,3 +59,4 @@ function ContactPage() {
 }
 
 export default ContactPage;
+

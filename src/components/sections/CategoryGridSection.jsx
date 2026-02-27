@@ -50,7 +50,7 @@ function CategoryGridSection() {
             <CategoryCard key={category.slug} category={category} index={idx} />
           ))}
           {!categories.length ? (
-            <div className="rounded-xl border border-white/15 bg-white/5 p-6 text-sm text-slate-300">
+            <div className="rounded-xl border border-white/15 bg-white/5 p-6 text-sm text-neutral-300">
               No categories available right now.
             </div>
           ) : null}
@@ -61,3 +61,4 @@ function CategoryGridSection() {
 }
 
 export default CategoryGridSection;
+

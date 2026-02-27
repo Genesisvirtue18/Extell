@@ -16,7 +16,7 @@ function IndustrySolutionsPage() {
           {industries.map((item) => (
             <div key={item.name} className="rounded-xl border border-white/10 bg-white/5 p-6">
               <h2 className="text-xl font-bold text-white">{item.name}</h2>
-              <p className="mt-2 text-sm text-slate-200">{item.value}</p>
+              <p className="mt-2 text-sm text-neutral-200">{item.value}</p>
             </div>
           ))}
         </div>

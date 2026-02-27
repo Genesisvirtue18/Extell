@@ -11,8 +11,8 @@ function DownloadsPage() {
         <div className="grid gap-4">
           {files.map((file) => (
             <div key={file} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-5">
-              <span className="text-sm text-slate-100">{file}</span>
-              <button className="inline-flex items-center gap-2 rounded-md bg-electric px-4 py-2 text-xs font-semibold text-white">
+              <span className="text-sm text-neutral-100">{file}</span>
+              <button className="inline-flex items-center gap-2 rounded-md bg-[#111111] px-4 py-2 text-xs font-semibold text-white">
                 <Download size={15} /> Download
               </button>
             </div>

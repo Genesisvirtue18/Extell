@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Download, FileText } from 'lucide-react';
 import placeholderImage from '../assets/placeholder-tech.svg';
 import { getProductById, getProducts } from '../lib/api';
+import { findProductBySlug, getProductPath } from '../lib/productUrl';
 
 const toDetailRows = (product) => {
   if (Array.isArray(product.detailRows) && product.detailRows.length) return product.detailRows;
@@ -31,7 +32,7 @@ const pickBestProductImage = (item) => {
 };
 
 function ProductDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,10 +46,18 @@ function ProductDetailPage() {
       try {
         setLoading(true);
         setError('');
-        const [productResponse, relatedResponse] = await Promise.all([getProductById(id), getProducts({ limit: 8 })]);
+        const normalizedSlug = String(slug || '').toLowerCase().trim();
+        const searchTerm = normalizedSlug.replace(/-/g, ' ');
+        const [matchingResponse, relatedResponse] = await Promise.all([getProducts({ q: searchTerm, limit: 24 }), getProducts({ limit: 8 })]);
         if (!mounted) return;
 
-        const selected = productResponse.item;
+        let selected = findProductBySlug(matchingResponse.items || [], normalizedSlug);
+        if (!selected && normalizedSlug) {
+          const byIdResponse = await getProductById(normalizedSlug).catch(() => null);
+          selected = byIdResponse?.item || null;
+        }
+        if (!selected) throw new Error('Product not found');
+
         const relatedItems = (relatedResponse.items || [])
           .filter((item) => item.id !== selected.id)
           .slice(0, 4);
@@ -67,7 +76,7 @@ function ProductDetailPage() {
     return () => {
       mounted = false;
     };
-  }, [id]);
+  }, [slug]);
 
   const gallery = useMemo(() => {
     if (!product) return [];
@@ -169,7 +178,7 @@ function ProductDetailPage() {
             <article key={item.id}>
               <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
               <p>{item.Name || item.name}</p>
-              <Link to={`/product/${item.id}`}>View Details</Link>
+              <Link to={getProductPath(item)}>View Details</Link>
             </article>
           ))}
         </div>

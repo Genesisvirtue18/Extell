@@ -20,7 +20,7 @@ function SiteLayout() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-deep text-white">
+    <div className="relative min-h-screen bg-black text-white">
       <CursorGlow />
       {isLoading ? <AppLoader /> : null}
       <div className="relative z-10">

@@ -5,6 +5,7 @@ import SectionHeader from '../ui/SectionHeader';
 import ComparisonModal from '../ui/ComparisonModal';
 import { getProducts } from '../../lib/api';
 import placeholderImage from '../../assets/placeholder-tech.svg';
+import { getProductPath } from '../../lib/productUrl';
 
 function FeaturedProductsSection() {
   const [compareList, setCompareList] = useState([]);
@@ -130,7 +131,7 @@ function FeaturedProductsSection() {
   const displayProducts = useMemo(() => products.slice(0, 4), [products]);
 
   return (
-    <section className="relative bg-navy/70 py-16">
+    <section className="relative bg-black/70 py-16">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(229,57,53,0.12),transparent_36%)]" />
       <div className="mx-auto max-w-7xl px-6">
@@ -178,7 +179,7 @@ function FeaturedProductsSection() {
                     ))}
                   </div>
                   <div className="catalog-card-actions">
-                    <Link to={`/product/${product.id}`}>VIEW SPECS</Link>
+                    <Link to={getProductPath(product)}>VIEW SPECS</Link>
                     <button type="button" onClick={() => onCompare(product)}>
                       COMPARE
                     </button>
@@ -187,7 +188,7 @@ function FeaturedProductsSection() {
               ))
             : null}
           {!loading && !displayProducts.length ? (
-            <div className="rounded-xl border border-white/15 bg-white/5 p-6 text-sm text-slate-300">
+            <div className="rounded-xl border border-white/15 bg-white/5 p-6 text-sm text-neutral-300">
               No featured products available right now.
             </div>
           ) : null}
@@ -199,3 +200,4 @@ function FeaturedProductsSection() {
 }
 
 export default FeaturedProductsSection;
+

@@ -48,7 +48,7 @@ function Navbar() {
   );
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#161b58]/95 backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/95 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link to="/" className="inline-flex items-center">
           <img src={logo} alt="Extell Systems" className="h-10 w-auto object-contain" />
@@ -67,16 +67,16 @@ function Navbar() {
                 <button
                   type="button"
                   onClick={() => setProductMenuOpen((prev) => !prev)}
-                  className="inline-flex items-center gap-1 text-sm font-medium text-slate-200 hover:text-[#ff4a66]"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-neutral-200 hover:text-[#ff4a66]"
                 >
                   Products <ChevronDown size={15} />
                 </button>
                 {productMenuOpen ? (
-                  <div className="absolute left-0 top-8 w-72 rounded-xl border border-white/15 bg-[#07142f] p-3 text-left shadow-glow">
+                  <div className="absolute left-0 top-8 w-72 rounded-xl border border-white/15 bg-black p-3 text-left shadow-glow">
                     <Link
                       to="/products"
                       onClick={() => setProductMenuOpen(false)}
-                      className="block rounded-md px-3 py-2 text-sm text-slate-200 hover:bg-white/10 hover:text-[#ff4a66]"
+                      className="block rounded-md px-3 py-2 text-sm text-neutral-200 hover:bg-white/10 hover:text-[#ff4a66]"
                     >
                       All Products
                     </Link>
@@ -85,7 +85,7 @@ function Navbar() {
                         key={category.slug}
                         to={`/products?category=${category.slug}`}
                         onClick={() => setProductMenuOpen(false)}
-                        className="block rounded-md px-3 py-2 text-sm text-slate-200 hover:bg-white/10 hover:text-[#ff4a66]"
+                        className="block rounded-md px-3 py-2 text-sm text-neutral-200 hover:bg-white/10 hover:text-[#ff4a66]"
                       >
                         {category.name}
                       </Link>
@@ -99,7 +99,7 @@ function Navbar() {
                 to={item.path}
                 onClick={() => setProductMenuOpen(false)}
                 className={({ isActive }) =>
-                  `text-sm font-medium transition ${isActive ? 'text-electric' : 'text-slate-200 hover:text-[#ff4a66]'}`
+                  `text-sm font-medium transition ${isActive ? 'text-[#ed2125]' : 'text-neutral-200 hover:text-[#ff4a66]'}`
                 }
               >
                 {item.label}
@@ -108,7 +108,7 @@ function Navbar() {
           )}
           <a
             href="tel:+13658895555"
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1.5 text-sm font-medium text-slate-200 hover:border-[#ff4a66] hover:text-[#ff4a66]"
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1.5 text-sm font-medium text-neutral-200 hover:border-[#ff4a66] hover:text-[#ff4a66]"
           >
             <Phone size={14} />
             +1 365 889 5555
@@ -118,7 +118,7 @@ function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Extell on LinkedIn"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-slate-200 hover:border-[#ff4a66] hover:text-[#ff4a66]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-neutral-200 hover:border-[#ff4a66] hover:text-[#ff4a66]"
           >
             <Linkedin size={16} />
           </a>
@@ -131,7 +131,7 @@ function Navbar() {
           <div className="grid gap-2">
             {filteredNavLinks.map((item) => (
               <div key={item.path}>
-                <Link to={item.path} onClick={() => setIsOpen(false)} className="text-sm text-slate-200">
+                <Link to={item.path} onClick={() => setIsOpen(false)} className="text-sm text-neutral-200">
                   {item.label}
                 </Link>
                 {item.label === 'Products' && categories.length ? (
@@ -141,7 +141,7 @@ function Navbar() {
                         key={category.slug}
                         to={`/products?category=${category.slug}`}
                         onClick={() => setIsOpen(false)}
-                        className="text-xs text-slate-300"
+                        className="text-xs text-neutral-300"
                       >
                         {category.name}
                       </Link>
@@ -152,7 +152,7 @@ function Navbar() {
             ))}
             <a
               href="tel:+13658895555"
-              className="mt-1 inline-flex items-center gap-2 text-sm text-slate-200"
+              className="mt-1 inline-flex items-center gap-2 text-sm text-neutral-200"
             >
               <Phone size={14} />
               +1 365 889 5555
@@ -161,7 +161,7 @@ function Navbar() {
               href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-slate-200"
+              className="inline-flex items-center gap-2 text-sm text-neutral-200"
             >
               <Linkedin size={14} />
               LinkedIn

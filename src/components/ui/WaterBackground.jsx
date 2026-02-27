@@ -133,8 +133,8 @@ function WaterBackground({ className = '' }) {
         const p = i * 4;
         const magnitude = Math.min(255, Math.abs(value) * 1.6);
         const red = Math.max(0, Math.min(255, 26 + magnitude * 0.55));
-        const green = Math.max(0, Math.min(255, 78 + magnitude * 0.5));
-        const blue = Math.max(0, Math.min(255, 128 + magnitude * 0.8));
+        const green = Math.max(0, Math.min(255, 24 + magnitude * 0.24));
+        const blue = Math.max(0, Math.min(255, 24 + magnitude * 0.22));
         const alpha = Math.max(0, Math.min(105, magnitude * 0.55));
 
         pixels[p] = red;
@@ -157,8 +157,8 @@ function WaterBackground({ className = '' }) {
           pointerRef.current.y,
           160
         );
-        gradient.addColorStop(0, 'rgba(148, 212, 255, 0.12)');
-        gradient.addColorStop(0.55, 'rgba(69, 157, 255, 0.07)');
+        gradient.addColorStop(0, 'rgba(80, 80, 80, 0.12)');
+        gradient.addColorStop(0.55, 'rgba(48, 48, 48, 0.07)');
         gradient.addColorStop(1, 'rgba(229, 57, 53, 0)');
         context.fillStyle = gradient;
         context.beginPath();

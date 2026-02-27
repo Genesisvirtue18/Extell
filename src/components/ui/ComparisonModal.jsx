@@ -8,7 +8,7 @@ function ComparisonModal({ items, open, onClose }) {
       <div className="w-full max-w-3xl rounded-xl bg-white p-6 text-navy">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-xl font-bold">Product Comparison (UI Only)</h3>
-          <button onClick={onClose} aria-label="Close" className="rounded-md p-1 hover:bg-slate-100"><X size={20} /></button>
+          <button onClick={onClose} aria-label="Close" className="rounded-md p-1 hover:bg-neutral-100"><X size={20} /></button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-left text-sm">

@@ -4,6 +4,7 @@ import { Heart, SlidersHorizontal } from 'lucide-react';
 import ComparisonModal from '../components/ui/ComparisonModal';
 import placeholderImage from '../assets/placeholder-tech.svg';
 import { getProducts } from '../lib/api';
+import { getProductPath } from '../lib/productUrl';
 
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -293,7 +294,7 @@ function ProductsPage() {
                       ))}
                     </div>
                     <div className="catalog-card-actions">
-                      <Link to={`/product/${productKey}`}>VIEW SPECS</Link>
+                      <Link to={getProductPath(product)}>VIEW SPECS</Link>
                       <button
                         type="button"
                         onClick={() =>

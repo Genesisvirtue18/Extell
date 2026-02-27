@@ -4,20 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: '#08142b',
-        deep: '#061022',
-        electric: '#1f7bff',
+        navy: '#0a0a0a',
+        deep: '#050505',
+        electric: '#111111',
         accent: '#ed2125',
-        cobalt: '#171d5a',
-        slate: '#6f7f9a',
+        cobalt: '#121212',
+        slate: '#737373',
         card: '#f8fbff'
       },
       boxShadow: {
-        glow: '0 0 0 1px rgba(31,123,255,0.4), 0 16px 48px rgba(4,19,45,0.35)'
+        glow: '0 0 0 1px rgba(17,17,17,0.4), 0 16px 48px rgba(0,0,0,0.35)'
       },
       backgroundImage: {
         'tech-grid': 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)',
-        'hero-gradient': 'linear-gradient(130deg, #061022 0%, #0b1c3e 45%, #123b86 100%)'
+        'hero-gradient': 'linear-gradient(130deg, #080808 0%, #121212 45%, #22090a 100%)'
       },
       fontFamily: {
         sans: ['Montserrat', 'Inter', 'IBM Plex Sans', 'sans-serif']

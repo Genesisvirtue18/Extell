@@ -8,9 +8,9 @@ function HomeHero() {
     <section className="relative overflow-hidden bg-transparent">
       <WaterBackground className="water-bg-hero" />
       <div className="absolute inset-0 bg-tech-grid bg-[size:26px_26px] opacity-10" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0b1142]/20 via-transparent to-[#0b1142]/25" />
-      <div className="absolute -right-24 top-16 h-72 w-72 animate-spinSlow rounded-full border border-electric/30" />
-      <div className="absolute -left-10 bottom-10 h-52 w-52 animate-float rounded-full bg-electric/20 blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+      <div className="absolute -right-24 top-16 h-72 w-72 animate-spinSlow rounded-full border border-black/40" />
+      <div className="absolute -left-10 bottom-10 h-52 w-52 animate-float rounded-full bg-black/40 blur-3xl" />
       <div className="absolute right-[12%] top-20 h-40 w-[2px] animate-pulseLine bg-gradient-to-b from-accent/10 via-accent to-accent/0" />
       <div className="absolute bottom-14 left-[18%] h-[2px] w-52 animate-pulseLine bg-gradient-to-r from-accent/0 via-accent to-accent/0" />
 
@@ -20,11 +20,11 @@ function HomeHero() {
         className="relative mx-auto max-w-7xl px-6 py-24 md:py-32"
       >
         <p className="accent-chip text-xs font-semibold uppercase tracking-[0.24em]">Enterprise Infrastructure</p>
-        <h1 className="headline-glow mt-4 max-w-3xl text-4xl font-extrabold leading-tight md:text-6xl">
+        <h1 className="headline-glow mt-4 max-w-3xl text-xl font-extrabold leading-tight md:text-4xl">
           <span className="text-[#ed2125]">Power Electronics</span>{' '}
           <span className="accent-title">and ICT Network Solutions</span>
         </h1>
-        <p className="mt-5 max-w-2xl text-base text-slate-200 md:text-lg">
+        <p className="mt-5 max-w-2xl text-base text-neutral-200 md:text-lg">
           Global distribution across <span className="font-semibold text-[#ed2125]">20+</span> countries
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
@@ -36,13 +36,13 @@ function HomeHero() {
         </div>
         <div className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-3">
           <div className="tech-panel red-wash rounded-lg p-3">
-            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-100"><Activity size={14} className="text-electric" /> Live Uptime Focus</p>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-100"><Activity size={14} className="text-[#ed2125]" /> Live Uptime Focus</p>
           </div>
           <div className="tech-panel red-wash rounded-lg p-3">
-            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-100"><ShieldCheck size={14} className="text-accent" /> Compliance Ready</p>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-100"><ShieldCheck size={14} className="text-accent" /> Compliance Ready</p>
           </div>
           <div className="tech-panel red-wash rounded-lg p-3">
-            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-100"><Zap size={14} className="text-electric" /> Critical Power</p>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-100"><Zap size={14} className="text-[#ed2125]" /> Critical Power</p>
           </div>
         </div>
       </motion.div>
@@ -51,3 +51,4 @@ function HomeHero() {
 }
 
 export default HomeHero;
+

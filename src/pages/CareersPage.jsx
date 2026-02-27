@@ -11,7 +11,7 @@ function CareersPage() {
           {roles.map((role) => (
             <div key={role} className="rounded-lg border border-white/10 bg-white/5 p-5">
               <h2 className="text-lg font-semibold text-white">{role}</h2>
-              <button className="mt-3 rounded-md bg-electric px-4 py-2 text-xs font-semibold">Apply Now</button>
+              <button className="mt-3 rounded-md bg-[#111111] px-4 py-2 text-xs font-semibold">Apply Now</button>
             </div>
           ))}
         </div>
