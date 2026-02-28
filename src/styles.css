@@ -516,13 +516,14 @@ button {
 }
 
 .catalog-pagination button {
-  width: 26px;
+  min-width: 26px;
   height: 26px;
   border-radius: 7px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: #161616;
   color: #b3b3b3;
   font-size: 0.7rem;
+  padding: 0 0.55rem;
 }
 
 .catalog-pagination button.active {

@@ -320,8 +320,8 @@ function ProductsPage() {
             >
               &lt;
             </button>
-            <button type="button" className="active">
-              {pagination.page}
+            <button type="button" className="active" aria-label="current page">
+              {pagination.page} / {Math.max(1, pagination.totalPages || 1)}
             </button>
             <button
               type="button"
