@@ -15,11 +15,11 @@ function ContactPage() {
         </form>
 
         <div className="mt-10 grid gap-6 md:grid-cols-[1.5fr,1fr]">
-          <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5">
+          <div className="h-[380px] overflow-hidden rounded-xl border border-white/10 bg-white/5">
             <iframe
               title="Extell Office Locations Map"
               src="https://www.google.com/maps/d/embed?mid=10sCdNRQ9w6wJq-Bt0SE711ckLhbeyC8&ehbc=2E312F"
-              className="h-[380px] w-full"
+              className="-mt-[100px] h-[480px] w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />

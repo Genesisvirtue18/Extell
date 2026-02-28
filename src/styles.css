@@ -512,24 +512,37 @@ button {
   margin-top: 1rem;
   display: flex;
   justify-content: center;
-  gap: 0.35rem;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .catalog-pagination button {
-  min-width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: #161616;
-  color: #b3b3b3;
-  font-size: 0.7rem;
-  padding: 0 0.55rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.catalog-pagination button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .catalog-pagination button.active {
-  background: #ff2845;
-  border-color: #ff2845;
-  color: #fff;
+  background: rgba(255, 40, 69, 0.28);
+  color: #ffffff;
+}
+
+.catalog-pagination .ellipsis {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
 }
 
 .product-detail-top {

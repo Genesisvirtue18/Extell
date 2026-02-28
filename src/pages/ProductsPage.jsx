@@ -145,6 +145,25 @@ function ProductsPage() {
     [products]
   );
 
+  const totalPages = Math.max(1, pagination.totalPages || 1);
+  const currentPage = Math.min(totalPages, Math.max(1, pagination.page || 1));
+
+  const pageItems = useMemo(() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    if (currentPage <= 4) {
+      return [1, 2, 3, 4, 5, 'ellipsis', totalPages];
+    }
+
+    if (currentPage >= totalPages - 3) {
+      return [1, 'ellipsis', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+
+    return [1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', totalPages];
+  }, [currentPage, totalPages]);
+
   return (
     <section className="catalog-shell mx-auto mt-6 max-w-[1220px] overflow-hidden rounded-md border border-white/10">
       <div className="catalog-grid">
@@ -311,27 +330,28 @@ function ProductsPage() {
             </div>
           ) : null}
 
-          <div className="catalog-pagination">
-            <button
-              type="button"
-              aria-label="prev"
-              disabled={pagination.page <= 1}
-              onClick={() => syncParam('page', Math.max(1, pagination.page - 1))}
-            >
-              &lt;
-            </button>
-            <button type="button" className="active" aria-label="current page">
-              {pagination.page} / {Math.max(1, pagination.totalPages || 1)}
-            </button>
-            <button
-              type="button"
-              aria-label="next"
-              disabled={pagination.page >= pagination.totalPages}
-              onClick={() => syncParam('page', Math.min(pagination.totalPages || 1, pagination.page + 1))}
-            >
-              &gt;
-            </button>
-          </div>
+          {totalPages > 1 ? (
+            <div className="catalog-pagination" aria-label="Pagination">
+              {pageItems.map((item, index) =>
+                item === 'ellipsis' ? (
+                  <span key={`ellipsis-${index}`} className="ellipsis" aria-hidden="true">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={`page-${item}`}
+                    type="button"
+                    className={item === currentPage ? 'active' : ''}
+                    aria-label={`Go to page ${item}`}
+                    aria-current={item === currentPage ? 'page' : undefined}
+                    onClick={() => syncParam('page', item)}
+                  >
+                    {item}
+                  </button>
+                )
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
       <ComparisonModal items={compareList} open={compareList.length > 1} onClose={() => setCompareList([])} />
