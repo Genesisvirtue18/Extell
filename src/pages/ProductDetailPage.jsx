@@ -31,6 +31,12 @@ const pickBestProductImage = (item) => {
   return [...candidates].sort((a, b) => scoreImage(b) - scoreImage(a))[0] || placeholderImage;
 };
 
+const parseCategoryPath = (rawValue) =>
+  String(rawValue || '')
+    .split('>')
+    .map((part) => part.split(',')[0].trim())
+    .filter(Boolean);
+
 function ProductDetailPage() {
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
@@ -94,10 +100,7 @@ function ProductDetailPage() {
   const description = product?.descriptionText || product?.description || product?.short || '';
   const category = product?.topCategory || product?.Categories || product?.category || 'Products';
   const datasheet = product?.datasheet || '';
-  const categoryPath = String(product?.Categories || category || '')
-    .split('>')
-    .map((part) => part.trim())
-    .filter(Boolean);
+  const categoryPath = parseCategoryPath(product?.Categories || category || '');
   const breadcrumbItems = ['Home', ...categoryPath, name];
   const similarProducts = related.slice(0, 3);
 

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import bgOne from '../assets/bg-1.jpg';
 
 function SolutionsPage() {
   const solutions = useMemo(
@@ -10,7 +11,7 @@ function SolutionsPage() {
         title: 'Modular UPS Solutions',
         heroTag: 'Solutions',
         subtitle: 'High quality premium modular UPS architecture for scalable critical power.',
-        heroImage: 'https://source.unsplash.com/1600x900/?ups,power,datacenter',
+        heroImage: bgOne,
         intro: [
           'ExTell Modular UPS Solutions range from compact modular systems to large modular plants with flexible power module combinations.',
           'With hot-swappable modules and true N+N/N+1 design options, clients can scale protection without large redesign cycles.'
@@ -31,7 +32,7 @@ function SolutionsPage() {
         title: 'Industrial UPS Solutions',
         heroTag: 'Solutions',
         subtitle: 'Heavy-duty UPS systems designed for harsh and demanding environments.',
-        heroImage: 'https://source.unsplash.com/1600x900/?industrial,power,server-room',
+        heroImage: bgOne,
         intro: [
           'ExTell Industrial UPS systems are engineered to protect critical machinery and control systems where power disturbances can stop operations.',
           'Designed for rugged conditions, they support high temperature, dust, humidity, vibration, and electrical noise environments.'
@@ -53,7 +54,7 @@ function SolutionsPage() {
         title: 'Enterprise Grade SCS Solutions',
         heroTag: 'Solutions',
         subtitle: 'Structured cabling systems built for organized, scalable enterprise infrastructure.',
-        heroImage: 'https://source.unsplash.com/1600x900/?ethernet,cabling,network',
+        heroImage: bgOne,
         intro: [
           'Cabling is the foundation of modern infrastructure. ExTell SCS solutions help create standardized, compliant, and easy-to-maintain network architecture.',
           'Our solutions cover patching, distribution frames, racks, and cable management aligned with international structured cabling practices.'
@@ -76,7 +77,7 @@ function SolutionsPage() {
         title: 'Solar Solutions',
         heroTag: 'Solutions',
         subtitle: 'On-grid and off-grid solar ecosystems designed for reliable clean energy.',
-        heroImage: 'https://source.unsplash.com/1600x900/?solar,power,renewable',
+        heroImage: bgOne,
         intro: [
           'ExTell offers solar solutions with flexible capacity choices for residential, commercial, and industrial applications.',
           'Our team supports design, installation, and maintenance models through authorized execution partners.'

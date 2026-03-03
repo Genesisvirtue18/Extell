@@ -13,7 +13,7 @@ function HomePage() {
       <FeaturedProductsSection />
       <SolutionsShowcaseSection />
       <TrustAndTestimonialsSection />
-      <NewsletterSection />
+    
     </>
   );
 }

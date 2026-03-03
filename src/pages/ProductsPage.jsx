@@ -6,6 +6,19 @@ import placeholderImage from '../assets/placeholder-tech.svg';
 import { getProducts } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 
+const slugifyValue = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+const parseCategoryPath = (rawValue) =>
+  String(rawValue || '')
+    .split('>')
+    .map((part) => part.split(',')[0].trim())
+    .filter(Boolean);
+
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [compareList, setCompareList] = useState([]);
@@ -28,6 +41,7 @@ function ProductsPage() {
   const [error, setError] = useState('');
 
   const selectedCategory = searchParams.get('category') || '';
+  const selectedSubCategory = searchParams.get('subCategory') || '';
   const selectedType = searchParams.get('type') || '';
   const inStock = searchParams.get('inStock') === 'true';
   const featured = searchParams.get('featured') === 'true';
@@ -131,6 +145,9 @@ function ProductsPage() {
         const specEntries = Array.isArray(product.detailRows)
           ? product.detailRows.slice(0, 4).map((row) => [row.parameter, row.value])
           : Object.entries(product.specs || {});
+        const categoryPath = parseCategoryPath(product.Categories || product.topCategory || product.category || '');
+        const topLevel = categoryPath[0] || product.topCategory || product.category || '';
+        const subCategory = categoryPath[1] || '';
         return {
           ...product,
           cardId: product.id,
@@ -139,11 +156,39 @@ function ProductsPage() {
           short: product.descriptionText || product.short || '',
           tag: product.isFeatured ? 'FEATURED' : product.inStock ? 'IN STOCK' : 'PRODUCT',
           specs: Object.fromEntries(specEntries),
-          image: getCardImage(product)
+          image: getCardImage(product),
+          categoryPath,
+          topLevel,
+          subCategory,
+          subCategorySlug: slugifyValue(subCategory)
         };
       }),
     [products]
   );
+
+  const subCategoryOptions = useMemo(() => {
+    const optionMap = new Map();
+    const selectedCategoryName = categories.find((c) => c.slug === selectedCategory)?.name;
+    cards.forEach((card) => {
+      if (!card.subCategory) return;
+      if (selectedCategory && selectedCategoryName && card.topLevel !== selectedCategoryName) return;
+      optionMap.set(card.subCategorySlug, card.subCategory);
+    });
+    return Array.from(optionMap.entries()).map(([slug, name]) => ({ slug, name }));
+  }, [cards, selectedCategory, categories]);
+
+  const visibleCards = useMemo(
+    () => (selectedSubCategory ? cards.filter((card) => card.subCategorySlug === selectedSubCategory) : cards),
+    [cards, selectedSubCategory]
+  );
+
+  useEffect(() => {
+    if (!selectedSubCategory) return;
+    const hasActiveSubCategory = subCategoryOptions.some((option) => option.slug === selectedSubCategory);
+    if (!hasActiveSubCategory) {
+      syncParam('subCategory', '');
+    }
+  }, [selectedSubCategory, subCategoryOptions]);
 
   const totalPages = Math.max(1, pagination.totalPages || 1);
   const currentPage = Math.min(totalPages, Math.max(1, pagination.page || 1));
@@ -214,6 +259,27 @@ function ProductsPage() {
           </div>
 
           <div className="catalog-filter-group">
+            <h3>SUBCATEGORY</h3>
+            {subCategoryOptions.map((subCategory) => (
+              <label key={subCategory.slug}>
+                <input
+                  type="radio"
+                  name="subcategory-filter"
+                  checked={selectedSubCategory === subCategory.slug}
+                  onChange={() => syncParam('subCategory', subCategory.slug)}
+                />
+                <span>{subCategory.name}</span>
+              </label>
+            ))}
+            {selectedSubCategory ? (
+              <label>
+                <input type="radio" name="subcategory-filter" checked={false} onChange={() => syncParam('subCategory', '')} />
+                <span>All Subcategories</span>
+              </label>
+            ) : null}
+          </div>
+
+          <div className="catalog-filter-group">
             <h3>STATUS</h3>
             <label>
               <input type="checkbox" checked={inStock} onChange={(e) => syncParam('inStock', e.target.checked)} />
@@ -234,6 +300,7 @@ function ProductsPage() {
           <div className="catalog-crumb">
             HOME &gt; PRODUCTS
             {selectedCategory ? ` > ${categories.find((c) => c.slug === selectedCategory)?.name || selectedCategory}` : ''}
+            {selectedSubCategory ? ` > ${subCategoryOptions.find((c) => c.slug === selectedSubCategory)?.name || selectedSubCategory}` : ''}
           </div>
           <div className="catalog-title-row">
             <div>
@@ -255,7 +322,7 @@ function ProductsPage() {
 
           <div className="catalog-actions">
             <div className="catalog-compare-pill">
-              {compareList.length} ITEMS SELECTED FOR COMPARISON | {pagination.total} RESULTS
+              {compareList.length} ITEMS SELECTED FOR COMPARISON | {selectedSubCategory ? visibleCards.length : pagination.total} RESULTS
             </div>
             <input
               value={query}
@@ -272,7 +339,7 @@ function ProductsPage() {
           {error ? <p>{error}</p> : null}
           {!loading && !error ? (
             <div className="catalog-cards">
-              {cards.map((product) => {
+              {visibleCards.map((product) => {
                 const productKey = product.id || product.cardId || product.sku;
                 const isWishlisted = wishlist.includes(productKey);
                 const hasBrokenImage = brokenImages[productKey];
@@ -302,6 +369,7 @@ function ProductsPage() {
                       />
                     </div>
                     <p className="catalog-sku">{product.sku}</p>
+                    {product.subCategory ? <p className="catalog-sku">{product.topLevel} &gt; {product.subCategory}</p> : null}
                     <h3>{product.name}</h3>
                     <p className="catalog-short">{product.short}</p>
                     <div className="catalog-spec-grid">
@@ -326,7 +394,7 @@ function ProductsPage() {
                   </article>
                 );
               })}
-              {!cards.length ? <p>No products found for the selected filters.</p> : null}
+              {!visibleCards.length ? <p>No products found for the selected filters.</p> : null}
             </div>
           ) : null}
 

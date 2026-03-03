@@ -95,13 +95,55 @@ export const products = [
 
 export const testimonials = [
   {
-    quote: 'Extell delivered a resilient and standards-compliant backbone for our national rollout.',
-    author: 'Program Director, Regional Telecom Group'
+    quote:
+      'Good Quality products and amazing prices. Very well trained staff and customer service is well appreciated. Keep up the great work',
+    author: 'shijit nair'
   },
   {
-    quote: 'Their UPS and power architecture reduced downtime risk across our core facility.',
-    author: 'Operations Lead, Financial Data Center'
+    quote: 'Quality products at affordable price highly recommended.',
+    author: 'Nidish Ram'
+  },
+  {
+    quote: 'Affordable, cost friendly and quality products that brings much of customer satisfaction.',
+    author: 'mayan prabhu'
   }
+];
+
+export const publicReviewSnapshots = [
+  {
+    platform: 'Justdial',
+    rating: 4.7,
+    totalRatings: 9,
+    label: 'ExTell Systems, HMT Colony, Ernakulam',
+    note: '100% authenticated and trusted ratings (as listed on Justdial).',
+    url: 'https://www.justdial.com/jdmart/Ernakulam/ExTell-Systems-HMT-Colony/0484PX484-X484-221214162013-A6L7_BZDET/catalogue'
+  },
+  {
+    platform: 'Google Reviews',
+    rating: null,
+    totalRatings: null,
+    label: 'ExTell Systems Pvt Ltd (ExTell)',
+    note: 'View latest public reviews directly on Google.',
+    url: 'https://www.google.com/search?sca_esv=cb0b2358a0071c17&sxsrf=ANbL-n5Naq6SNJuW2wtlbF3v-EURhzzwGA:1772524650129&si=AL3DRZEsmMGCryMMFSHJ3StBhOdZ2-6yYkXd_doETEE1OR-qOegHiz8b2a8wVJvfAi05XjpOJPGLXPHdRgNuWNvmptB-9YA2OuB_F2I1i-f0r0GU6JluMNWioZbq6neOceG4UX2AM54KZTCHRkLozZmr7A2e4WPfXg%3D%3D&q=ExTell+Systems+Pvt+Ltd+%28ExTell%29+Reviews&sa=X&ved=2ahUKEwijoYHxoIOTAxUVUGcHHRePBdcQ0bkNegQILxAH&biw=1280&bih=551&dpr=1.5'
+  }
+];
+
+export const solutionShowcaseItems = [
+  'Modular UPS solutions with hot-swappable architecture and N+1/N+N redundancy.',
+  'Industrial UPS deployments for harsh environments with long-runtime backup options.',
+  'Enterprise-grade structured cabling (SCS) covering EF, ER, TR/TE, and horizontal links.',
+  'Solar solution stacks for residential, commercial, and industrial on-grid/off-grid projects.'
+];
+
+export const solutionIndustries = [
+  'Telecom',
+  'Data Centers',
+  'Banking & Finance',
+  'Healthcare',
+  'Government',
+  'Manufacturing',
+  'Oil & Gas',
+  'Utilities'
 ];
 
 export const partnerLogos = ['NexGrid', 'OptiCore', 'VoltAxis', 'InfraPulse', 'Datatrail'];

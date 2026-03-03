@@ -9,7 +9,7 @@ function SearchBar({ placeholder = 'Search products, models, certifications...',
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-white/15 bg-white/95 py-3 pl-10 pr-4 text-sm text-navy outline-none ring-[#333333] transition focus:ring-2"
+        className="ui-input ui-focus-ring w-full rounded-lg py-3 pl-10 pr-4 text-sm outline-none transition"
       />
     </label>
   );

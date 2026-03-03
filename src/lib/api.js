@@ -12,8 +12,15 @@ const buildUrl = (path, params) => {
   return url.toString();
 };
 
-const getJson = async (path, params) => {
-  const response = await fetch(buildUrl(path, params));
+const requestJson = async (path, { method = 'GET', params, body, headers } = {}) => {
+  const response = await fetch(buildUrl(path, params), {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(headers || {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
     throw new Error(payload.message || 'Request failed');
@@ -21,8 +28,13 @@ const getJson = async (path, params) => {
   return response.json();
 };
 
+const getJson = (path, params) => requestJson(path, { params });
+const postJson = (path, body) => requestJson(path, { method: 'POST', body });
+
 export const getProducts = (params) => getJson('/api/products', params);
 export const getProductById = (id) => getJson(`/api/products/${id}`);
 export const getProductBySlug = (slug) => getJson(`/api/products/slug/${encodeURIComponent(slug)}`);
 export const getCategories = () => getJson('/api/categories');
+export const getSupportCategories = () => getJson('/api/support/categories');
 export const getProductsGroupedByCategory = (params) => getJson('/api/products/grouped-by-category', params);
+export const submitSupportTicket = (payload) => postJson('/api/support/tickets', payload);

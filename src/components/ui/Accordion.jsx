@@ -7,9 +7,9 @@ function Accordion({ items }) {
   return (
     <div className="space-y-3">
       {items.map((item, index) => (
-        <div key={item.title} className="rounded-lg border border-white/10 bg-black/60">
+        <div key={item.title} className="ui-surface-1 rounded-lg">
           <button
-            className="flex w-full items-center justify-between px-5 py-4 text-left"
+            className="ui-focus-ring flex w-full items-center justify-between rounded-lg px-5 py-4 text-left"
             onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
           >
             <span className="font-semibold text-white">{item.title}</span>

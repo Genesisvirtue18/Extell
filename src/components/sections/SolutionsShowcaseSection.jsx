@@ -1,10 +1,7 @@
 import SectionHeader from '../ui/SectionHeader';
-import { partnerLogos } from '../../data/siteData';
+import { partnerLogos, solutionIndustries, solutionShowcaseItems } from '../../data/siteData';
 
 function SolutionsShowcaseSection() {
-  const solutions = ['Core Network Rollouts', 'Edge Data Center Enablement', 'Critical Power Modernization', 'Fiber Capacity Expansion'];
-  const industries = ['Telecom', 'Oil & Gas', 'Banking', 'Government', 'Manufacturing', 'Cloud'];
-
   return (
     <section className="mx-auto max-w-7xl px-6 py-16">
       <SectionHeader eyebrow="Solutions" title="Deployment-ready Solution Stacks" subtitle="Integrated hardware, engineering, and support for national-scale projects." />
@@ -12,13 +9,13 @@ function SolutionsShowcaseSection() {
         <div className="tech-panel red-wash rounded-xl p-6">
           <h3 className="accent-title text-xl font-bold">Solution Showcase</h3>
           <ul className="mt-4 space-y-3 text-neutral-200">
-            {solutions.map((solution) => <li key={solution}>- {solution}</li>)}
+            {solutionShowcaseItems.map((solution) => <li key={solution}>- {solution}</li>)}
           </ul>
         </div>
         <div className="tech-panel red-wash rounded-xl p-6">
           <h3 className="accent-title text-xl font-bold">Industry Sectors</h3>
           <div className="mt-4 flex flex-wrap gap-2">
-            {industries.map((industry) => (
+            {solutionIndustries.map((industry) => (
               <span key={industry} className="rounded-full border border-white/20 bg-accent/10 px-3 py-1 text-sm text-neutral-100 hover:border-accent/70">{industry}</span>
             ))}
           </div>

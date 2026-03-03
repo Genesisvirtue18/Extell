@@ -2,10 +2,19 @@ import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import { Activity, ShieldCheck, Zap } from 'lucide-react';
 import WaterBackground from '../ui/WaterBackground';
+import homeBackground from '../../assets/homebg.jpg';
 
 function HomeHero() {
   return (
-    <section className="relative overflow-hidden bg-transparent">
+    <section
+      className="relative overflow-hidden bg-transparent"
+      style={{
+        backgroundImage: `linear-gradient(rgba(2, 6, 23, 0.72), rgba(2, 6, 23, 0.78)), url(${homeBackground})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <WaterBackground className="water-bg-hero" />
       <div className="absolute inset-0 bg-tech-grid bg-[size:26px_26px] opacity-10" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
@@ -51,4 +60,3 @@ function HomeHero() {
 }
 
 export default HomeHero;
-

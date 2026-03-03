@@ -1,3 +1,5 @@
+import aboutBackground from '../assets/about.jpg';
+
 function AboutPage() {
   const strengths = [
     'Power Backup Solutions for mission-critical uptime',
@@ -20,7 +22,7 @@ function AboutPage() {
         className="relative border-b border-white/10"
         style={{
           backgroundImage:
-            "linear-gradient(90deg, rgba(6,6,6,0.92) 0%, rgba(10,10,10,0.88) 42%, rgba(14,14,14,0.72) 100%), url('https://source.unsplash.com/1800x900/?global,technology,network')",
+            `linear-gradient(90deg, rgba(6,6,6,0.92) 0%, rgba(10,10,10,0.88) 42%, rgba(14,14,14,0.72) 100%), url(${aboutBackground})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
