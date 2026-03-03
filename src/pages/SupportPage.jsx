@@ -374,7 +374,7 @@ export default function SupportPage() {
                 className="ui-input ui-focus-ring w-full rounded-lg px-4 py-3 text-sm outline-none"
               />
             </label>
-            <label className="space-y-2 md:col-span-2">
+            <div className="space-y-2 md:col-span-2">
               <span className="text-sm text-neutral-300">Attachments</span>
               <div
                 className="ui-focus-ring cursor-pointer rounded-xl border border-dashed border-white/30 bg-white/5 p-6 text-center"
@@ -405,7 +405,7 @@ export default function SupportPage() {
                   </p>
                 ) : null}
               </div>
-            </label>
+            </div>
             <div className="md:col-span-2">
               <button
                 type="submit"
