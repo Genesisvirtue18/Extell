@@ -188,6 +188,14 @@ function ProductsPage() {
     }
   }, [selectedSubCategory, subCategoryOptions]);
 
+  useEffect(() => {
+    if (!selectedSubCategory) return;
+    const pageFromQuery = Number(searchParams.get('page') || 1);
+    if (pageFromQuery > 1) {
+      syncParam('page', 1);
+    }
+  }, [selectedSubCategory, searchParams]);
+
   const totalPages = Math.max(1, pagination.totalPages || 1);
   const currentPage = Math.min(totalPages, Math.max(1, pagination.page || 1));
 
@@ -396,7 +404,7 @@ function ProductsPage() {
             </div>
           ) : null}
 
-          {totalPages > 1 ? (
+          {totalPages > 1 && !selectedSubCategory ? (
             <div className="catalog-pagination" aria-label="Pagination">
               {pageItems.map((item, index) =>
                 item === 'ellipsis' ? (
