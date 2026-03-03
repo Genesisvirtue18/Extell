@@ -168,14 +168,12 @@ function ProductsPage() {
 
   const subCategoryOptions = useMemo(() => {
     const optionMap = new Map();
-    const selectedCategoryName = categories.find((c) => c.slug === selectedCategory)?.name;
     cards.forEach((card) => {
       if (!card.subCategory) return;
-      if (selectedCategory && selectedCategoryName && card.topLevel !== selectedCategoryName) return;
       optionMap.set(card.subCategorySlug, card.subCategory);
     });
     return Array.from(optionMap.entries()).map(([slug, name]) => ({ slug, name }));
-  }, [cards, selectedCategory, categories]);
+  }, [cards]);
 
   const visibleCards = useMemo(
     () => (selectedSubCategory ? cards.filter((card) => card.subCategorySlug === selectedSubCategory) : cards),
