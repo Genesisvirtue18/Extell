@@ -40,7 +40,7 @@ function CategoryGridSection() {
       {loading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, idx) => (
-            <div key={`cat-skeleton-${idx}`} className="h-[190px] animate-pulse rounded-xl border border-white/10 bg-white/5" />
+            <div key={`cat-skeleton-${idx}`} className="ui-surface-1 h-[190px] animate-pulse rounded-xl" />
           ))}
         </div>
       ) : null}
@@ -50,7 +50,7 @@ function CategoryGridSection() {
             <CategoryCard key={category.slug} category={category} index={idx} />
           ))}
           {!categories.length ? (
-            <div className="rounded-xl border border-white/15 bg-white/5 p-6 text-sm text-neutral-300">
+            <div className="ui-surface-1 rounded-xl p-6 text-sm ui-text-muted">
               No categories available right now.
             </div>
           ) : null}

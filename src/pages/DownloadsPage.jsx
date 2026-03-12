@@ -10,9 +10,9 @@ function DownloadsPage() {
       <section className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid gap-4">
           {files.map((file) => (
-            <div key={file} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-5">
-              <span className="text-sm text-neutral-100">{file}</span>
-              <button className="inline-flex items-center gap-2 rounded-md bg-[#111111] px-4 py-2 text-xs font-semibold text-white">
+            <div key={file} className="ui-surface-1 flex items-center justify-between rounded-lg p-5">
+              <span className="text-sm ui-text">{file}</span>
+              <button className="ui-surface-1 ui-text inline-flex items-center gap-2 rounded-md px-4 py-2 text-xs font-semibold">
                 <Download size={15} /> Download
               </button>
             </div>

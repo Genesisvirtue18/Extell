@@ -12,10 +12,10 @@ function Accordion({ items }) {
             className="ui-focus-ring flex w-full items-center justify-between rounded-lg px-5 py-4 text-left"
             onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
           >
-            <span className="font-semibold text-white">{item.title}</span>
+            <span className="font-semibold ui-text">{item.title}</span>
             <ChevronDown className={openIndex === index ? 'rotate-180 transition' : 'transition'} size={18} />
           </button>
-          {openIndex === index ? <p className="px-5 pb-4 text-sm text-neutral-200">{item.content}</p> : null}
+          {openIndex === index ? <p className="px-5 pb-4 text-sm ui-text-muted">{item.content}</p> : null}
         </div>
       ))}
     </div>

@@ -131,7 +131,7 @@ function FeaturedProductsSection() {
   const displayProducts = useMemo(() => products.slice(0, 4), [products]);
 
   return (
-    <section className="relative bg-black/70 py-16">
+    <section className="ui-section relative py-16">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(229,57,53,0.12),transparent_36%)]" />
       <div className="mx-auto max-w-7xl px-6">
@@ -139,7 +139,7 @@ function FeaturedProductsSection() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {loading
             ? [...Array(4)].map((_, idx) => (
-                <div key={`feature-skeleton-${idx}`} className="h-[420px] animate-pulse rounded-xl border border-white/10 bg-white/5" />
+                <div key={`feature-skeleton-${idx}`} className="ui-surface-1 h-[420px] animate-pulse rounded-xl" />
               ))
             : null}
           {!loading && displayProducts.length
@@ -188,7 +188,7 @@ function FeaturedProductsSection() {
               ))
             : null}
           {!loading && !displayProducts.length ? (
-            <div className="rounded-xl border border-white/15 bg-white/5 p-6 text-sm text-neutral-300">
+            <div className="ui-surface-1 rounded-xl p-6 text-sm ui-text-muted">
               No featured products available right now.
             </div>
           ) : null}

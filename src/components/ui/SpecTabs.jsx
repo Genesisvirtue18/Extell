@@ -6,19 +6,19 @@ function SpecTabs({ product }) {
   const [active, setActive] = useState('Specifications');
 
   return (
-    <div className="rounded-xl border border-white/10 bg-black/70 p-6">
-      <div className="flex flex-wrap gap-2 border-b border-white/10 pb-3">
+    <div className="ui-surface-2 rounded-xl p-6">
+      <div className="flex flex-wrap gap-2 border-b ui-border pb-3">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActive(tab)}
-            className={`rounded-md px-4 py-2 text-sm ${active === tab ? 'bg-[#111111] text-white' : 'bg-white/10 text-neutral-200'}`}
+            className={`ui-tab rounded-md px-4 py-2 text-sm ${active === tab ? 'ui-tab-active' : 'ui-tab-inactive'}`}
           >
             {tab}
           </button>
         ))}
       </div>
-      <div className="pt-4 text-sm text-neutral-200">
+      <div className="pt-4 text-sm ui-text-muted">
         {active === 'Specifications' ? (
           Object.entries(product.specs).map(([key, value]) => <p key={key}><span className="font-semibold">{key}:</span> {value}</p>)
         ) : null}

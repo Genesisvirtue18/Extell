@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
@@ -22,6 +23,7 @@ const supportServices = [
     accent: {
       border: "rgba(71, 231, 255, 0.55)",
       bg: "linear-gradient(160deg, rgba(71,231,255,0.2), rgba(71,231,255,0.05) 35%, rgba(1,8,30,0.78) 100%)",
+      lightBg: "linear-gradient(160deg, rgba(71,231,255,0.25), rgba(255,255,255,0.92) 45%, rgba(234,244,255,0.96) 100%)",
       glow: "0 0 24px rgba(71,231,255,0.22)",
     },
   },
@@ -32,6 +34,7 @@ const supportServices = [
     accent: {
       border: "rgba(90, 153, 255, 0.55)",
       bg: "linear-gradient(160deg, rgba(90,153,255,0.2), rgba(90,153,255,0.05) 35%, rgba(1,8,30,0.78) 100%)",
+      lightBg: "linear-gradient(160deg, rgba(90,153,255,0.22), rgba(255,255,255,0.92) 45%, rgba(235,242,255,0.96) 100%)",
       glow: "0 0 24px rgba(90,153,255,0.22)",
     },
   },
@@ -42,6 +45,7 @@ const supportServices = [
     accent: {
       border: "rgba(86, 244, 214, 0.55)",
       bg: "linear-gradient(160deg, rgba(86,244,214,0.2), rgba(86,244,214,0.05) 35%, rgba(1,8,30,0.78) 100%)",
+      lightBg: "linear-gradient(160deg, rgba(86,244,214,0.22), rgba(255,255,255,0.92) 45%, rgba(236,255,250,0.96) 100%)",
       glow: "0 0 24px rgba(86,244,214,0.2)",
     },
   },
@@ -52,6 +56,7 @@ const supportServices = [
     accent: {
       border: "rgba(228, 122, 255, 0.55)",
       bg: "linear-gradient(160deg, rgba(228,122,255,0.2), rgba(228,122,255,0.05) 35%, rgba(1,8,30,0.78) 100%)",
+      lightBg: "linear-gradient(160deg, rgba(228,122,255,0.22), rgba(255,255,255,0.92) 45%, rgba(247,237,255,0.96) 100%)",
       glow: "0 0 24px rgba(228,122,255,0.22)",
     },
   },
@@ -77,6 +82,8 @@ const faqs = [
 ];
 
 export default function SupportPage() {
+  const { theme = "light" } = useOutletContext() || {};
+  const isLightTheme = theme === "light";
   const emailJsServiceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
   const emailJsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
   const emailJsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
@@ -210,10 +217,12 @@ export default function SupportPage() {
 
   return (
     <div
-      className="relative min-h-screen overflow-hidden text-white px-6 py-20"
+      className="relative min-h-screen overflow-hidden px-6 py-20 ui-text"
       style={{
-        backgroundImage: `radial-gradient(circle at 50% 5%, rgba(89,118,255,0.22), transparent 34%), url(${supportBackground})`,
-        backgroundColor: "#020617",
+        backgroundImage: isLightTheme
+          ? "radial-gradient(circle at 15% 12%, rgba(239,246,255,0.9), transparent 46%), radial-gradient(circle at 85% 12%, rgba(254,242,242,0.75), transparent 42%)"
+          : `radial-gradient(circle at 50% 5%, rgba(89,118,255,0.22), transparent 34%), url(${supportBackground})`,
+        backgroundColor: isLightTheme ? "#f8fafc" : "#020617",
         backgroundSize: "cover",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",
@@ -238,7 +247,7 @@ export default function SupportPage() {
         <h1 className="text-4xl font-extrabold tracking-wide md:text-5xl">
           Support Center
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-slate-300">
+        <p className={`mx-auto mt-4 max-w-2xl ${isLightTheme ? "text-slate-600" : "text-slate-300"}`}>
           Centralized technical support, tools, and services designed for
           enterprise reliability.
         </p>
@@ -255,23 +264,23 @@ export default function SupportPage() {
             className="group relative rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1"
             style={{
               borderColor: service.accent.border,
-              background: service.accent.bg,
+              background: isLightTheme ? service.accent.lightBg : service.accent.bg,
               boxShadow: service.accent.glow,
             }}
           >
             <div className="relative z-10 flex h-full flex-col space-y-4">
-              <div className="text-3xl text-cyan-200">{service.icon}</div>
+              <div className={`text-3xl ${isLightTheme ? "text-cyan-600" : "text-cyan-200"}`}>{service.icon}</div>
               <h3 className="text-xl font-semibold">{service.title}</h3>
-              <p className="text-sm leading-relaxed text-slate-200/80">
+              <p className={`text-sm leading-relaxed ${isLightTheme ? "text-slate-600" : "text-slate-200/80"}`}>
                 {service.desc}
               </p>
               <div className="pt-2">
                 <button
                   className="ui-focus-ring rounded-full border px-4 py-2 text-sm font-semibold transition hover:bg-white/20"
                   style={{
-                    borderColor: "rgba(255,255,255,0.6)",
-                    background: "rgba(255,255,255,0.14)",
-                    color: "#ffffff",
+                    borderColor: isLightTheme ? "rgba(15,23,42,0.2)" : "rgba(255,255,255,0.6)",
+                    background: isLightTheme ? "rgba(255,255,255,0.78)" : "rgba(255,255,255,0.14)",
+                    color: isLightTheme ? "#0f172a" : "#ffffff",
                   }}
                 >
                   Access Service -&gt;
@@ -282,19 +291,23 @@ export default function SupportPage() {
         ))}
       </div>
 
-      <div className="mx-auto ui-surface-1 mt-16 grid max-w-7xl gap-6 lg:grid-cols-2 rounded-xl mb-10"  style={{
-            background:
-              "linear-gradient(180deg, rgba(3,10,32,0.68), rgba(2,8,26,0.82))",
-            backdropFilter: "blur(1.5px)",
-          }}>
+      <div
+        className="mx-auto ui-surface-1 mt-16 grid max-w-7xl gap-6 rounded-xl mb-10 lg:grid-cols-2"
+        style={{
+          background: isLightTheme
+            ? "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(241,245,249,0.96))"
+            : "linear-gradient(180deg, rgba(3,10,32,0.68), rgba(2,8,26,0.82))",
+          backdropFilter: "blur(1.5px)",
+        }}
+      >
         <div className=" relative rounded-3xl p-5 md:p-8" >
           <div className="mb-6">
-            <h2 className="text-3xl font-semibold text-neutral-100">Submit a Ticket</h2>
-            <p className="mt-2 text-neutral-300">Our engineering team will respond within 24 hours.</p>
+            <h2 className="text-3xl font-semibold ui-text">Submit a Ticket</h2>
+            <p className="mt-2 ui-text-muted">Our engineering team will respond within 24 hours.</p>
           </div>
           <form className="grid gap-4 md:grid-cols-2" onSubmit={handleTicketSubmit}>
             <label className="space-y-2">
-              <span className="text-sm text-neutral-300">Work Email</span>
+              <span className="text-sm ui-text-muted">Work Email</span>
               <input
                 type="email"
                 name="email"
@@ -306,7 +319,7 @@ export default function SupportPage() {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-sm text-neutral-300">Serial Number (Optional)</span>
+              <span className="text-sm ui-text-muted">Serial Number (Optional)</span>
               <input
                 type="text"
                 name="serialNumber"
@@ -317,7 +330,7 @@ export default function SupportPage() {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-sm text-neutral-300">Product Category</span>
+              <span className="text-sm ui-text-muted">Product Category</span>
               <select
                 name="category"
                 value={ticketForm.category}
@@ -350,7 +363,7 @@ export default function SupportPage() {
               </select>
             </label>
             <label className="space-y-2">
-              <span className="text-sm text-neutral-300">Priority Level</span>
+              <span className="text-sm ui-text-muted">Priority Level</span>
               <select
                 name="priority"
                 value={ticketForm.priority}
@@ -363,7 +376,7 @@ export default function SupportPage() {
               </select>
             </label>
             <label className="space-y-2 md:col-span-2">
-              <span className="text-sm text-neutral-300">Issue Description</span>
+              <span className="text-sm ui-text-muted">Issue Description</span>
               <textarea
                 name="description"
                 value={ticketForm.description}
@@ -375,9 +388,9 @@ export default function SupportPage() {
               />
             </label>
             <div className="space-y-2 md:col-span-2">
-              <span className="text-sm text-neutral-300">Attachments</span>
+              <span className="text-sm ui-text-muted">Attachments</span>
               <div
-                className="ui-focus-ring cursor-pointer rounded-xl border border-dashed border-white/30 bg-white/5 p-6 text-center"
+                className={`ui-focus-ring cursor-pointer rounded-xl border border-dashed p-6 text-center ${isLightTheme ? "ui-border ui-bg-soft" : "border-white/30 bg-white/5"}`}
                 onClick={openAttachmentPicker}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
@@ -388,9 +401,9 @@ export default function SupportPage() {
                 role="button"
                 tabIndex={0}
               >
-                <FaUpload className="mx-auto mb-2 text-lg text-neutral-300" />
-                <p className="text-sm text-neutral-300">Click to upload or drag and drop</p>
-                <p className="mt-1 text-xs text-neutral-400">JPG, PNG, WEBP (MAX. 10MB each)</p>
+                <FaUpload className="mx-auto mb-2 text-lg ui-text-muted" />
+                <p className="text-sm ui-text-muted">Click to upload or drag and drop</p>
+                <p className="mt-1 text-xs ui-text-muted">JPG, PNG, WEBP (MAX. 10MB each)</p>
                 <input
                   ref={attachmentInputRef}
                   type="file"
@@ -400,7 +413,7 @@ export default function SupportPage() {
                   className="hidden"
                 />
                 {attachmentNames.length ? (
-                  <p className="mt-2 text-xs text-neutral-400">
+                  <p className="mt-2 text-xs ui-text-muted">
                     {attachmentNames.join(", ")}
                   </p>
                 ) : null}
@@ -416,7 +429,7 @@ export default function SupportPage() {
                 {submitState.loading ? "Submitting..." : "Submit Ticket"}
               </button>
               {submitState.message ? (
-                <p className={`mt-3 text-sm ${submitState.error ? "text-red-300" : "text-emerald-300"}`}>
+                <p className={`mt-3 text-sm ${submitState.error ? (isLightTheme ? "text-red-600" : "text-red-300") : (isLightTheme ? "text-emerald-600" : "text-emerald-300")}`}>
                   {submitState.message}
                 </p>
               ) : null}
@@ -428,7 +441,10 @@ export default function SupportPage() {
           className=" relative rounded-3xl p-6 md:p-8"
          
         >
-          <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ boxShadow: "inset 0 0 90px rgba(0, 0, 0, 0.28)" }} />
+          <div
+            className="absolute inset-0 rounded-3xl pointer-events-none"
+            style={{ boxShadow: isLightTheme ? "inset 0 0 80px rgba(148,163,184,0.18)" : "inset 0 0 90px rgba(0, 0, 0, 0.28)" }}
+          />
           <div className="relative">
             <h2 className="mb-6 text-3xl font-bold">FAQs</h2>
             <div className="grid grid-cols-1">
@@ -437,16 +453,16 @@ export default function SupportPage() {
                   key={i}
                   className="ui-surface-2 group mt-4 rounded-xl p-5 transition-all"
                   style={{
-                    background: "rgba(15, 23, 42, 0.44)",
+                    background: isLightTheme ? "rgba(255,255,255,0.84)" : "rgba(15, 23, 42, 0.44)",
                   }}
                 >
                   <summary className="flex cursor-pointer items-start justify-between gap-3 text-lg font-medium">
                     <span>{item.q}</span>
-                    <span className="mt-1 text-cyan-300 transition-transform group-open:rotate-45">
+                    <span className={`mt-1 transition-transform group-open:rotate-45 ${isLightTheme ? "text-cyan-600" : "text-cyan-300"}`}>
                       <FaQuestionCircle />
                     </span>
                   </summary>
-                  <p className="mt-4 text-sm leading-relaxed text-slate-300">
+                  <p className={`mt-4 text-sm leading-relaxed ${isLightTheme ? "text-slate-600" : "text-slate-300"}`}>
                     {item.a}
                   </p>
                 </details>

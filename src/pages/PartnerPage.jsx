@@ -9,7 +9,7 @@ function PartnerPage() {
       <section className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid gap-4 md:grid-cols-2">
           {benefits.map((benefit) => (
-            <div key={benefit} className="rounded-lg border border-white/10 bg-white/5 p-5 text-neutral-100">{benefit}</div>
+            <div key={benefit} className="ui-surface-1 rounded-lg p-5 ui-text">{benefit}</div>
           ))}
         </div>
       </section>

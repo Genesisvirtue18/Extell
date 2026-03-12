@@ -14,9 +14,9 @@ function IndustrySolutionsPage() {
       <section className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid gap-6 md:grid-cols-2">
           {industries.map((item) => (
-            <div key={item.name} className="rounded-xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-xl font-bold text-white">{item.name}</h2>
-              <p className="mt-2 text-sm text-neutral-200">{item.value}</p>
+            <div key={item.name} className="ui-surface-1 rounded-xl p-6">
+              <h2 className="text-xl font-bold ui-text">{item.name}</h2>
+              <p className="mt-2 text-sm ui-text-muted">{item.value}</p>
             </div>
           ))}
         </div>

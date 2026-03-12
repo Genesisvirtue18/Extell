@@ -4,11 +4,11 @@ function ComparisonModal({ items, open, onClose }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] grid place-items-center bg-black/60 p-4">
-      <div className="w-full max-w-3xl rounded-xl bg-white p-6 text-navy">
+    <div className="ui-modal-backdrop fixed inset-0 z-[60] grid place-items-center p-4">
+      <div className="ui-surface-1 w-full max-w-3xl rounded-xl p-6 ui-text">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-xl font-bold">Product Comparison (UI Only)</h3>
-          <button onClick={onClose} aria-label="Close" className="rounded-md p-1 hover:bg-neutral-100"><X size={20} /></button>
+          <button onClick={onClose} aria-label="Close" className="rounded-md p-1 ui-hover-surface"><X size={20} /></button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-left text-sm">

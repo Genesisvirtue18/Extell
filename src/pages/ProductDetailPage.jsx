@@ -221,11 +221,13 @@ function ProductDetailPage() {
           <div className="similar-products-card">
             <h4>Similar Products</h4>
             {similarProducts.map((item) => (
-              <article key={item.id}>
+              <article key={item.id} className="similar-product-item">
                 <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
                 <div>
                   <p>{item.Name || item.name}</p>
-                  <Link to={getProductPath(item)}>View Details</Link>
+                  <Link className="similar-product-link" to={getProductPath(item)}>
+                    View Details
+                  </Link>
                 </div>
               </article>
             ))}
@@ -240,7 +242,9 @@ function ProductDetailPage() {
             <article key={item.id}>
               <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
               <p>{item.Name || item.name}</p>
-              <Link to={getProductPath(item)}>View Details</Link>
+              <Link className="similar-product-link text-white" to={getProductPath(item)}>
+                View Details
+              </Link>
             </article>
           ))}
         </div>

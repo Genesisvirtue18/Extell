@@ -4,7 +4,7 @@ import { publicReviewSnapshots, testimonials } from '../../data/siteData';
 
 function TrustAndTestimonialsSection() {
   return (
-    <section className="bg-gradient-to-b from-black/60 via-black/75 to-black/70 py-16">
+    <section className="ui-section py-16">
       <div className="mx-auto max-w-7xl space-y-12 px-6">
         <div>
           <SectionHeader eyebrow="Trust" title="Compliance and Enterprise Credibility" />
@@ -14,31 +14,31 @@ function TrustAndTestimonialsSection() {
           <SectionHeader eyebrow="Voices" title="Client Testimonials" />
           <div className="grid gap-6 md:grid-cols-3">
             {testimonials.map((item) => (
-              <blockquote key={item.author} className="rounded-xl border border-white/10 bg-gradient-to-br from-white/5 via-white/5 to-accent/10 p-6 text-neutral-100">
+              <blockquote key={item.author} className="ui-surface-1 rounded-xl p-6 ui-text">
                 <p className="text-base">"{item.quote}"</p>
                 <footer className="mt-4 text-sm text-[#ed2125]">{item.author}</footer>
               </blockquote>
             ))}
           </div>
-          <div className="mt-8 rounded-xl border border-white/10 bg-white/5 p-6">
-            <h3 className="text-lg font-semibold text-neutral-100">Public Review Snapshot</h3>
-            <p className="mt-2 text-sm text-neutral-300">
+          <div className="ui-surface-2 mt-8 rounded-xl p-6">
+            <h3 className="text-lg font-semibold ui-text">Public Review Snapshot</h3>
+            <p className="mt-2 text-sm ui-text-muted">
               External ratings pulled from public listing pages. Open source links for latest live reviews.
             </p>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {publicReviewSnapshots.map((item) => (
-                <article key={`${item.platform}-${item.label}`} className="rounded-lg border border-white/10 bg-black/30 p-4">
-                  <p className="text-xs uppercase tracking-wider text-neutral-400">{item.platform}</p>
-                  <p className="mt-1 text-sm font-semibold text-neutral-100">{item.label}</p>
+                <article key={`${item.platform}-${item.label}`} className="ui-surface-1 rounded-lg p-4">
+                  <p className="text-xs uppercase tracking-wider ui-text-muted">{item.platform}</p>
+                  <p className="mt-1 text-sm font-semibold ui-text">{item.label}</p>
                   {item.rating ? (
-                    <p className="mt-2 text-sm text-neutral-200">
+                    <p className="mt-2 text-sm ui-text-muted">
                       Rating: <span className="font-semibold text-[#ed2125]">{item.rating}/5</span>
                       {item.totalRatings ? ` (${item.totalRatings} ratings)` : ''}
                     </p>
                   ) : (
-                    <p className="mt-2 text-sm text-neutral-200">Open source for current rating details.</p>
+                    <p className="mt-2 text-sm ui-text-muted">Open source for current rating details.</p>
                   )}
-                  <p className="mt-2 text-xs text-neutral-400">{item.note}</p>
+                  <p className="mt-2 text-xs ui-text-muted">{item.note}</p>
                   <a
                     href={item.url}
                     target="_blank"
@@ -58,4 +58,3 @@ function TrustAndTestimonialsSection() {
 }
 
 export default TrustAndTestimonialsSection;
-
