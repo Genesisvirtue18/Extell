@@ -44,6 +44,14 @@ function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeImage, setActiveImage] = useState(placeholderImage);
+  const [quoteForm, setQuoteForm] = useState({
+    fullName: '',
+    email: '',
+    companyName: '',
+    requirements: ''
+  });
+  const [quoteStatus, setQuoteStatus] = useState({ type: '', message: '' });
+  const [quoteSubmitting, setQuoteSubmitting] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -93,6 +101,17 @@ function ProductDetailPage() {
     setActiveImage(gallery[0] || '');
   }, [gallery]);
 
+  const detailRows = useMemo(() => (product ? toDetailRows(product) : []), [product]);
+  const features = product?.features || [];
+  const name = product?.Name || product?.name || 'Product';
+  const sku = product?.SKU || product?.sku || product?.id || '';
+  const description = product?.descriptionText || product?.description || product?.short || '';
+  const category = product?.topCategory || product?.Categories || product?.category || 'Products';
+  const datasheet = product?.datasheet || '';
+  const categoryPath = parseCategoryPath(product?.Categories || category || '');
+  const breadcrumbItems = ['Home', ...categoryPath, name];
+  const similarProducts = related.slice(0, 3);
+
   const handleQuoteChange = (event) => {
     const { name, value } = event.target;
     setQuoteForm((prev) => ({ ...prev, [name]: value }));
@@ -124,17 +143,6 @@ function ProductDetailPage() {
       setQuoteSubmitting(false);
     }
   };
-  const detailRows = useMemo(() => (product ? toDetailRows(product) : []), [product]);
-  const features = product?.features || [];
-  const name = product?.Name || product?.name || 'Product';
-  const sku = product?.SKU || product?.sku || product?.id || '';
-  const description = product?.descriptionText || product?.description || product?.short || '';
-  const category = product?.topCategory || product?.Categories || product?.category || 'Products';
-  const datasheet = product?.datasheet || '';
-  const categoryPath = parseCategoryPath(product?.Categories || category || '');
-  const breadcrumbItems = ['Home', ...categoryPath, name];
-  const similarProducts = related.slice(0, 3);
-
   if (loading) return <section className="mx-auto mt-6 max-w-[1220px]">Loading product...</section>;
   if (error || !product) return <section className="mx-auto mt-6 max-w-[1220px]">{error || 'Product not found'}</section>;
 
