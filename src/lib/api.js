@@ -37,6 +37,7 @@ export const getProductBySlug = (slug) => getJson(`/api/products/slug/${encodeUR
 export const getCategories = () => getJson('/api/categories');
 export const getSupportCategories = () => getJson('/api/support/categories');
 export const getProductsGroupedByCategory = (params) => getJson('/api/products/grouped-by-category', params);
-export const submitSupportTicket = (payload) => postJson('/api/support/tickets', payload);\nexport const submitQuoteRequest = (payload) => postJson('/api/quotes', payload);
+export const submitSupportTicket = (payload) => postJson('/api/support/tickets', payload);
+export const submitQuoteRequest = (payload) => postJson('/api/quotes', payload);
 export const submitWarrantyRegistration = (payload) => postJson('/api/warranty/register', payload);
 
