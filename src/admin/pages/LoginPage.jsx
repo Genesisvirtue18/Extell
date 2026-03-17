@@ -29,7 +29,7 @@ const LoginPage = () => {
         <div className="grid w-full gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-5">
             <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Admin Portal</p>
-            <h1 className="text-4xl font-semibold leading-tight">Manage products, content, and support tickets.</h1>
+            <p className="text-4xl font-semibold leading-tight text-gray-400">Manage products, content, and support tickets.</p>
             <p className="text-sm text-gray-400">
               Secure access for Extell Systems administrators. Use your admin credentials to continue.
             </p>

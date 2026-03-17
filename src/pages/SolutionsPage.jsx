@@ -100,12 +100,15 @@ function SolutionsPage() {
   const activeSolution = solutions.find((item) => item.slug === activeSlug) || solutions[0];
 
   return (
-    <section className="solutions-shell solutions-unified m-6 overflow-hidden rounded-md border border-white/10">
-      <div className="solutions-layout">
-        <aside className="solutions-menu">
-          <p>SOLUTIONS</p>
-          {solutions.map((item) => (
-            <button
+    <>
+   
+
+      <section className="solutions-shell solutions-unified m-6 overflow-hidden rounded-md border border-white/10">
+        <div className="solutions-layout">
+          <aside className="solutions-menu">
+            <p>SOLUTIONS</p>
+            {solutions.map((item) => (
+              <button
               key={item.slug}
               type="button"
               onClick={() => setActiveSlug(item.slug)}
@@ -146,6 +149,7 @@ function SolutionsPage() {
         </article>
       </div>
     </section>
+    </>
   );
 }
 

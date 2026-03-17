@@ -3,9 +3,6 @@ export const navLinks = [
   { label: 'Products', path: '/products' },
   { label: 'Solutions', path: '/solutions' },
   { label: 'Support', path: '/support' },
-  { label: 'Case Studies', path: '/case-studies' },
-  { label: 'Certifications', path: '/certifications' },
-  { label: 'Downloads', path: '/downloads' },
   { label: 'About', path: '/about' },
   { label: 'Contact', path: '/contact' }
 ];

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png';
-import logoWhite from '../../assets/logowhite.png';
+import logoWhite from '../../assets/logowhite.jpg';
 
 function Footer({ theme = 'light' }) {
   return (

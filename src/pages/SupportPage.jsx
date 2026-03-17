@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
@@ -20,6 +20,8 @@ const supportServices = [
     title: "Product Warranty Registration",
     desc: "Register your product warranty digitally with serial tracking and lifecycle management.",
     icon: <FaTools />,
+    link: "/warranty",
+    linkLabel: "Register Warranty",
     accent: {
       border: "rgba(71, 231, 255, 0.55)",
       bg: "linear-gradient(160deg, rgba(71,231,255,0.2), rgba(71,231,255,0.05) 35%, rgba(1,8,30,0.78) 100%)",
@@ -42,6 +44,8 @@ const supportServices = [
     title: "UPS Runtime Calculator",
     desc: "Estimate backup duration based on load and configuration.",
     icon: <FaBatteryHalf />,
+    link: "/ups-calculator",
+    linkLabel: "Open UPS Calculator",
     accent: {
       border: "rgba(86, 244, 214, 0.55)",
       bg: "linear-gradient(160deg, rgba(86,244,214,0.2), rgba(86,244,214,0.05) 35%, rgba(1,8,30,0.78) 100%)",
@@ -53,6 +57,8 @@ const supportServices = [
     title: "UPS Selector",
     desc: "AI-assisted UPS selection based on capacity and business use-case.",
     icon: <FaServer />,
+    link: "/ups-calculator/selector",
+    linkLabel: "Open UPS Selector",
     accent: {
       border: "rgba(228, 122, 255, 0.55)",
       bg: "linear-gradient(160deg, rgba(228,122,255,0.2), rgba(228,122,255,0.05) 35%, rgba(1,8,30,0.78) 100%)",
@@ -221,7 +227,7 @@ export default function SupportPage() {
       style={{
         backgroundImage: isLightTheme
           ? "radial-gradient(circle at 15% 12%, rgba(239,246,255,0.9), transparent 46%), radial-gradient(circle at 85% 12%, rgba(254,242,242,0.75), transparent 42%)"
-          : `radial-gradient(circle at 50% 5%, rgba(89,118,255,0.22), transparent 34%), url(${supportBackground})`,
+          : "radial-gradient(circle at 50% 5%, rgba(89,118,255,0.22), transparent 34%)",
         backgroundColor: isLightTheme ? "#f8fafc" : "#020617",
         backgroundSize: "cover",
         backgroundPosition: "center top",
@@ -275,16 +281,30 @@ export default function SupportPage() {
                 {service.desc}
               </p>
               <div className="pt-2">
-                <button
-                  className="ui-focus-ring rounded-full border px-4 py-2 text-sm font-semibold transition hover:bg-white/20"
-                  style={{
-                    borderColor: isLightTheme ? "rgba(15,23,42,0.2)" : "rgba(255,255,255,0.6)",
-                    background: isLightTheme ? "rgba(255,255,255,0.78)" : "rgba(255,255,255,0.14)",
-                    color: isLightTheme ? "#0f172a" : "#ffffff",
-                  }}
-                >
-                  Access Service -&gt;
-                </button>
+                {service.link ? (
+                  <Link
+                    to={service.link}
+                    className="ui-focus-ring inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition hover:bg-white/20"
+                    style={{
+                      borderColor: isLightTheme ? "rgba(15,23,42,0.2)" : "rgba(255,255,255,0.6)",
+                      background: isLightTheme ? "rgba(255,255,255,0.78)" : "rgba(255,255,255,0.14)",
+                      color: isLightTheme ? "#0f172a" : "#ffffff",
+                    }}
+                  >
+                    {service.linkLabel || "Access Service ->"}
+                  </Link>
+                ) : (
+                  <button
+                    className="ui-focus-ring rounded-full border px-4 py-2 text-sm font-semibold transition hover:bg-white/20"
+                    style={{
+                      borderColor: isLightTheme ? "rgba(15,23,42,0.2)" : "rgba(255,255,255,0.6)",
+                      background: isLightTheme ? "rgba(255,255,255,0.78)" : "rgba(255,255,255,0.14)",
+                      color: isLightTheme ? "#0f172a" : "#ffffff",
+                    }}
+                  >
+                    Access Service -&gt;
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>

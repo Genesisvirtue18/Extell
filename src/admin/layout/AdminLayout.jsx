@@ -1,12 +1,13 @@
-import { NavLink, Outlet } from 'react-router-dom';
-import {
+﻿import {
   LayoutDashboard,
   Package,
   Layers,
   Briefcase,
   FolderDown,
   LifeBuoy,
-  Home,
+  FileText,
+  Calculator,
+  ShieldCheck,
   Settings,
   LogOut,
   Users
@@ -20,8 +21,10 @@ const navItems = [
   { to: '/admin/solutions', label: 'Solutions', icon: Layers },
   { to: '/admin/projects', label: 'Projects', icon: Briefcase },
   { to: '/admin/resources', label: 'Resources', icon: FolderDown },
+  { to: '/admin/quotes', label: 'Quotes', icon: FileText },
   { to: '/admin/tickets', label: 'Tickets', icon: LifeBuoy },
-
+  { to: '/admin/warranties', label: 'Warranties', icon: ShieldCheck },
+ { to: '/admin/ups-dashboard', label: 'UPS Dashboard', icon: Calculator },
   { to: '/admin/settings', label: 'Settings', icon: Settings }
 ];
 
@@ -108,3 +111,7 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+
+
+
+

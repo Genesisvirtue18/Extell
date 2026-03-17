@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Download, FileText } from 'lucide-react';
 import placeholderImage from '../assets/placeholder-tech.svg';
-import { getProductById, getProductBySlug, getProducts } from '../lib/api';
+import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 
 const toDetailRows = (product) => {
@@ -93,6 +93,37 @@ function ProductDetailPage() {
     setActiveImage(gallery[0] || '');
   }, [gallery]);
 
+  const handleQuoteChange = (event) => {
+    const { name, value } = event.target;
+    setQuoteForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleQuoteSubmit = async (event) => {
+    event.preventDefault();
+    setQuoteStatus({ type: '', message: '' });
+
+    if (!quoteForm.fullName || !quoteForm.email || !quoteForm.requirements) {
+      setQuoteStatus({ type: 'error', message: 'Full name, email, and requirements are required.' });
+      return;
+    }
+
+    try {
+      setQuoteSubmitting(true);
+      const productName = product?.Name || product?.name || '';
+      const productSku = product?.SKU || product?.sku || product?.id || '';
+      await submitQuoteRequest({
+        ...quoteForm,
+        productName,
+        productSku
+      });
+      setQuoteStatus({ type: 'success', message: 'Quote request received. Our team will respond shortly.' });
+      setQuoteForm({ fullName: '', email: '', companyName: '', requirements: '' });
+    } catch (err) {
+      setQuoteStatus({ type: 'error', message: err?.message || 'Unable to submit quote right now.' });
+    } finally {
+      setQuoteSubmitting(false);
+    }
+  };
   const detailRows = useMemo(() => (product ? toDetailRows(product) : []), [product]);
   const features = product?.features || [];
   const name = product?.Name || product?.name || 'Product';
@@ -150,14 +181,50 @@ function ProductDetailPage() {
 
           <div className="product-detail-quote">
             <h3>Request Custom Quote</h3>
-            <div className="quote-grid">
-              <input type="text" placeholder="Full Name" />
-              <input type="email" placeholder="Work Email" />
-            </div>
-            <input type="text" placeholder="Company Name" />
-            <textarea rows={3} placeholder="Describe your project requirements..." />
-            <button type="button">Get a Quote</button>
-            <small>Usually responds within 2 hours during business days.</small>
+            <form className="space-y-3" onSubmit={handleQuoteSubmit}>
+              <div className="quote-grid">
+                <input
+                  name="fullName"
+                  value={quoteForm.fullName}
+                  onChange={handleQuoteChange}
+                  type="text"
+                  placeholder="Full Name"
+                  required
+                />
+                <input
+                  name="email"
+                  value={quoteForm.email}
+                  onChange={handleQuoteChange}
+                  type="email"
+                  placeholder="Work Email"
+                  required
+                />
+              </div>
+              <input
+                name="companyName"
+                value={quoteForm.companyName}
+                onChange={handleQuoteChange}
+                type="text"
+                placeholder="Company Name"
+              />
+              <textarea
+                name="requirements"
+                value={quoteForm.requirements}
+                onChange={handleQuoteChange}
+                rows={3}
+                placeholder="Describe your project requirements..."
+                required
+              />
+              {quoteStatus.message ? (
+                <p className={`text-sm ${quoteStatus.type === 'error' ? 'text-red-600' : 'text-green-600'}`}>
+                  {quoteStatus.message}
+                </p>
+              ) : null}
+              <button type="submit" disabled={quoteSubmitting}>
+                {quoteSubmitting ? 'Sending...' : 'Get a Quote'}
+              </button>
+              <small>Usually responds within 2 hours during business days.</small>
+            </form>
           </div>
         </div>
       </div>
@@ -254,3 +321,8 @@ function ProductDetailPage() {
 }
 
 export default ProductDetailPage;
+
+
+
+
+

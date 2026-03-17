@@ -4,7 +4,7 @@ import { ChevronDown, Linkedin, Menu, Moon, Phone, Sun, X } from 'lucide-react';
 import { navLinks } from '../../data/siteData';
 import SearchBar from '../ui/SearchBar';
 import logo from '../../assets/logo.png';
-import logoWhite from '../../assets/logowhite.png';
+import logoWhite from '../../assets/logowhite.jpg';
 import { getCategories } from '../../lib/api';
 
 function Navbar({ theme = 'light', onToggleTheme }) {
@@ -124,6 +124,12 @@ function Navbar({ theme = 'light', onToggleTheme }) {
             <Phone size={14} />
             +1 365 889 5555
           </a>
+          <Link
+            to="/admin/login"
+            className="ui-focus-ring inline-flex items-center gap-2 rounded-full bg-[#fc3725] px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-[#e72f1d]"
+          >
+            Login
+          </Link>
           <a
             href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"
             target="_blank"
@@ -186,6 +192,13 @@ function Navbar({ theme = 'light', onToggleTheme }) {
               <Linkedin size={14} />
               LinkedIn
             </a>
+            <Link
+              to="/admin/login"
+              onClick={() => setIsOpen(false)}
+              className="ui-nav-link ui-focus-ring inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-semibold text-[#fc3725]"
+            >
+              Login
+            </Link>
             <button
               type="button"
               onClick={onToggleTheme}

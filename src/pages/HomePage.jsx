@@ -12,7 +12,7 @@ function HomePage() {
       <CategoryGridSection />
       <FeaturedProductsSection />
       <SolutionsShowcaseSection />
-      <TrustAndTestimonialsSection />
+   
     
     </>
   );

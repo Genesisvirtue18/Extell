@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -132,6 +132,16 @@ export const updateTicketStatus = async (id, status) => {
   return data;
 };
 
+export const fetchWarrantyRegistrations = async (params = {}) => {
+  const { data } = await api.get('/api/admin/warranties', { params });
+  return data;
+};
+
+export const updateWarrantyStatus = async (id, status) => {
+  const { data } = await api.put(`/api/admin/warranties/${id}/status`, { status });
+  return data;
+};
+
 export const fetchAdminUsers = async () => {
   const { data } = await api.get('/api/admin/users');
   return data;
@@ -142,4 +152,16 @@ export const createAdminUser = async (payload) => {
   return data;
 };
 
+export const fetchQuoteRequests = async (params = {}) => {
+  const { data } = await api.get('/api/admin/quotes', { params });
+  return data;
+};
+
+export const updateQuoteStatus = async (id, status) => {
+  const { data } = await api.put(`/api/admin/quotes/${id}/status`, { status });
+  return data;
+};
+
 export default api;
+
+
