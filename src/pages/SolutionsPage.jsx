@@ -1,9 +1,10 @@
 'use client';
 
+
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-const bgOne = '/assets/bg-1.jpg';
 
+const bgOne = '/assets/bg-1.jpg';
 function SolutionsPage() {
   const solutions = useMemo(
     () => [

@@ -1,13 +1,15 @@
 'use client';
 
+
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, Linkedin, Menu, Moon, Phone, Sun, X } from 'lucide-react';
 import { navLinks } from '../../data/siteData';
 import SearchBar from '../ui/SearchBar';
+import { getCategories } from '../../lib/api';
+
 const logo = '/assets/logo.png';
 const logoWhite = '/assets/logowhite.jpg';
-import { getCategories } from '../../lib/api';
 
 function Navbar({ theme = 'light', onToggleTheme }) {
   const formatLabel = (value) => {

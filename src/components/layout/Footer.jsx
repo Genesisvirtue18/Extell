@@ -1,9 +1,10 @@
 'use client';
 
+
 import { Link } from 'next/link';
+
 const logo = '/assets/logo.png';
 const logoWhite = '/assets/logowhite.jpg';
-
 function Footer({ theme = 'light' }) {
   return (
     <footer className="ui-surface-1 mt-16 border-t">

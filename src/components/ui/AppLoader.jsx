@@ -1,8 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
-const loaderImage = '/assets/loader.png';
 
+import { motion } from 'framer-motion';
+
+const loaderImage = '/assets/loader.png';
 function AppLoader() {
   return (
     <div className="ui-loader-backdrop fixed inset-0 z-[120] flex items-center justify-center backdrop-blur-sm">

@@ -1,3 +1,5 @@
+'use client';
+
 import { X } from 'lucide-react';
 
 const Modal = ({ open, title, onClose, children, footer }) => {

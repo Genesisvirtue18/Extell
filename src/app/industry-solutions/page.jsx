@@ -1,3 +1,7 @@
+'use client';
+
+export const dynamic = 'force-dynamic';
+
 import SiteLayoutWrapper from '@/app/layout-wrapper';
 import IndustrySolutionsPage from '@/pages/IndustrySolutionsPage';
 

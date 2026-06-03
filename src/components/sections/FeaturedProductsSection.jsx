@@ -1,14 +1,15 @@
 'use client';
 
+
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'next/link';
 import { Heart } from 'lucide-react';
 import SectionHeader from '../ui/SectionHeader';
 import ComparisonModal from '../ui/ComparisonModal';
 import { getProducts } from '../../lib/api';
-const placeholderImage = '/assets/placeholder-tech.svg';
 import { getProductPath } from '../../lib/productUrl';
 
+const placeholderImage = '/assets/placeholder-tech.svg';
 function FeaturedProductsSection() {
   const [compareList, setCompareList] = useState([]);
   const [products, setProducts] = useState([]);

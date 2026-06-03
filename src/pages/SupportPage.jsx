@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from "react";
-import { useOutletContext, Link } from "react-router-dom";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
@@ -14,8 +14,9 @@ import {
   FaUpload,
   FaPaperPlane,
 } from "react-icons/fa";
-import supportBackground from '/assets/support-background.png";
 import { getSupportCategories, submitSupportTicket } from "../lib/api";
+
+const supportBackground = '/assets/support-background.png';
 
 const supportServices = [
   {

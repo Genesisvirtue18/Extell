@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_API_URL || '') : '';
 
 const buildUrl = (path, params) => {
   const url = new URL(`${API_BASE}${path}`, window.location.origin);

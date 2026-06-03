@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 const BASE_URL = "https://api.calculator.genesisvirtue.se/api";
+
 //const BASE_URL = "http://localhost:1008/api";
 
 export default function AdminDashboard() {

@@ -1,9 +1,10 @@
 'use client';
 
+
 import PageHero from '../components/ui/PageHero';
+
 const contactHero = '/assets/contact.png';
 const contactFormImage = '/assets/contactform.png';
-
 function ContactPage() {
   return (
     <>

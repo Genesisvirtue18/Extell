@@ -1,13 +1,14 @@
 'use client';
 
+
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Heart, SlidersHorizontal } from 'lucide-react';
 import ComparisonModal from '../components/ui/ComparisonModal';
-const placeholderImage = '/assets/placeholder-tech.svg';
 import { getProducts } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 
+const placeholderImage = '/assets/placeholder-tech.svg';
 const slugifyValue = (value) =>
   String(value || '')
     .toLowerCase()

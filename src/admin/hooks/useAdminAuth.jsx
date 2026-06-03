@@ -1,10 +1,15 @@
+'use client';
+
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { adminLogin, fetchAdminMe } from '../services/api';
 
 const AdminAuthContext = createContext(null);
 
 export const AdminAuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem('admin_token'));
+  const [token, setToken] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('admin_token');
+  });
   const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(Boolean(token));
 
@@ -16,7 +21,9 @@ export const AdminAuthProvider = ({ children }) => {
       setAdmin(response.admin || null);
     } catch (error) {
       setAdmin(null);
-      localStorage.removeItem('admin_token');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('admin_token');
+      }
       setToken(null);
     } finally {
       setLoading(false);
@@ -29,14 +36,18 @@ export const AdminAuthProvider = ({ children }) => {
 
   const login = async (payload) => {
     const response = await adminLogin(payload);
-    localStorage.setItem('admin_token', response.token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('admin_token', response.token);
+    }
     setToken(response.token);
     setAdmin(response.admin);
     return response;
   };
 
   const logout = () => {
-    localStorage.removeItem('admin_token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('admin_token');
+    }
     setToken(null);
     setAdmin(null);
   };

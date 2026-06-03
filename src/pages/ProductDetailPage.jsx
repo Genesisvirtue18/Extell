@@ -1,12 +1,13 @@
 'use client';
 
+
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Download, FileText } from 'lucide-react';
-const placeholderImage = '/assets/placeholder-tech.svg';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 
+const placeholderImage = '/assets/placeholder-tech.svg';
 const toDetailRows = (product) => {
   if (Array.isArray(product.detailRows) && product.detailRows.length) return product.detailRows;
   if (product.specs && typeof product.specs === 'object') {

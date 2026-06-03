@@ -1,3 +1,7 @@
+'use client';
+
+export const dynamic = 'force-dynamic';
+
 import SiteLayoutWrapper from './layout-wrapper';
 import HomeHero from '@/components/sections/HomeHero';
 import CategoryGridSection from '@/components/sections/CategoryGridSection';

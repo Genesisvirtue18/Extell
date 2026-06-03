@@ -1,7 +1,9 @@
 'use client';
 
-const aboutBackground = '/assets/about.jpg';
 
+
+
+const aboutBackground = '/assets/about.jpg';
 function AboutPage() {
   const strengths = [
     'Power Backup Solutions for mission-critical uptime',

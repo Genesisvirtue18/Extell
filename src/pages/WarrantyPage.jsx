@@ -1,12 +1,13 @@
 'use client';
 
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { ShieldCheck, PhoneCall, CheckCircle2 } from 'lucide-react';
-const supportBackground = '/assets/support-background.png';
-const warrantyImage = '/assets/warranty.jpeg';
 import { submitWarrantyRegistration } from '../lib/api';
 
+const supportBackground = '/assets/support-background.png';
+const warrantyImage = '/assets/warranty.jpeg';
 const initialForm = {
   customerName: '',
   productName: '',

@@ -1,3 +1,5 @@
+'use client';
+
 import { NavLink, Outlet } from 'next/link';
 import {
   LayoutDashboard,
