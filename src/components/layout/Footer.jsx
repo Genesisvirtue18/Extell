@@ -1,11 +1,11 @@
 'use client';
 
 
-import { Link } from 'next/link';
+import Link from 'next/link';
 
 const logo = '/assets/logo.png';
 const logoWhite = '/assets/logowhite.jpg';
-function Footer({ theme = 'light' }) {
+export default function Footer({ theme = 'light' }) {
   return (
     <footer className="ui-surface-1 mt-16 border-t">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-4">
@@ -20,17 +20,17 @@ function Footer({ theme = 'light' }) {
         <div>
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-[#ed2125]">Products</p>
           <ul className="space-y-2 text-sm ui-text-muted">
-            <li><Link className="ui-nav-link" to="/category/fiber-cables">Fiber Cables</Link></li>
-            <li><Link className="ui-nav-link" to="/category/ups-systems">UPS Systems</Link></li>
-            <li><Link className="ui-nav-link" to="/category/data-center-solutions">Data Center</Link></li>
+            <li><Link className="ui-nav-link" href="/category/fiber-cables">Fiber Cables</Link></li>
+            <li><Link className="ui-nav-link" href="/category/ups-systems">UPS Systems</Link></li>
+            <li><Link className="ui-nav-link" href="/category/data-center-solutions">Data Center</Link></li>
           </ul>
         </div>
         <div>
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-[#ed2125]">Company</p>
           <ul className="space-y-2 text-sm ui-text-muted">
-            <li><Link className="ui-nav-link" to="/about">About</Link></li>
-            <li><Link className="ui-nav-link" to="/careers">Careers</Link></li>
-            <li><Link className="ui-nav-link" to="/partner">Partner</Link></li>
+            <li><Link className="ui-nav-link" href="/about">About</Link></li>
+            <li><Link className="ui-nav-link" href="/careers">Careers</Link></li>
+            <li><Link className="ui-nav-link" href="/partner">Partner</Link></li>
           </ul>
         </div>
         <div>
@@ -62,5 +62,3 @@ function Footer({ theme = 'light' }) {
     </footer>
   );
 }
-
-export default Footer;

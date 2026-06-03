@@ -61,7 +61,7 @@ function Navbar({ theme = 'light', onToggleTheme }) {
   return (
     <header className="ui-header fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link to="/" className="inline-flex items-center">
+        <Link href="/" className="inline-flex items-center">
           <img
             src={theme === 'light' ? logoWhite : logo}
             alt="Extell Systems"
@@ -89,7 +89,7 @@ function Navbar({ theme = 'light', onToggleTheme }) {
                 {productMenuOpen ? (
                   <div className="ui-menu-panel absolute left-0 top-10 w-72 rounded-xl p-3 text-left">
                     <Link
-                      to="/products"
+                      href="/products"
                       onClick={() => setProductMenuOpen(false)}
                       className="ui-menu-item ui-focus-ring block rounded-md px-3 py-2 text-sm"
                     >
@@ -98,7 +98,7 @@ function Navbar({ theme = 'light', onToggleTheme }) {
                     {categories.map((category) => (
                       <Link
                         key={category.slug}
-                        to={`/products?category=${category.slug}`}
+                        href={`/products?category=${category.slug}`}
                         onClick={() => setProductMenuOpen(false)}
                         className="ui-menu-item ui-focus-ring block rounded-md px-3 py-2 text-sm"
                       >
@@ -127,7 +127,7 @@ function Navbar({ theme = 'light', onToggleTheme }) {
             +1 365 889 5555
           </a>
           <Link
-            to="/admin/login"
+            href="/admin/login"
             className="ui-focus-ring inline-flex items-center gap-2 rounded-full bg-[#fc3725] px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-[#e72f1d]"
           >
             Login
@@ -159,7 +159,7 @@ function Navbar({ theme = 'light', onToggleTheme }) {
           <div className="grid gap-2">
             {filteredNavLinks.map((item) => (
               <div key={item.path}>
-                <Link to={item.path} onClick={() => setIsOpen(false)} className="ui-nav-link ui-focus-ring inline-block rounded-md px-2 py-1 text-sm">
+                <Link href={item.path} onClick={() => setIsOpen(false)} className="ui-nav-link ui-focus-ring inline-block rounded-md px-2 py-1 text-sm">
                   {item.label}
                 </Link>
                 {item.label === 'Products' && categories.length ? (
@@ -167,7 +167,7 @@ function Navbar({ theme = 'light', onToggleTheme }) {
                     {categories.map((category) => (
                       <Link
                         key={category.slug}
-                        to={`/products?category=${category.slug}`}
+                        href={`/products?category=${category.slug}`}
                         onClick={() => setIsOpen(false)}
                         className="ui-menu-item ui-focus-ring rounded-md px-2 py-1 text-xs"
                       >
@@ -195,7 +195,7 @@ function Navbar({ theme = 'light', onToggleTheme }) {
               LinkedIn
             </a>
             <Link
-              to="/admin/login"
+              href="/admin/login"
               onClick={() => setIsOpen(false)}
               className="ui-nav-link ui-focus-ring inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-semibold text-[#fc3725]"
             >

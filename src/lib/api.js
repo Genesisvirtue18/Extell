@@ -1,7 +1,8 @@
-const API_BASE = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_API_URL || '') : '';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 const buildUrl = (path, params) => {
-  const url = new URL(`${API_BASE}${path}`, window.location.origin);
+  const fullUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+  const url = new URL(`${fullUrl}${path}`);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
