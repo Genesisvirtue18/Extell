@@ -12,7 +12,7 @@ import {
   FaUpload,
   FaPaperPlane,
 } from "react-icons/fa";
-import supportBackground from "../assets/support-background.png";
+import supportBackground from '/assets/support-background.png";
 import { getSupportCategories, submitSupportTicket } from "../lib/api";
 
 const supportServices = [

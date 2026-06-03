@@ -1,6 +1,6 @@
 import PageHero from '../components/ui/PageHero';
-import contactHero from '/assets/contact.png';
-import contactFormImage from '/assets/contactform.png';
+const contactHero = '/assets/contact.png';
+const contactFormImage = '/assets/contactform.png';
 
 function ContactPage() {
   return (

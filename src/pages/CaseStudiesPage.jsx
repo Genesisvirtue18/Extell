@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ChevronDown, Search } from 'lucide-react';
-import placeholderImage from '/assets/placeholder-tech.svg';
+const placeholderImage = '/assets/placeholder-tech.svg';
 
 function CaseStudiesPage() {
   const projects = [

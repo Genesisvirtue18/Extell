@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Download, FileText } from 'lucide-react';
-import placeholderImage from '/assets/placeholder-tech.svg';
+const placeholderImage = '/assets/placeholder-tech.svg';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 

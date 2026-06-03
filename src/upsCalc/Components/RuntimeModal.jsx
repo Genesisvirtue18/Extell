@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchUPS, fetchBatteries } from '../Services/api';
 import { useNavigate } from 'next/link';
 import { Search, CheckCircle } from 'lucide-react';
-import logo from '../../assets/logo.png';
+const logo.png = '/assets/logo.png';
 
 export default function RuntimeModal() {
   const navigate = useNavigate();

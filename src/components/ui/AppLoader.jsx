@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import loaderImage from '/assets/loader.png';
+const loaderImage = '/assets/loader.png';
 
 function AppLoader() {
   return (

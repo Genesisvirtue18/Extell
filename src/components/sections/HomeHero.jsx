@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import { Activity, ShieldCheck, Zap } from 'lucide-react';
 import WaterBackground from '../ui/WaterBackground';
-import homeBackground from '/assets/homebg.jpg';
+const homeBackground = '/assets/homebg.jpg';
 
 function HomeHero() {
   return (

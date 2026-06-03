@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ShieldCheck, PhoneCall, CheckCircle2 } from 'lucide-react';
-import supportBackground from '/assets/support-background.png';
-import warrantyImage from '/assets/warranty.jpeg';
+const supportBackground = '/assets/support-background.png';
+const warrantyImage = '/assets/warranty.jpeg';
 import { submitWarrantyRegistration } from '../lib/api';
 
 const initialForm = {

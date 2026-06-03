@@ -17,7 +17,7 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react';
-import logo from '../../assets/logo.png';
+const logo.png = '/assets/logo.png';
 
 export default function ResultPage() {
   const { state } = useLocation();
