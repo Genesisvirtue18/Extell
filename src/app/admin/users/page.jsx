@@ -1,6 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
 
 import UsersPage from '@/admin/pages/UsersPage';
 

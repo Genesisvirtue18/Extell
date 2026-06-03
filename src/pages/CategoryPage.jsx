@@ -1,5 +1,6 @@
 'use client';
 
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import PageHero from '../components/ui/PageHero';
 import ProductCard from '../components/ui/ProductCard';
