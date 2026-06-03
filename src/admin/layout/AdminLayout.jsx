@@ -1,6 +1,6 @@
 'use client';
 
-import { NavLink, Outlet } from 'next/link';
+import Link from 'next/link';
 import {
   LayoutDashboard,
   Package,
@@ -11,7 +11,6 @@ import {
   FileText,
   Calculator,
   ShieldCheck,
-  Settings,
   LogOut,
   Users
 } from 'lucide-react';
@@ -31,7 +30,7 @@ const navItems = [
   { to: '/admin/settings', label: 'Settings', icon: Settings }
 ];
 
-const AdminLayout = () => {
+const AdminLayout = ({ children }) => {
   const { admin, logout } = useAdminAuth();
 
   return (
@@ -46,18 +45,14 @@ const AdminLayout = () => {
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
-                <NavLink
+                <Link
                   key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                      isActive ? 'bg-[#ed2125] text-white' : 'text-slate-600 hover:bg-red-100'
-                    }`
-                  }
+                  href={item.to}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition text-slate-600 hover:bg-red-100"
                 >
                   <Icon size={18} />
                   {item.label}
-                </NavLink>
+                </Link>
               );
             })}
           </nav>
@@ -87,25 +82,21 @@ const AdminLayout = () => {
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <NavLink
+                  <Link
                     key={item.to}
-                    to={item.to}
-                    className={({ isActive }) =>
-                      `flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition ${
-                        isActive ? 'border-slate-900 bg-red-900 text-white' : 'border-slate-200 text-slate-600 bg-white'
-                      }`
-                    }
+                    href={item.to}
+                    className="flex items-center gap-2 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold transition text-slate-600 bg-white"
                   >
                     <Icon size={14} />
                     {item.label}
-                  </NavLink>
+                  </Link>
                 );
               })}
             </div>
           </nav>
 
           <main className="p-6">
-            <Outlet />
+            {children}
           </main>
         </div>
       </div>

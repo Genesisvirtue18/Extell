@@ -109,16 +109,14 @@ function Navbar({ theme = 'light', onToggleTheme }) {
                 ) : null}
               </div>
             ) : (
-              <NavLink
+              <Link
                 key={item.path}
-                to={item.path}
+                href={item.path}
                 onClick={() => setProductMenuOpen(false)}
-                className={({ isActive }) =>
-                  `ui-focus-ring rounded-md px-1 py-1 text-sm font-medium transition ${isActive ? 'text-[#fc3725]' : 'ui-nav-link'}`
-                }
+                className="ui-focus-ring rounded-md px-1 py-1 text-sm font-medium transition ui-nav-link hover:text-[#fc3725]"
               >
                 {item.label}
-              </NavLink>
+              </Link>
             )
           )}
           <a
