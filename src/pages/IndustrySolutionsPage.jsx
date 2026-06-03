@@ -1,3 +1,5 @@
+'use client';
+
 import PageHero from '../components/ui/PageHero';
 
 function IndustrySolutionsPage() {

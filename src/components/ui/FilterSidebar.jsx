@@ -1,3 +1,5 @@
+'use client';
+
 function FilterSidebar() {
   return (
     <aside className="ui-surface-2 rounded-xl p-5">

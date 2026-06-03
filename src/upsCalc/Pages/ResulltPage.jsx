@@ -1,3 +1,5 @@
+'use client';
+
 import { useLocation, useNavigate } from 'next/link';
 import { useEffect, useState } from 'react';
 import { fetchRuntimeCurve, calculateRuntime } from '../Services/api';
@@ -17,7 +19,7 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react';
-const logo.png = '/assets/logo.png';
+const logo = '/assets/logo.png';
 
 export default function ResultPage() {
   const { state } = useLocation();
@@ -418,7 +420,7 @@ export default function ResultPage() {
                     </li>
                     <li className="text-xs text-[#4a507c] flex items-start gap-2">
                       <div className="w-1.5 h-1.5 bg-[#1b1f3b] rounded-full mt-1 flex-shrink-0"></div>
-                      <span>Data based on 25°C ambient temperature</span>
+                      <span>Data based on 25?C ambient temperature</span>
                     </li>
                     <li className="text-xs text-[#4a507c] flex items-start gap-2">
                       <div className="w-1.5 h-1.5 bg-[#1b1f3b] rounded-full mt-1 flex-shrink-0"></div>
@@ -467,7 +469,7 @@ export default function ResultPage() {
                 </li>
                 <li className="text-xs text-[#4a507c] flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-[#1b1f3b] rounded-full mt-1 flex-shrink-0"></div>
-                  <span>Keep UPS in cool, dry environments (15-25°C ideal)</span>
+                  <span>Keep UPS in cool, dry environments (15-25?C ideal)</span>
                 </li>
                 <li className="text-xs text-[#4a507c] flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-[#1b1f3b] rounded-full mt-1 flex-shrink-0"></div>

@@ -1,4 +1,6 @@
-﻿import { useEffect, useState } from 'react';
+'use client';
+
+import { useEffect, useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import { fetchQuoteRequests, updateQuoteStatus } from '../services/api';
 import { formatDate } from '../utils/date';
@@ -85,8 +87,8 @@ const QuotesPage = () => {
                   <tr key={item._id} className="border-b last:border-0">
                     <td className="py-3 text-slate-700">{item.fullName}</td>
                     <td className="py-3 text-slate-700">{item.email}</td>
-                    <td className="py-3 text-slate-700">{item.companyName || '—'}</td>
-                    <td className="py-3 text-slate-700">{item.productName || item.productSku || '—'}</td>
+                    <td className="py-3 text-slate-700">{item.companyName || '--'}</td>
+                    <td className="py-3 text-slate-700">{item.productName || item.productSku || '--'}</td>
                     <td className="py-3">
                       <select
                         value={item.status}

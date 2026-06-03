@@ -1,4 +1,6 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import PageHeader from '../components/PageHeader';
 import Modal from '../components/Modal';
@@ -208,7 +210,7 @@ const ProductsPage = () => {
                     <td className="py-3 font-medium text-slate-800">{item.Name || item.name}</td>
                     <td className="py-3 text-slate-600">{item.category || item.Categories}</td>
                     <td className="py-3 text-slate-500">
-                      {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '—'}
+                      {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '--'}
                     </td>
                     <td className="py-3">
                       <div className="flex gap-2">

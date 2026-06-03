@@ -1,3 +1,5 @@
+'use client';
+
 function SectionHeader({ eyebrow, title, subtitle }) {
   return (
     <div className="mx-auto mb-10 max-w-3xl text-center">

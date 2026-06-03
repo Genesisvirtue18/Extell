@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useState } from "react";
 import { useOutletContext, Link } from "react-router-dom";
 import { motion } from "framer-motion";

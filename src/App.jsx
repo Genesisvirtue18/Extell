@@ -1,4 +1,4 @@
-﻿import { Navigate, Route, Routes } from 'next/link';
+import { Navigate, Route, Routes } from 'next/link';
 import SiteLayout from './components/layout/SiteLayout';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';

@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'next/link';
@@ -34,9 +36,9 @@ const LoginPage = () => {
               Secure access for Extell Systems administrators. Use your admin credentials to continue.
             </p>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>• Role-based access for admins.</li>
-              <li>• Encrypted sessions & multi-factor ready.</li>
-              <li>• Centralized dashboard for updates.</li>
+              <li>o Role-based access for admins.</li>
+              <li>o Encrypted sessions & multi-factor ready.</li>
+              <li>o Centralized dashboard for updates.</li>
             </ul>
           </div>
           <div className="w-full rounded-2xl bg-white/5 p-8 shadow-2xl shadow-emerald-500/10 backdrop-blur">
@@ -61,7 +63,7 @@ const LoginPage = () => {
                 <input
                   type="password"
                   className="mt-2 w-full rounded-lg border border-white/10 bg-white/10 px-4 py-3 text-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/40"
-                  placeholder="••••••••"
+                  placeholder="oooooooo"
                   {...register('password', { required: true })}
                 />
                 {errors.password ? <p className="mt-1 text-xs text-red-300">Password is required.</p> : null}

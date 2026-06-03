@@ -1,8 +1,10 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { fetchUPS, fetchBatteries } from '../Services/api';
 import { useNavigate } from 'next/link';
 import { Search, CheckCircle } from 'lucide-react';
-const logo.png = '/assets/logo.png';
+const logo = '/assets/logo.png';
 
 export default function RuntimeModal() {
   const navigate = useNavigate();
@@ -161,7 +163,7 @@ export default function RuntimeModal() {
               onClick={goToResult}
               className="w-full sm:w-auto px-5 py-2 rounded-lg text-xs font-medium text-white bg-[#1b1f3b] disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-[#141733] transition whitespace-nowrap"
             >
-              Calculate Runtime →
+              Calculate Runtime ->
             </button>
           </div>
         </div>

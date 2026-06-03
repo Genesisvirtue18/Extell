@@ -1,3 +1,5 @@
+'use client';
+
 import SectionHeader from '../ui/SectionHeader';
 import TrustBadges from '../ui/TrustBadges';
 import { publicReviewSnapshots, testimonials } from '../../data/siteData';

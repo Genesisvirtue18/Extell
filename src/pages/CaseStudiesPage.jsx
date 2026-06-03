@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { ChevronDown, Search } from 'lucide-react';
 const placeholderImage = '/assets/placeholder-tech.svg';

@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import PageHero from '../components/ui/PageHero';
 import ProductCard from '../components/ui/ProductCard';

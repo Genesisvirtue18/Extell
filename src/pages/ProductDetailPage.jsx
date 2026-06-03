@@ -1,4 +1,6 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Download, FileText } from 'lucide-react';
 const placeholderImage = '/assets/placeholder-tech.svg';

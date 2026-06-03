@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import SectionHeader from '../ui/SectionHeader';
 import CategoryCard from '../ui/CategoryCard';

@@ -1,3 +1,5 @@
+'use client';
+
 import { Search } from 'lucide-react';
 
 function SearchBar({ placeholder = 'Search products, models, certifications...', value = '', onChange }) {

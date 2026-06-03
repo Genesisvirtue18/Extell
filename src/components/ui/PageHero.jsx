@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from 'framer-motion';
 
 function PageHero({ title, description, actions, heroImage, disableOverlay = false }) {

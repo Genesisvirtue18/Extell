@@ -1,3 +1,5 @@
+'use client';
+
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area } from 'recharts';
 
 export default function RuntimeChart({ data }) {

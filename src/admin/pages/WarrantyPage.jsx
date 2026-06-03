@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import { fetchWarrantyRegistrations, updateWarrantyStatus } from '../services/api';
@@ -84,7 +86,7 @@ const WarrantyPage = () => {
                 {items.map((item) => (
                   <tr key={item._id} className="border-b last:border-0">
                     <td className="py-3 text-slate-700">{item.productName}</td>
-                    <td className="py-3 text-slate-700">{item.customerName || '—'}</td>
+                    <td className="py-3 text-slate-700">{item.customerName || '--'}</td>
                     <td className="py-3 text-slate-700">{item.invoiceId}</td>
                     <td className="py-3 text-slate-700">{item.mobile}</td>
                     <td className="py-3">

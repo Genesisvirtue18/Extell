@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import PageHeader from '../components/PageHeader';
@@ -87,7 +89,7 @@ const ResourcesPage = () => {
                 {filteredItems.map((item) => (
                   <tr key={item._id} className="border-b last:border-0">
                     <td className="py-3 font-medium text-slate-800">{item.title}</td>
-                    <td className="py-3 text-slate-600">{item.category || '�'}</td>
+                    <td className="py-3 text-slate-600">{item.category || '?'}</td>
                     <td className="py-3">
                       <div className="flex gap-2">
                         <button

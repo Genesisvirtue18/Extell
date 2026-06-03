@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 
 const HOVER_RIPPLE_RADIUS = 3;

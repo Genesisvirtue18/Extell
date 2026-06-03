@@ -1,7 +1,9 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { fetchMaxLoads, fetchUpsByLoad, fetchNearestUPSConfig } from '../Services/api';
 import { X, CheckCircle, Zap, Clock, Gauge, Cpu } from 'lucide-react';
-const logo.png = '/assets/logo.png';
+const logo = '/assets/logo.png';
 
 const UPSSelector = () => {
   const [maxLoads, setMaxLoads] = useState([]);

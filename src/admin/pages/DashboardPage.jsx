@@ -1,4 +1,6 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } from 'recharts';
 import PageHeader from '../components/PageHeader';
 import StatCard from '../components/StatCard';

@@ -1,3 +1,5 @@
+'use client';
+
 import { BadgeCheck, Download, Leaf, Search, ShieldCheck, Stamp } from 'lucide-react';
 
 function CertificationsPage() {

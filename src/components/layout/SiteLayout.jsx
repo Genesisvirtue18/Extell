@@ -1,3 +1,5 @@
+'use client';
+
 import { Outlet, useLocation } from 'next/link';
 import { useEffect, useState } from 'react';
 import Navbar from './Navbar';

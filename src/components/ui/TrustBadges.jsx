@@ -1,3 +1,5 @@
+'use client';
+
 function TrustBadges() {
   const badges = ['ISO 9001', 'IEC Compliant', 'UL Certified', '24/7 Support'];
 

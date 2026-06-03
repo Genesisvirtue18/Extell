@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Home from '../upsCalc/Pages/Home';
 import ResultPage from '../upsCalc/Pages/ResulltPage';

@@ -1,3 +1,5 @@
+'use client';
+
 // AdminDashboard.jsx
 import { useState, useEffect } from "react";
 import {
@@ -518,7 +520,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="p-3 bg-blue-50 rounded-lg">
                     <p className="text-xs text-blue-700">
-                      <span className="font-semibold">Formula:</span> Runtime (min) = (Voltage × Ah × Count × UPS_Efficiency × Battery_Efficiency × 60 × FactorOfSafety/100) ÷ Load (W)
+                      <span className="font-semibold">Formula:</span> Runtime (min) = (Voltage x Ah x Count x UPS_Efficiency x Battery_Efficiency x 60 x FactorOfSafety/100) ? Load (W)
                     </p>
                   </div>
                   <div className="flex gap-2 pt-2">
@@ -664,7 +666,7 @@ export default function AdminDashboard() {
                               </td>
                               <td className="p-3 text-sm text-gray-900">
                                 <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-800 text-xs">
-                                  {item.batteryCount} ×
+                                  {item.batteryCount} x
                                 </span>
                               </td>
                               <td className="p-3 text-sm text-gray-900">{item.batteryName || '-'}</td>

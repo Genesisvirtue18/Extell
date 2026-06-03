@@ -1,3 +1,5 @@
+'use client';
+
 import RuntimeModal from '../Components/RuntimeModal';
 
 export default function Home() {

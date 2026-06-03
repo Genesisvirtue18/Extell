@@ -1,3 +1,5 @@
+'use client';
+
 const aboutBackground = '/assets/about.jpg';
 
 function AboutPage() {

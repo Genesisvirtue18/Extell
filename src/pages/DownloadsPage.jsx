@@ -1,3 +1,5 @@
+'use client';
+
 import { Download } from 'lucide-react';
 import PageHero from '../components/ui/PageHero';
 

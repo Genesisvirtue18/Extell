@@ -1,3 +1,5 @@
+'use client';
+
 import SectionHeader from '../ui/SectionHeader';
 import { partnerLogos, solutionIndustries, solutionShowcaseItems } from '../../data/siteData';
 
