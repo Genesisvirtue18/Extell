@@ -12,7 +12,8 @@ import {
   Calculator,
   ShieldCheck,
   LogOut,
-  Users
+  Users,
+  Settings
 } from 'lucide-react';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
