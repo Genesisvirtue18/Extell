@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { getProductPath } from '../../lib/productUrl';
 

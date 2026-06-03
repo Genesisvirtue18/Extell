@@ -1,4 +1,4 @@
-import aboutBackground from '../assets/about.jpg';
+import aboutBackground from '/assets/about.jpg';
 
 function AboutPage() {
   const strengths = [

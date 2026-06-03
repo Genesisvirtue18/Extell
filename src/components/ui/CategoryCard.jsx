@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'next/link';
 import { motion } from 'framer-motion';
 
 function CategoryCard({ category, index = 0 }) {

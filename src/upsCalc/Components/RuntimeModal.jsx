@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchUPS, fetchBatteries } from '../Services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'next/link';
 import { Search, CheckCircle } from 'lucide-react';
 import logo from '../../assets/logo.png';
 

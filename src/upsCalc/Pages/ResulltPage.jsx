@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'next/link';
 import { useEffect, useState } from 'react';
 import { fetchRuntimeCurve, calculateRuntime } from '../Services/api';
 import RuntimeChart from '../Components/RuntimeCharts';

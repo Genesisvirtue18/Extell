@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import Link from 'next/link';
 import { ChevronDown, Linkedin, Menu, Moon, Phone, Sun, X } from 'lucide-react';
 import { navLinks } from '../../data/siteData';
 import SearchBar from '../ui/SearchBar';
-import logo from '../../assets/logo.png';
-import logoWhite from '../../assets/logowhite.jpg';
+import logo from '/assets/logo.png';
+import logoWhite from '/assets/logowhite.jpg';
 import { getCategories } from '../../lib/api';
 
 function Navbar({ theme = 'light', onToggleTheme }) {

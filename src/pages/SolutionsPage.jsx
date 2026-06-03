@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import bgOne from '../assets/bg-1.jpg';
+import Link from 'next/link';
+import bgOne from '/assets/bg-1.jpg';
 
 function SolutionsPage() {
   const solutions = useMemo(

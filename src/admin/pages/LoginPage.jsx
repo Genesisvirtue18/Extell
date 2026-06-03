@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'next/link';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
 const LoginPage = () => {

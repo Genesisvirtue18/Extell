@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import Link from 'next/link';
 import PageHero from '../components/ui/PageHero';
 import ProductCard from '../components/ui/ProductCard';
 import { categories, products } from '../data/siteData';

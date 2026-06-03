@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'next/link';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
 const ProtectedRoute = () => {

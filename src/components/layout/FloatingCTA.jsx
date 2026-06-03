@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 

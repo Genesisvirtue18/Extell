@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'next/link';
 import { Heart } from 'lucide-react';
 import SectionHeader from '../ui/SectionHeader';
 import ComparisonModal from '../ui/ComparisonModal';
 import { getProducts } from '../../lib/api';
-import placeholderImage from '../../assets/placeholder-tech.svg';
+import placeholderImage from '/assets/placeholder-tech.svg';
 import { getProductPath } from '../../lib/productUrl';
 
 function FeaturedProductsSection() {

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import Link from 'next/link';
 import { Heart, SlidersHorizontal } from 'lucide-react';
 import ComparisonModal from '../components/ui/ComparisonModal';
-import placeholderImage from '../assets/placeholder-tech.svg';
+import placeholderImage from '/assets/placeholder-tech.svg';
 import { getProducts } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 

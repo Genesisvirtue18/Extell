@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import Link from 'next/link';
 import Home from '../upsCalc/Pages/Home';
 import ResultPage from '../upsCalc/Pages/ResulltPage';
 import UPSSelector from '../upsCalc/Pages/UPSSelector';
