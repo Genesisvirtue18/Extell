@@ -1,107 +1,118 @@
-import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import SiteLayoutWrapper from '@/app/layout-wrapper';
 import ProductDetailPageContent from '@/pages/ProductDetailPage';
-import { getProductBySlug } from '@/lib/api';
+
+import { getProductBySlug, getProductById } from '@/lib/api';
 
 const BASE_URL = 'https://extellsystems.com';
 
-export async function generateMetadata({ params }) {
-  try {
-    const { getProductBySlug } = await import('@/lib/api');
-    const res = await getProductBySlug(params.slug);
-    const product = res?.item;
-
-    if (!product) {
-      return {
-        title: 'Product Not Found | Extell Systems',
-        description: 'The product you are looking for could not be found.',
-      };
-    }
-
-    const url = `${BASE_URL}/product/${product.slug || params.slug}`;
-    const productImage =
-      product.images?.[0] ||
-      product.imageList?.[0] ||
-      product.heroImage ||
-      `${BASE_URL}/assets/placeholder-tech.svg`;
-
-    return {
-      title: `${product.name} | Extell Systems`,
-      description:
-        product.shortDescription ||
-        product.description?.slice(0, 160) ||
-        `Premium ${product.category} from Extell Systems`,
-      keywords: [
-        product.name,
-        product.category,
-        'power solutions',
-        'industrial equipment',
-        'UPS',
-      ],
-      alternates: {
-        canonical: url,
-      },
-      openGraph: {
-        title: product.name,
-        description:
-          product.shortDescription ||
-          product.description?.slice(0, 160),
-        url,
-        siteName: 'Extell Systems',
-        type: 'product',
-        images: [
-          {
-            url: productImage,
-            width: 1200,
-            height: 630,
-            alt: product.name,
-            type: 'image/jpeg',
-          },
-        ],
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: product.name,
-        description:
-          product.shortDescription ||
-          product.description?.slice(0, 160),
-        images: [productImage],
-      },
-    };
-  } catch (error) {
-    console.error('Error generating metadata:', error);
-    return {
-      title: 'Product | Extell Systems',
-      description: 'Explore our premium power solutions and industrial equipment.',
-    };
-  }
+// ✅ helper (VERY IMPORTANT)
+function normalizeSlug(slug) {
+  return String(slug || '').toLowerCase().trim();
 }
 
-export default async function Page({ params }) {
-  const normalizedSlug = String(params.slug || '').toLowerCase().trim();
+// ✅ shared product resolver (used in BOTH places)
+async function resolveProduct(slug) {
+  const normalizedSlug = normalizeSlug(slug);
 
   let product = null;
 
   try {
-    const slugResponse = await getProductBySlug(normalizedSlug).catch(() => null);
+    // 1️⃣ Try slug API
+    const slugRes = await getProductBySlug(normalizedSlug).catch(() => null);
+    product = slugRes?.item || null;
 
-    product = slugResponse?.item || null;
-
+    // 2️⃣ Try ID fallback
     if (!product && normalizedSlug) {
-      const idResponse = await getProductById(normalizedSlug).catch(() => null);
-      product = idResponse?.item || null;
+      const idRes = await getProductById(normalizedSlug).catch(() => null);
+      product = idRes?.item || null;
     }
 
+    // 3️⃣ Try static/local fallback
     if (!product && normalizedSlug) {
       const { products: seedProducts } = await import('@/data/siteData');
       const { findProductBySlug } = await import('@/lib/productUrl');
+
       product = findProductBySlug(seedProducts, normalizedSlug) || null;
     }
 
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error('Resolve product error:', err);
   }
+
+  return product;
+}
+
+// ✅ METADATA
+export async function generateMetadata({ params }) {
+  const product = await resolveProduct(params.slug);
+
+  if (!product) {
+    return {
+      title: 'Product Not Found | Extell Systems',
+      description: 'The product you are looking for could not be found.',
+    };
+  }
+
+  const url = `${BASE_URL}/product/${params.slug}`;
+
+  const productImage =
+    product.images?.[0] ||
+    product.imageList?.[0] ||
+    product.heroImage ||
+    `${BASE_URL}/assets/placeholder-tech.svg`;
+
+  return {
+    title: `${product.name} | Extell Systems`,
+    description:
+      product.shortDescription ||
+      product.description?.slice(0, 160) ||
+      `Premium ${product.category} from Extell Systems`,
+
+    keywords: [
+      product.name,
+      product.category,
+      'power solutions',
+      'industrial equipment',
+      'UPS',
+    ],
+
+    alternates: {
+      canonical: url,
+    },
+
+    openGraph: {
+      title: product.name,
+      description:
+        product.shortDescription ||
+        product.description?.slice(0, 160),
+      url,
+      siteName: 'Extell Systems',
+      type: 'product',
+      images: [
+        {
+          url: productImage,
+          width: 1200,
+          height: 630,
+          alt: product.name,
+        },
+      ],
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description:
+        product.shortDescription ||
+        product.description?.slice(0, 160),
+      images: [productImage],
+    },
+  };
+}
+
+// ✅ PAGE
+export default async function Page({ params }) {
+  const product = await resolveProduct(params.slug);
 
   if (!product) {
     notFound();
@@ -109,7 +120,8 @@ export default async function Page({ params }) {
 
   return (
     <SiteLayoutWrapper>
-      <ProductDetailPageContent slug={params.slug} />
+      {/* ✅ PASS FULL PRODUCT (FIXED) */}
+      <ProductDetailPageContent product={product} />
     </SiteLayoutWrapper>
   );
 }
