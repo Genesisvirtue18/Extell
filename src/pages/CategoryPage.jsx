@@ -1,13 +1,11 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import PageHero from '../components/ui/PageHero';
 import ProductCard from '../components/ui/ProductCard';
 import { categories, products } from '../data/siteData';
 
-function CategoryPage() {
-  const { slug } = useParams();
+function CategoryPage({ slug }) {
   const category = categories.find((item) => item.slug === slug);
   const listing = products.filter((item) => item.category === slug);
 

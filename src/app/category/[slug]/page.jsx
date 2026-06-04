@@ -14,7 +14,7 @@ export default function Page({ params }) {
 
   return (
     <SiteLayoutWrapper>
-      <CategoryPage />
+      <CategoryPage slug={params.slug} />
     </SiteLayoutWrapper>
   );
 }

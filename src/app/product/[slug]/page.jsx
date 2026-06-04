@@ -85,7 +85,7 @@ export default async function Page({ params }) {
 
   return (
     <SiteLayoutWrapper>
-      <ProductDetailPageContent />
+      <ProductDetailPageContent slug={params.slug} />
     </SiteLayoutWrapper>
   );
 }

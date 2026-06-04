@@ -3,7 +3,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { Download, FileText } from 'lucide-react';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
@@ -41,8 +40,7 @@ const parseCategoryPath = (rawValue) =>
     .map((part) => part.split(',')[0].trim())
     .filter(Boolean);
 
-function ProductDetailPage() {
-  const { slug } = useParams();
+function ProductDetailPage({ slug }) {
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
