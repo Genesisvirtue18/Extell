@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 function CategoryCard({ category, index = 0 }) {
-  const count = Number(category.count || 0);
+
   const badge = String(index + 1).padStart(2, '0');
 
   return (
@@ -16,7 +16,7 @@ function CategoryCard({ category, index = 0 }) {
         <p className="ui-border ui-bg-soft inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold tracking-[0.14em] ui-text-muted">
           {badge}
         </p>
-        <p className="text-xs font-semibold text-[#ff5a73]">{count} products</p>
+        
       </div>
       <h3 className="mt-3 text-2xl font-extrabold leading-tight ui-text">{category.name}</h3>
       <p className="mt-2 text-sm leading-relaxed ui-text-muted">
