@@ -1,15 +1,33 @@
 'use client';
 
-
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import SectionHeader from '../ui/SectionHeader';
 import ComparisonModal from '../ui/ComparisonModal';
 import { getProducts } from '../../lib/api';
-import { getProductPath } from '../../lib/productUrl';
 
 const placeholderImage = '/assets/placeholder-tech.svg';
+
+// ✅ ADD THIS
+function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+// ✅ ADD THIS (REPLACES getProductPath)
+function getProductPath(product) {
+  const slug =
+    product.slug ||
+    slugify(product.name) ||
+    product.id;
+
+  return `/product/${slug}`;
+}
+
 function FeaturedProductsSection() {
   const [compareList, setCompareList] = useState([]);
   const [products, setProducts] = useState([]);
@@ -33,6 +51,7 @@ function FeaturedProductsSection() {
 
     const getCardImage = (item) => {
       const imageList = Array.isArray(item?.imageList) ? item.imageList : [];
+
       const scoreImage = (entry) => {
         const value = String(entry || '').toLowerCase();
         let score = 0;
@@ -42,12 +61,14 @@ function FeaturedProductsSection() {
         if (value.includes('side') || value.includes('rear') || value.includes('front')) score += 8;
         return score;
       };
+
       const sorted = [...imageList].sort((a, b) => scoreImage(b) - scoreImage(a));
       return sorted[0] || item?.heroImage || placeholderImage;
     };
 
     const normalizeProduct = (item) => {
       const detailRows = Array.isArray(item.detailRows) ? item.detailRows : [];
+
       const detailSpecs = detailRows.slice(0, 3).reduce((acc, row) => {
         if (row?.parameter && row?.value) acc[row.parameter] = row.value;
         return acc;
@@ -59,11 +80,17 @@ function FeaturedProductsSection() {
         Topology: detailSpecs.Topology || detailSpecs['Waveform (Batt. Mode)'] || '-'
       };
 
+      const name = item.Name || item.name || 'Product';
+
       return {
         id: item.id,
+        slug: item.slug || slugify(name), // ✅ IMPORTANT
         sku: item.SKU || item.sku || item.id,
-        name: item.Name || item.name || 'Product',
-        short: item.descriptionText || item.short || 'Industrial-grade product built for uptime and reliability.',
+        name,
+        short:
+          item.descriptionText ||
+          item.short ||
+          'Industrial-grade product built for uptime and reliability.',
         inStock: Boolean(item.inStock ?? item['In stock?']),
         specs: Object.keys(detailSpecs).length ? detailSpecs : fallbackSpecs,
         image: getCardImage(item)
@@ -95,16 +122,19 @@ function FeaturedProductsSection() {
           const merged = [...items, ...(fallbackResponse.items || [])];
           const unique = [];
           const seen = new Set();
+
           for (const item of merged) {
             if (!item?.id || seen.has(item.id)) continue;
             seen.add(item.id);
             unique.push(item);
             if (unique.length === 4) break;
           }
+
           items = unique;
         }
 
         if (!mounted) return;
+
         setProducts(items.map(normalizeProduct));
       } catch {
         if (!mounted) return;
@@ -115,6 +145,7 @@ function FeaturedProductsSection() {
     };
 
     loadFeatured();
+
     return () => {
       mounted = false;
     };
@@ -128,79 +159,81 @@ function FeaturedProductsSection() {
   };
 
   const toggleWishlist = (productId) => {
-    setWishlist((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]));
+    setWishlist((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    );
   };
 
   const displayProducts = useMemo(() => products.slice(0, 4), [products]);
 
   return (
     <section className="ui-section relative py-16">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(229,57,53,0.12),transparent_36%)]" />
       <div className="mx-auto max-w-7xl px-6">
-        <SectionHeader eyebrow="Featured" title="High-demand Products" subtitle="Flagship products optimized for uptime, scale, and compliance." />
+        <SectionHeader
+          eyebrow="Featured"
+          title="High-demand Products"
+          subtitle="Flagship products optimized for uptime, scale, and compliance."
+        />
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {loading
             ? [...Array(4)].map((_, idx) => (
-                <div key={`feature-skeleton-${idx}`} className="ui-surface-1 h-[420px] animate-pulse rounded-xl" />
+                <div key={idx} className="ui-surface-1 h-[420px] animate-pulse rounded-xl" />
               ))
             : null}
-          {!loading && displayProducts.length
-            ? displayProducts.map((product) => (
-                <article key={product.id} className="catalog-card">
-                  <div className="catalog-card-tag">{product.inStock ? 'IN STOCK' : 'PRODUCT'}</div>
-                  <button
-                    type="button"
-                    className={`catalog-fav ${wishlist.includes(product.id) ? 'active' : ''}`}
-                    aria-label={wishlist.includes(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
-                    onClick={() => toggleWishlist(product.id)}
-                  >
-                    <Heart size={14} fill={wishlist.includes(product.id) ? 'currentColor' : 'none'} />
+
+          {!loading &&
+            displayProducts.map((product) => (
+              <article key={product.id} className="catalog-card">
+                <div className="catalog-card-tag">
+                  {product.inStock ? 'IN STOCK' : 'PRODUCT'}
+                </div>
+
+                <button
+                  className={`catalog-fav ${wishlist.includes(product.id) ? 'active' : ''}`}
+                  onClick={() => toggleWishlist(product.id)}
+                >
+                  <Heart size={14} fill={wishlist.includes(product.id) ? 'currentColor' : 'none'} />
+                </button>
+
+                <div className="catalog-image-wrap">
+                  <img
+                    src={brokenImages[product.id] ? placeholderImage : product.image}
+                    alt={product.name}
+                    onError={() =>
+                      setBrokenImages((prev) => ({ ...prev, [product.id]: true }))
+                    }
+                  />
+                </div>
+
+                <p className="catalog-sku">{product.sku}</p>
+                <h3>{product.name}</h3>
+                <p className="catalog-short">{product.short}</p>
+
+                <div className="catalog-card-actions">
+                  {/* ✅ FIXED LINK */}
+                  <Link href={getProductPath(product)}>
+                    VIEW SPECS
+                  </Link>
+
+                  <button onClick={() => onCompare(product)}>
+                    COMPARE
                   </button>
-                  <div className="catalog-image-wrap">
-                    <img
-                      src={brokenImages[product.id] ? placeholderImage : product.image || placeholderImage}
-                      alt={product.name}
-                      loading="lazy"
-                      onError={() =>
-                        setBrokenImages((prev) => ({
-                          ...prev,
-                          [product.id]: true
-                        }))
-                      }
-                    />
-                  </div>
-                  <p className="catalog-sku">{product.sku}</p>
-                  <h3>{product.name}</h3>
-                  <p className="catalog-short">{product.short}</p>
-                  <div className="catalog-spec-grid">
-                    {Object.entries(product.specs).slice(0, 4).map(([key, value]) => (
-                      <div key={`${product.id}-${key}`}>
-                        <span>{key}</span>
-                        <strong>{value}</strong>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="catalog-card-actions">
-                    <Link href={getProductPath(product)}>VIEW SPECS</Link>
-                    <button type="button" onClick={() => onCompare(product)}>
-                      COMPARE
-                    </button>
-                  </div>
-                </article>
-              ))
-            : null}
-          {!loading && !displayProducts.length ? (
-            <div className="ui-surface-1 rounded-xl p-6 text-sm ui-text-muted">
-              No featured products available right now.
-            </div>
-          ) : null}
+                </div>
+              </article>
+            ))}
         </div>
       </div>
-      <ComparisonModal items={compareList} open={compareList.length > 1} onClose={() => setCompareList([])} />
+
+      <ComparisonModal
+        items={compareList}
+        open={compareList.length > 1}
+        onClose={() => setCompareList([])}
+      />
     </section>
   );
 }
 
 export default FeaturedProductsSection;
-

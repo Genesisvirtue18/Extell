@@ -45,7 +45,8 @@ async function resolveProduct(slug) {
 
 // ✅ METADATA
 export async function generateMetadata({ params }) {
-  const product = await resolveProduct(params.slug);
+  const { slug } = await params;
+  const product = await resolveProduct(slug);
 
   if (!product) {
     return {
@@ -54,7 +55,7 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const url = `${BASE_URL}/product/${params.slug}`;
+  const url = `${BASE_URL}/product/${slug}`;
 
   const productImage =
     product.images?.[0] ||
@@ -88,7 +89,7 @@ export async function generateMetadata({ params }) {
         product.description?.slice(0, 160),
       url,
       siteName: 'Extell Systems',
-      type: 'product',
+      type: 'website',
       images: [
         {
           url: productImage,
@@ -112,7 +113,8 @@ export async function generateMetadata({ params }) {
 
 // ✅ PAGE
 export default async function Page({ params }) {
-  const product = await resolveProduct(params.slug);
+  const { slug } = await params;
+  const product = await resolveProduct(slug);
 
   if (!product) {
     notFound();
@@ -120,8 +122,7 @@ export default async function Page({ params }) {
 
   return (
     <SiteLayoutWrapper>
-      {/* ✅ PASS FULL PRODUCT (FIXED) */}
-      <ProductDetailPageContent product={product} />
+      <ProductDetailPageContent slug={slug} />
     </SiteLayoutWrapper>
   );
 }
