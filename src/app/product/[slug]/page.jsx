@@ -9,7 +9,8 @@ const BASE_URL = 'https://extellsystems.com';
 export async function generateMetadata({ params }) {
   try {
     const { getProductBySlug } = await import('@/lib/api');
-    const product = await getProductBySlug(params.slug);
+    const res = await getProductBySlug(params.slug);
+    const product = res?.item;
 
     if (!product) {
       return {
@@ -78,8 +79,31 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const productResponse = await getProductBySlug(params.slug).catch(() => null);
-  if (!productResponse?.item) {
+  const normalizedSlug = String(params.slug || '').toLowerCase().trim();
+
+  let product = null;
+
+  try {
+    const slugResponse = await getProductBySlug(normalizedSlug).catch(() => null);
+
+    product = slugResponse?.item || null;
+
+    if (!product && normalizedSlug) {
+      const idResponse = await getProductById(normalizedSlug).catch(() => null);
+      product = idResponse?.item || null;
+    }
+
+    if (!product && normalizedSlug) {
+      const { products: seedProducts } = await import('@/data/siteData');
+      const { findProductBySlug } = await import('@/lib/productUrl');
+      product = findProductBySlug(seedProducts, normalizedSlug) || null;
+    }
+
+  } catch (e) {
+    console.error(e);
+  }
+
+  if (!product) {
     notFound();
   }
 
