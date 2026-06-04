@@ -1,9 +1,8 @@
 {
-  "redirects": [
+  "rewrites": [
     {
       "source": "/login",
-      "destination": "https://dev-apps.getzino.site/login",
-      "permanent": true
+      "destination": "https://dev-apps.getzino.site/login"
     }
   ]
 }
