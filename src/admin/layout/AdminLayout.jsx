@@ -4,11 +4,8 @@ import Link from 'next/link';
 import {
   LayoutDashboard,
   Package,
-  Layers,
-  Briefcase,
-  FolderDown,
-  LifeBuoy,
   FileText,
+  LifeBuoy,
   Calculator,
   ShieldCheck,
   LogOut,
@@ -21,13 +18,10 @@ const navItems = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/admin/products', label: 'Products', icon: Package },
   { to: '/admin/users', label: 'Users', icon: Users },
-  { to: '/admin/solutions', label: 'Solutions', icon: Layers },
-  { to: '/admin/projects', label: 'Projects', icon: Briefcase },
-  { to: '/admin/resources', label: 'Resources', icon: FolderDown },
   { to: '/admin/quotes', label: 'Quotes', icon: FileText },
   { to: '/admin/tickets', label: 'Tickets', icon: LifeBuoy },
   { to: '/admin/warranties', label: 'Warranties', icon: ShieldCheck },
- { to: '/admin/ups-dashboard', label: 'UPS Dashboard', icon: Calculator },
+  { to: '/admin/ups-dashboard', label: 'UPS Dashboard', icon: Calculator },
   { to: '/admin/settings', label: 'Settings', icon: Settings }
 ];
 

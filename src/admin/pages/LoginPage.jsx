@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
 const LoginPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { login } = useAdminAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +17,7 @@ const LoginPage = () => {
       setLoading(true);
       setError('');
       await login(values);
-      navigate('/admin/dashboard');
+      router.push('/admin/dashboard');
     } catch (err) {
       setError(err?.response?.data?.message || 'Login failed.');
     } finally {

@@ -2,7 +2,7 @@
 
 
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'next/link';
+import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import SectionHeader from '../ui/SectionHeader';
 import ComparisonModal from '../ui/ComparisonModal';
@@ -182,7 +182,7 @@ function FeaturedProductsSection() {
                     ))}
                   </div>
                   <div className="catalog-card-actions">
-                    <Link to={getProductPath(product)}>VIEW SPECS</Link>
+                    <Link href={getProductPath(product)}>VIEW SPECS</Link>
                     <button type="button" onClick={() => onCompare(product)}>
                       COMPARE
                     </button>

@@ -91,13 +91,12 @@ const faqs = [
 ];
 
 export default function SupportPage() {
-  const { theme = "light" } = useOutletContext() || {};
-  const isLightTheme = theme === "light";
-  const emailJsServiceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-  const emailJsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-  const emailJsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-  const cloudinaryCloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const cloudinaryUploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  const isLightTheme = true;
+  const emailJsServiceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+  const emailJsTemplateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+  const emailJsPublicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+  const cloudinaryCloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const cloudinaryUploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
   const attachmentInputRef = useRef(null);
   const [ticketForm, setTicketForm] = useState({
@@ -286,7 +285,7 @@ export default function SupportPage() {
               <div className="pt-2">
                 {service.link ? (
                   <Link
-                    to={service.link}
+                    href={service.link}
                     className="ui-focus-ring inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition hover:bg-white/20"
                     style={{
                       borderColor: isLightTheme ? "rgba(15,23,42,0.2)" : "rgba(255,255,255,0.6)",

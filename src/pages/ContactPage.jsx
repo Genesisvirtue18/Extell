@@ -72,6 +72,17 @@ function ContactPage() {
                   </a>
                 </p>
               </div>
+
+              <div>
+                <h3 className="text-3xl font-semibold ui-text">Bahrain</h3>
+                <p className="mt-3 text-lg">Phone: +973 3883 5435</p>
+                <p className="text-lg">
+                  Email:{' '}
+                  <a className="ui-text hover:text-accent" href="mailto:sales.imea@extellsystems.com">
+                    sales.imea@extellsystems.com
+                  </a>
+                </p>
+              </div>
             </div>
           </aside>
         </div>

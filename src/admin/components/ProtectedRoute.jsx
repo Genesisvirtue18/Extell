@@ -1,8 +1,18 @@
-import { Navigate, Outlet } from 'next/link';
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ children }) => {
   const { token, loading } = useAdminAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !token) {
+      router.push('/admin/login');
+    }
+  }, [token, loading, router]);
 
   if (loading) {
     return (
@@ -13,10 +23,10 @@ const ProtectedRoute = () => {
   }
 
   if (!token) {
-    return <Navigate to="/admin/login" replace />;
+    return null;
   }
 
-  return <Outlet />;
+  return children;
 };
 
 export default ProtectedRoute;

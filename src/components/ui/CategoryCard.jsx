@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from 'next/link';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 function CategoryCard({ category, index = 0 }) {
@@ -23,7 +23,7 @@ function CategoryCard({ category, index = 0 }) {
         Browse live catalog items for this category with backend-powered filters and availability.
       </p>
       <Link
-        to={`/products?category=${category.slug}`}
+        href={`/products?category=${category.slug}`}
         className="mt-5 inline-flex items-center rounded-md border border-[#ff5a73] bg-[#ed2125] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#d91f23]"
       >
         View category

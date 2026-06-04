@@ -30,8 +30,8 @@ function CaseStudiesPage() {
           and mission-critical ICT infrastructure solutions.
         </p>
         <div className="case-hero-actions">
-          <Link to="/contact">VIEW LATEST PROJECTS</Link>
-          <Link to="/downloads">DOWNLOAD PORTFOLIO -&gt;</Link>
+          <Link href="/contact">VIEW LATEST PROJECTS</Link>
+          <Link href="/downloads">DOWNLOAD PORTFOLIO -&gt;</Link>
         </div>
       </header>
 
@@ -92,8 +92,8 @@ function CaseStudiesPage() {
           can empower your next project.
         </p>
         <div>
-          <Link to="/contact">GET A QUOTE</Link>
-          <Link to="/contact">CONTACT SALES -&gt;</Link>
+          <Link href="/contact">GET A QUOTE</Link>
+          <Link href="/contact">CONTACT SALES -&gt;</Link>
         </div>
       </section>
     </section>

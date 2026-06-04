@@ -131,7 +131,7 @@ function SolutionsPage() {
               <p>{activeSolution.heroTag}</p>
               <h1>{activeSolution.title}</h1>
               <h2>{activeSolution.subtitle}</h2>
-              <Link to="/products">Product Catalog</Link>
+              <Link href="/products">Product Catalog</Link>
             </div>
           </header>
 

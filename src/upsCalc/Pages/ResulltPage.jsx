@@ -1,8 +1,8 @@
 'use client';
 
-import { useLocation, useNavigate } from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { fetchRuntimeCurve, calculateRuntime } from '../Services/api';
+import { fetchRuntimeCurve, calculateRuntime, fetchUPS, fetchBatteries } from '../Services/api';
 import RuntimeChart from '../Components/RuntimeCharts';
 import {
   ArrowLeft,
@@ -22,10 +22,13 @@ import {
 const logo = '/assets/logo.png';
 
 export default function ResultPage() {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const { ups, battery } = state || {};
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const upsId = searchParams.get('upsId');
+  const batteryId = searchParams.get('batteryId');
 
+  const [ups, setUps] = useState(null);
+  const [battery, setBattery] = useState(null);
   const [curve, setCurve] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('chart');
@@ -33,6 +36,33 @@ export default function ResultPage() {
   const [calculatedRuntime, setCalculatedRuntime] = useState(null);
   const [calculating, setCalculating] = useState(false);
   const [calculationError, setCalculationError] = useState('');
+
+  useEffect(() => {
+    if (!upsId || !batteryId) return;
+    let mounted = true;
+    setLoading(true);
+
+    Promise.all([fetchUPS(), fetchBatteries(upsId)])
+      .then(([upsList, batteries]) => {
+        if (!mounted) return;
+        const foundUps = upsList.find((item) => String(item.id) === String(upsId));
+        const foundBattery = batteries.find((item) => String(item.id) === String(batteryId));
+        setUps(foundUps || null);
+        setBattery(foundBattery || null);
+      })
+      .catch((error) => {
+        console.error('Error loading UPS or battery details:', error);
+        setUps(null);
+        setBattery(null);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [upsId, batteryId]);
 
   useEffect(() => {
     if (!ups || !battery) return;
@@ -85,7 +115,7 @@ export default function ResultPage() {
     calculationError &&
     calculationError.includes('Entered load is above the UPS rating.');
 
-  if (!state || !ups || !battery) {
+  if (!upsId || !batteryId || !ups || !battery) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0f2ff] to-[#e6e9ff] flex items-center justify-center p-4">
         <div className="text-center p-6 bg-white rounded-lg border border-[#e0e3ff] shadow-md max-w-md w-full">
@@ -95,7 +125,7 @@ export default function ResultPage() {
           <h2 className="text-lg font-bold text-[#1b1f3b] mb-2">No Data Available</h2>
           <p className="text-[#4a507c] mb-4 text-sm">Please select UPS and battery first</p>
           <button
-            onClick={() => navigate('/ups-calculator')}
+            onClick={() => router.push('/ups-calculator')}
             className="px-4 py-2.5 bg-[#1b1f3b] text-white rounded-lg font-medium hover:opacity-90 transition-all w-full"
           >
             Go Back
@@ -110,7 +140,7 @@ export default function ResultPage() {
       <div className="max-w-7xl mx-auto p-4 md:p-5">
         <div className="mb-6">
           <button
-            onClick={() => navigate('/ups-calculator')}
+            onClick={() => router.push('/ups-calculator')}
             className="flex items-center gap-2 text-[#4a507c] hover:text-[#1b1f3b] mb-4 group transition-colors text-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />

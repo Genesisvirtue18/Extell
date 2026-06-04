@@ -1,14 +1,19 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAdminAuth } from '@/admin/hooks/useAdminAuth';
+import { useAdminAuth, AdminAuthProvider } from '@/admin/hooks/useAdminAuth';
 import AdminLayout from '@/admin/layout/AdminLayout';
 
-export default function AdminLayoutWrapper({ children }) {
+function AdminLayoutContent({ children }) {
   const { isAuthenticated, isLoading } = useAdminAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Allow access to login page without authentication
@@ -27,8 +32,8 @@ export default function AdminLayoutWrapper({ children }) {
     return children;
   }
 
-  // For other admin pages, use AdminLayout
-  if (isLoading) {
+  // Show loading only after hydration to prevent mismatch
+  if (!mounted || isLoading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
@@ -37,4 +42,12 @@ export default function AdminLayoutWrapper({ children }) {
   }
 
   return <AdminLayout>{children}</AdminLayout>;
+}
+
+export default function AdminLayoutWrapper({ children }) {
+  return (
+    <AdminAuthProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </AdminAuthProvider>
+  );
 }

@@ -7,7 +7,7 @@ const logo = '/assets/logo.png';
 const logoWhite = '/assets/logowhite.jpg';
 export default function Footer({ theme = 'light' }) {
   return (
-    <footer className="ui-surface-1 mt-16 border-t">
+    <footer className="ui-surface-1 mt-6 border-t">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-4">
         <div>
           <img

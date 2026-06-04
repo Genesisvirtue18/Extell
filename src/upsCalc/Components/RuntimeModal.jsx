@@ -2,13 +2,13 @@
 
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { fetchUPS, fetchBatteries } from '../Services/api';
-import { useNavigate } from 'next/link';
 import { Search, CheckCircle } from 'lucide-react';
 
 const logo = '/assets/logo.png';
 export default function RuntimeModal() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [upsList, setUpsList] = useState([]);
   const [batteries, setBatteries] = useState([]);
@@ -34,12 +34,10 @@ export default function RuntimeModal() {
   };
 
   const goToResult = () => {
-    navigate('result', {
-      state: {
-        ups: selectedUps,
-        battery: selectedBattery
-      }
-    });
+    if (!selectedUps || !selectedBattery) return;
+    router.push(
+      `/ups-calculator/result?upsId=${encodeURIComponent(selectedUps.id)}&batteryId=${encodeURIComponent(selectedBattery.id)}`
+    );
   };
 
   const filteredUPS = upsList.filter((u) => u.modelCode.toLowerCase().includes(query.toLowerCase()));

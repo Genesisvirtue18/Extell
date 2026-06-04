@@ -53,7 +53,16 @@ export const AdminAuthProvider = ({ children }) => {
   };
 
   const value = useMemo(
-    () => ({ token, admin, loading, login, logout, refresh: loadMe }),
+    () => ({ 
+      token, 
+      admin, 
+      loading,
+      isLoading: loading,
+      isAuthenticated: !!token,
+      login, 
+      logout, 
+      refresh: loadMe 
+    }),
     [token, admin, loading]
   );
 

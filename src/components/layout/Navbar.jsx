@@ -126,12 +126,14 @@ function Navbar({ theme = 'light', onToggleTheme }) {
             <Phone size={14} />
             +1 365 889 5555
           </a>
-          <Link
-            href="/admin/login"
+          <a
+            href="https://portal.extellsystems.com/login"
+            target="_blank"
+            rel="noopener noreferrer"
             className="ui-focus-ring inline-flex items-center gap-2 rounded-full bg-[#fc3725] px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-[#e72f1d]"
           >
             Login
-          </Link>
+          </a>
           <a
             href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"
             target="_blank"
@@ -194,13 +196,15 @@ function Navbar({ theme = 'light', onToggleTheme }) {
               <Linkedin size={14} />
               LinkedIn
             </a>
-            <Link
-              href="/admin/login"
+            <a
+              href="https://portal.extellsystems.com/login"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setIsOpen(false)}
               className="ui-nav-link ui-focus-ring inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-semibold text-[#fc3725]"
             >
               Login
-            </Link>
+            </a>
             <button
               type="button"
               onClick={onToggleTheme}

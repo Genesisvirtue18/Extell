@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { Download, FileText } from 'lucide-react';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
@@ -150,7 +151,30 @@ function ProductDetailPage() {
   if (error || !product) return <section className="mx-auto mt-6 max-w-[1220px]">{error || 'Product not found'}</section>;
 
   return (
-    <section className="product-detail-shell mx-auto mt-6 max-w-[1220px] overflow-hidden rounded-md border border-white/10">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name,
+            image: product.imageList || product.images || [product.heroImage || placeholderImage],
+            description: product.description || product.descriptionText,
+            brand: {
+              '@type': 'Brand',
+              name: 'Extell Systems',
+            },
+            offers: {
+              '@type': 'Offer',
+              priceCurrency: 'INR',
+              price: product.price || 'Contact for pricing',
+              availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            },
+          }),
+        }}
+      />
+      <section className="product-detail-shell mx-auto mt-6 max-w-[1220px] overflow-hidden rounded-md border border-white/10">
       <div className="product-detail-breadcrumb">
         {breadcrumbItems.map((item, index) => (
           <span key={`${item}-${index}`}>
@@ -187,7 +211,22 @@ function ProductDetailPage() {
           <p className="product-detail-copy">{description}</p>
           <p className="feature-title">Key Features</p>
           <ul>
-            {features.length ? features.map((feature) => <li key={feature}>{feature}</li>) : <li>No feature list available.</li>}
+            {features.length ? (
+              features.map((feature, index) => {
+                const label = typeof feature === 'string' ? feature : feature?.title || feature?.detail || `Feature ${index + 1}`;
+                const detail = typeof feature === 'object' && feature !== null && feature?.detail ? feature.detail : null;
+                const key = typeof feature === 'string' ? feature : feature?.title ? feature.title : `feature-${index}`;
+
+                return (
+                  <li key={key}>
+                    {label}
+                    {detail ? `: ${detail}` : null}
+                  </li>
+                );
+              })
+            ) : (
+              <li>No feature list available.</li>
+            )}
           </ul>
 
           <div className="product-detail-quote">
@@ -251,16 +290,9 @@ function ProductDetailPage() {
             rel={datasheet ? 'noreferrer' : undefined}
             className={!datasheet ? 'disabled' : ''}
           >
-            Downloads &amp; Manuals
+            <p className='text-xs ml-5'>Downloads &amp; Manuals</p>
           </a>
-          <a
-            href={datasheet || '#'}
-            target={datasheet ? '_blank' : undefined}
-            rel={datasheet ? 'noreferrer' : undefined}
-            className={!datasheet ? 'disabled' : ''}
-          >
-            Certifications
-          </a>
+         
         </div>
       ) : null}
 
@@ -303,7 +335,7 @@ function ProductDetailPage() {
                 <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
                 <div>
                   <p>{item.Name || item.name}</p>
-                  <Link className="similar-product-link" to={getProductPath(item)}>
+                  <Link className="similar-product-link" href={getProductPath(item)}>
                     View Details
                   </Link>
                 </div>
@@ -320,14 +352,18 @@ function ProductDetailPage() {
             <article key={item.id}>
               <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
               <p>{item.Name || item.name}</p>
-              <Link className="similar-product-link text-white" to={getProductPath(item)}>
-                View Details
-              </Link>
+  <button
+  className="bg-red-500 text-white rounded text-xs p-1"
+  onClick={() => router.push(getProductPath(item))}
+>
+  View Details
+</button>
             </article>
           ))}
         </div>
       </div>
     </section>
+    </>
   );
 }
 

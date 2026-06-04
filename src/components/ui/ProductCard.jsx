@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from 'next/link';
+import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { getProductPath } from '../../lib/productUrl';
 
@@ -18,7 +18,7 @@ function ProductCard({ product, onCompare }) {
         ))}
       </ul>
       <div className="mt-6 flex gap-2">
-        <Link to={getProductPath(product)} className="rounded-md bg-[#ed2125] px-3 py-2 text-xs font-semibold text-white shadow-[0_8px_18px_rgba(237,33,37,0.4)]">Details</Link>
+        <Link href={getProductPath(product)} className="rounded-md bg-[#ed2125] px-3 py-2 text-xs font-semibold text-white shadow-[0_8px_18px_rgba(237,33,37,0.4)]">Details</Link>
         <button onClick={() => onCompare(product)} className="ui-border ui-text rounded-md border px-3 py-2 text-xs font-semibold hover:border-accent hover:text-accent">Compare</button>
       </div>
     </article>

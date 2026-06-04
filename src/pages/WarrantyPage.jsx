@@ -20,8 +20,7 @@ const initialForm = {
 };
 
 function WarrantyPage() {
-  const { theme = 'light' } = useOutletContext() || {};
-  const isLight = theme === 'light';
+  const isLight = true;
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });

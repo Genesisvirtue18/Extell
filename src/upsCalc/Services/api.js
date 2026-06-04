@@ -1,5 +1,5 @@
 // API bindings copied from UPS calculator package
-const BASE_URL = 'https://api.calculator.genesisvirtue.se/api';
+const BASE_URL = process.env.NEXT_PUBLIC_UPS_CALCULATOR_API_URL || 'https://api.calculator.genesisvirtue.se/api';
 
 export const fetchUPS = async () => {
   const res = await fetch(`${BASE_URL}/ups`);

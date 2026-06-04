@@ -2,6 +2,7 @@
   "name": "extell-enterprise-frontend",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
     "dev:web": "next dev",
