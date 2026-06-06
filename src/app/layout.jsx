@@ -6,10 +6,8 @@ import '@/styles.css';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://extellsystems.com');
-
+const siteUrl = 'https://extellsystems.com';
+  
 export const metadata = {
   metadataBase: new URL(siteUrl),
   title: {

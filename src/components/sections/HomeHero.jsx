@@ -61,9 +61,9 @@ function HomeHero() {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => router.push('/downloads')}
+            onClick={() => router.push('/solutions')}
           >
-            Download Catalog
+            Solutions
           </Button>
         </div>
         <div className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-3">
