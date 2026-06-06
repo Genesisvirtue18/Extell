@@ -305,12 +305,12 @@ export default function Footer({
           >
             Developed by{' '}
             <a
-              href="https://www.genesisvirtue.com/"
+          
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-[#ed2125] transition hover:underline"
             >
-              Genesis Virtue
+              Zoed Tech
             </a>{' '}
             with ❤️
           </p>
