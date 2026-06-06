@@ -3,9 +3,17 @@ import { getProducts } from '@/lib/api';
 import { getProductSlug } from '@/lib/productUrl';
 import { categories as siteCategories, products as siteProducts } from '@/data/siteData';
 
-const getSiteUrl = () =>
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://extellsystems.com');
+const getSiteUrl = () => {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+
+  if (process.env.VERCEL_ENV === "production") {
+    return "https://www.extellsystems.com";
+  }
+
+  return `https://${process.env.VERCEL_URL}`;
+};
 
 const BASE_URL = getSiteUrl();
 
