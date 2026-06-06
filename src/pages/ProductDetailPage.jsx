@@ -2,6 +2,7 @@
 
 
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Download, FileText } from 'lucide-react';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
@@ -41,6 +42,7 @@ const parseCategoryPath = (rawValue) =>
     .filter(Boolean);
 
 function ProductDetailPage({ slug }) {
+  const router = useRouter();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -156,7 +158,7 @@ function ProductDetailPage({ slug }) {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Product',
-            name: product.name,
+            name,
             image: product.imageList || product.images || [product.heroImage || placeholderImage],
             description: product.description || product.descriptionText,
             brand: {

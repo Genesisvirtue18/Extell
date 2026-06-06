@@ -47,6 +47,8 @@ async function resolveProduct(slug) {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = await resolveProduct(slug);
+  const productName = product?.Name || product?.name || 'Product';
+  const productCategory = product?.topCategory || product?.Categories || product?.category || 'Products';
 
   if (!product) {
     return {
@@ -64,15 +66,15 @@ export async function generateMetadata({ params }) {
     `${BASE_URL}/assets/placeholder-tech.svg`;
 
   return {
-    title: `${product.name} | Extell Systems`,
+    title: `${productName} | Extell Systems`,
     description:
       product.shortDescription ||
       product.description?.slice(0, 160) ||
-      `Premium ${product.category} from Extell Systems`,
+      `Premium ${productCategory} from Extell Systems`,
 
     keywords: [
-      product.name,
-      product.category,
+      productName,
+      productCategory,
       'power solutions',
       'industrial equipment',
       'UPS',
@@ -83,7 +85,7 @@ export async function generateMetadata({ params }) {
     },
 
     openGraph: {
-      title: product.name,
+      title: productName,
       description:
         product.shortDescription ||
         product.description?.slice(0, 160),
@@ -95,14 +97,14 @@ export async function generateMetadata({ params }) {
           url: productImage,
           width: 1200,
           height: 630,
-          alt: product.name,
+          alt: productName,
         },
       ],
     },
 
     twitter: {
       card: 'summary_large_image',
-      title: product.name,
+      title: productName,
       description:
         product.shortDescription ||
         product.description?.slice(0, 160),

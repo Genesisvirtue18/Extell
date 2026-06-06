@@ -3,7 +3,11 @@ import { getProducts } from '@/lib/api';
 import { getProductSlug } from '@/lib/productUrl';
 import { categories as siteCategories, products as siteProducts } from '@/data/siteData';
 
-const BASE_URL = 'https://extellsystems.com';
+const getSiteUrl = () =>
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://extellsystems.com');
+
+const BASE_URL = getSiteUrl();
 
 const buildAbsoluteUrl = (path: string) => `${BASE_URL}${path}`;
 
@@ -64,25 +68,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const productSource = products.length ? products : siteProducts;
     const categorySource = siteCategories;
-
-    const productUrls: MetadataRoute.Sitemap = productSource.map((product: any) => {
-      const slug = product.slug || getProductSlug(product);
-
-      return {
-        url: buildAbsoluteUrl(`/product/${encodeURIComponent(slug)}`),
-        lastModified: asLastModified(product.updatedAt),
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      };
-    });
-
-    const categoryUrls: MetadataRoute.Sitemap = categorySource.map((category) => ({
-      url: buildAbsoluteUrl(`/category/${encodeURIComponent(category.slug)}`),
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    }));
-
     const staticUrls: MetadataRoute.Sitemap = [
       {
         url: buildAbsoluteUrl('/'),
@@ -94,7 +79,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: buildAbsoluteUrl('/products'),
         lastModified: new Date(),
         changeFrequency: 'daily',
-        priority: 0.9,
+        priority: 0.95,
       },
       {
         url: buildAbsoluteUrl('/solutions'),
@@ -120,49 +105,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly',
         priority: 0.7,
       },
-      {
-        url: buildAbsoluteUrl('/case-studies'),
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      },
-      {
-        url: buildAbsoluteUrl('/certifications'),
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      },
-      {
-        url: buildAbsoluteUrl('/downloads'),
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      },
-      {
-        url: buildAbsoluteUrl('/industry-solutions'),
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      },
-      {
-        url: buildAbsoluteUrl('/partner'),
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      },
-      {
-        url: buildAbsoluteUrl('/ups-calculator'),
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      },
-      {
-        url: buildAbsoluteUrl('/warranty'),
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      },
     ];
+
+    const productUrls: MetadataRoute.Sitemap = productSource.map((product: any) => {
+      const slug = product.slug || getProductSlug(product);
+
+      return {
+        url: buildAbsoluteUrl(`/product/${encodeURIComponent(slug)}`),
+        lastModified: asLastModified(product.updatedAt),
+        changeFrequency: 'weekly',
+        priority: 0.8,
+      };
+    });
+
+    const categoryUrls: MetadataRoute.Sitemap = categorySource.map((category) => ({
+      url: buildAbsoluteUrl(`/products?category=${encodeURIComponent(category.slug)}`),
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    }));
 
     return [...staticUrls, ...categoryUrls, ...productUrls];
   } catch (error) {
@@ -179,7 +140,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: buildAbsoluteUrl('/products'),
         lastModified: new Date(),
         changeFrequency: 'daily',
-        priority: 0.9,
+        priority: 0.95,
       },
       {
         url: buildAbsoluteUrl('/solutions'),
@@ -192,6 +153,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.8,
+      },
+      {
+        url: buildAbsoluteUrl('/about'),
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.7,
+      },
+      {
+        url: buildAbsoluteUrl('/contact'),
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.7,
       },
     ];
   }

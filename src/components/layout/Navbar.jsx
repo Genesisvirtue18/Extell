@@ -35,6 +35,7 @@ function Navbar({
   onToggleTheme,
 }) {
   const router = useRouter();
+  const isDarkTheme = theme === 'dark';
 
   const formatLabel = (value) => {
     if (!value) return '';
@@ -487,7 +488,13 @@ function Navbar({
                     </button>
 
                     {productMenuOpen ? (
-                      <div className="absolute left-0 top-10 w-72 rounded-2xl border bg-white p-3 shadow-2xl">
+                      <div
+                        className={`absolute left-0 top-10 w-72 rounded-2xl border p-3 shadow-2xl ${
+                          isDarkTheme
+                            ? 'border-slate-800 bg-black text-slate-100'
+                            : 'border-slate-200 bg-white text-slate-900'
+                        }`}
+                      >
                         <Link
                           href="/products"
                           onClick={() =>
@@ -495,7 +502,11 @@ function Navbar({
                               false
                             )
                           }
-                          className="block rounded-lg px-3 py-2 text-sm transition hover:bg-slate-100"
+                          className={`block rounded-lg px-3 py-2 text-sm transition ${
+                            isDarkTheme
+                              ? 'text-slate-100 hover:bg-slate-900'
+                              : 'text-slate-900 hover:bg-slate-100'
+                          }`}
                         >
                           All Products
                         </Link>
@@ -514,7 +525,11 @@ function Navbar({
                                   false
                                 )
                               }
-                              className="block rounded-lg px-3 py-2 text-sm transition hover:bg-slate-100"
+                              className={`block rounded-lg px-3 py-2 text-sm transition ${
+                                isDarkTheme
+                                  ? 'text-slate-100 hover:bg-slate-900'
+                                  : 'text-slate-900 hover:bg-slate-100'
+                              }`}
                             >
                               {formatLabel(
                                 category.name
@@ -668,7 +683,7 @@ function Navbar({
                   categories.length ? (
                     <div className="ml-3 mt-1 grid gap-1">
                       {categories.map(
-                        (
+                          (
                           category
                         ) => (
                           <Link
@@ -681,7 +696,11 @@ function Navbar({
                                 false
                               )
                             }
-                            className="rounded-md px-2 py-1 text-xs text-slate-600"
+                            className={`rounded-md px-2 py-1 text-xs transition ${
+                              isDarkTheme
+                                ? 'text-slate-300 hover:bg-slate-900 hover:text-white'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                            }`}
                           >
                             {formatLabel(
                               category.name

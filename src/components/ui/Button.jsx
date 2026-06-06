@@ -12,6 +12,7 @@ function Button({ children, variant = 'primary', className = '', ...props }) {
 
   return (
     <motion.button
+      type={props.type || 'button'}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={`ui-focus-ring inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition ${variants[variant]} ${className}`}

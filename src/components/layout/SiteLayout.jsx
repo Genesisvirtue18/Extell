@@ -22,10 +22,14 @@ function SiteLayout() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Force light theme on first paint; users can still toggle to dark afterward.
   useEffect(() => {
-    setTheme('light');
-    window.localStorage.setItem('theme', 'light');
+    const savedTheme = window.localStorage.getItem('theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      setTheme(savedTheme);
+    }
+    else {
+      window.localStorage.setItem('theme', 'light');
+    }
   }, []);
 
   useEffect(() => {

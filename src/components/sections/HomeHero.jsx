@@ -2,12 +2,15 @@
 
 
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import Button from '../ui/Button';
 import { Activity, ShieldCheck, Zap } from 'lucide-react';
 import WaterBackground from '../ui/WaterBackground';
 
 const homeBackground = '/assets/homebg.jpg';
 function HomeHero() {
+  const router = useRouter();
+
   return (
     <section
       className="home-hero relative overflow-hidden bg-transparent"
@@ -40,11 +43,28 @@ function HomeHero() {
           Global distribution across <span className="font-semibold text-[#ed2125]">20+</span> countries
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Button className="bg-none !bg-[#ed2125] hover:!bg-[#d91f23] text-white shadow-[0_10px_28px_rgba(237,33,37,0.45)] hover:shadow-[0_12px_30px_rgba(237,33,37,0.5)]">
+          <Button
+            type="button"
+            onClick={() => router.push('/products')}
+            className="bg-none !bg-[#ed2125] text-white shadow-[0_10px_28px_rgba(237,33,37,0.45)] hover:!bg-[#d91f23] hover:shadow-[0_12px_30px_rgba(237,33,37,0.5)]"
+          >
             Explore Products
           </Button>
-          <Button variant="secondary" className="border-accent/25">Contact Sales</Button>
-          <Button variant="ghost">Download Catalog</Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.push('/contact')}
+            className="border-accent/25"
+          >
+            Contact Sales
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => router.push('/downloads')}
+          >
+            Download Catalog
+          </Button>
         </div>
         <div className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-3">
           <div className="tech-panel red-wash ui-surface-1 rounded-lg p-3">
