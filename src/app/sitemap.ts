@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getProducts } from '@/lib/api';
 import { getProductSlug } from '@/lib/productUrl';
 import { CANONICAL_SITE_URL } from '@/lib/siteUrl';
-import { categories as siteCategories, products as siteProducts } from '@/data/siteData';
+import { products as siteProducts } from '@/data/siteData';
 
 const BASE_URL = CANONICAL_SITE_URL;
 
@@ -64,7 +64,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const products = await fetchAllProducts();
 
     const productSource = products.length ? products : siteProducts;
-    const categorySource = siteCategories;
     const staticUrls: MetadataRoute.Sitemap = [
       {
         url: buildAbsoluteUrl('/'),
@@ -115,14 +114,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       };
     });
 
-    const categoryUrls: MetadataRoute.Sitemap = categorySource.map((category) => ({
-      url: buildAbsoluteUrl(`/products?category=${encodeURIComponent(category.slug)}`),
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    }));
-
-    return [...staticUrls, ...categoryUrls, ...productUrls];
+    return [...staticUrls, ...productUrls];
   } catch (error) {
     console.error('Sitemap generation error:', error);
 

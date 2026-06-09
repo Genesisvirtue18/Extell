@@ -3,6 +3,16 @@ import SiteLayoutWrapper from '@/app/layout-wrapper';
 import CategoryPage from '@/pages/CategoryPage';
 import { categories } from '@/data/siteData';
 
+export const metadata = {
+  title: 'Category | ExTell Systems',
+  description:
+    'Category listing page for ExTell Systems products.',
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
+
 export default async function Page({ params }) {
   const { slug } = await params;
   const category = categories.find((item) => item.slug === slug);

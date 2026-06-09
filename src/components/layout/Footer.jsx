@@ -104,14 +104,14 @@ export default function Footer({ theme = 'light' }) {
             </h3>
 
             <div className="grid gap-2 sm:gap-3 text-sm">
-              {categories.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`/category/${item.slug}`}
-                  className={`transition hover:text-[#ed2125] ${
-                    isDark ? 'text-slate-400' : 'text-slate-600'
-                  }`}
-                >
+                {categories.map((item) => (
+                  <Link
+                    key={item.slug}
+                    href={`/products?category=${item.slug}`}
+                    className={`transition hover:text-[#ed2125] ${
+                      isDark ? 'text-slate-400' : 'text-slate-600'
+                    }`}
+                  >
                   {item.name}
                 </Link>
               ))}
