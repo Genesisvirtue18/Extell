@@ -5,7 +5,7 @@ import { partnerLogos, solutionIndustries, solutionShowcaseItems } from '../../d
 
 function SolutionsShowcaseSection() {
   return (
-    <section className=" max-w-7xl p-6">
+    <section className="mx-auto max-w-7xl px-6">
       <SectionHeader eyebrow="Solutions" title="Deployment-ready Solution Stacks" subtitle="Integrated hardware, engineering, and support for national-scale projects." />
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="tech-panel red-wash ui-surface-1 rounded-xl p-6">
