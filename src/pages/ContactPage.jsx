@@ -53,7 +53,6 @@ function ContactPage() {
             <div className="mt-6 space-y-8 ui-text-muted">
               <div>
                 <h3 className="text-3xl font-semibold ui-text">US</h3>
-                <p className="mt-3 text-lg">Phone: +1 365 889 5555</p>
                 <p className="text-lg">
                   Email:{' '}
                   <a className="ui-text hover:text-accent" href="mailto:sales@extellsystems.com">

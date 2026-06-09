@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Download, FileText } from 'lucide-react';
+import { Download, FileText, X, ZoomIn } from 'lucide-react';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 
@@ -48,6 +48,7 @@ function ProductDetailPage({ slug }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeImage, setActiveImage] = useState(placeholderImage);
+  const [zoomedImage, setZoomedImage] = useState('');
   const [quoteForm, setQuoteForm] = useState({
     fullName: '',
     email: '',
@@ -105,6 +106,26 @@ function ProductDetailPage({ slug }) {
     setActiveImage(gallery[0] || '');
   }, [gallery]);
 
+  useEffect(() => {
+    if (!zoomedImage) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setZoomedImage('');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [zoomedImage]);
+
   const detailRows = useMemo(() => (product ? toDetailRows(product) : []), [product]);
   const features = product?.features || [];
   const name = product?.Name || product?.name || 'Product';
@@ -147,6 +168,12 @@ function ProductDetailPage({ slug }) {
       setQuoteSubmitting(false);
     }
   };
+  const openZoom = (src) => {
+    if (!src) return;
+    setZoomedImage(src);
+  };
+
+  const closeZoom = () => setZoomedImage('');
   if (loading) return <section className="mx-auto mt-6 max-w-[1220px]">Loading product...</section>;
   if (error || !product) return <section className="mx-auto mt-6 max-w-[1220px]">{error || 'Product not found'}</section>;
 
@@ -185,14 +212,33 @@ function ProductDetailPage({ slug }) {
       </div>
 
       <div className="product-detail-top">
-        <div className="product-detail-gallery">
+          <div className="product-detail-gallery">
           <div className="product-detail-main-image">
-            {activeImage ? <img src={activeImage} alt={name} /> : <div className="product-detail-no-image">No image available</div>}
+            {activeImage ? (
+              <button
+                type="button"
+                className="product-detail-image-button"
+                onClick={() => openZoom(activeImage)}
+                aria-label={`Open larger view for ${name}`}
+              >
+                <img src={activeImage} alt={name} />
+                <span className="product-detail-zoom-hint">
+                  <ZoomIn size={16} />
+                  Click to zoom
+                </span>
+              </button>
+            ) : (
+              <div className="product-detail-no-image">No image available</div>
+            )}
           </div>
           {gallery.length ? (
             <div className="product-detail-thumbs">
               {gallery.map((src, index) => (
-                <button key={`${product.id}-thumb-${index + 1}`} type="button" onClick={() => setActiveImage(src)}>
+                <button
+                  key={`${product.id}-thumb-${index + 1}`}
+                  type="button"
+                  onClick={() => setActiveImage(src)}
+                >
                   <img src={src} alt={`${name} thumb ${index + 1}`} />
                 </button>
               ))}
@@ -362,7 +408,40 @@ function ProductDetailPage({ slug }) {
           ))}
         </div>
       </div>
-    </section>
+      </section>
+      {zoomedImage ? (
+        <div
+          className="product-detail-zoom-modal ui-modal-backdrop fixed inset-0 z-[120] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${name} image preview`}
+          onClick={closeZoom}
+        >
+          <div
+            className="product-detail-zoom-panel relative flex max-h-[92vh] w-full max-w-6xl flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-black/95 p-4 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white transition hover:bg-white/10"
+              onClick={closeZoom}
+              aria-label="Close image preview"
+            >
+              <X size={20} />
+            </button>
+            <div className="flex w-full flex-1 items-center justify-center overflow-auto p-3">
+              <img
+                src={zoomedImage}
+                alt={name}
+                className="max-h-[78vh] w-auto max-w-full select-none object-contain"
+              />
+            </div>
+            <div className="pb-2 pt-4 text-center text-sm text-white/70">
+              Click outside the image or press close to exit
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

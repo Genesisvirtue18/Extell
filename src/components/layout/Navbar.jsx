@@ -11,7 +11,6 @@ import {
   Linkedin,
   Menu,
   Moon,
-  Phone,
   Sun,
   X,
 } from 'lucide-react';
@@ -581,14 +580,6 @@ function Navbar({
           {/* RIGHT ACTIONS */}
           <div className="flex shrink-0 items-center gap-3">
             <a
-              href="tel:+13658895555"
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-[#fc3725] hover:text-[#fc3725]"
-            >
-              <Phone size={14} />
-              +1 365 889 5555
-            </a>
-
-            <a
               href="https://portal.extellsystems.com/login"
               target="_blank"
               rel="noopener noreferrer"
@@ -713,14 +704,6 @@ function Navbar({
                 </div>
               )
             )}
-
-            <a
-              href="tel:+13658895555"
-              className="mt-2 inline-flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-slate-700"
-            >
-              <Phone size={14} />
-              +1 365 889 5555
-            </a>
 
             <a
               href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"

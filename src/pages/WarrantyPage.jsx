@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, PhoneCall, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { submitWarrantyRegistration } from '../lib/api';
 
 const supportBackground = '/assets/support-background.png';
@@ -93,10 +93,6 @@ function WarrantyPage() {
                 Add your invoice ID and contact so we can verify coverage. We will confirm registration within one
                 business day.
               </p>
-              <div className="flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2 text-sm text-gray-600">
-                <PhoneCall size={16} className="text-red-500" />
-                Need help? Call support: <span className="font-semibold text-gray-900 ml-1">+1 365 889 5555</span>
-              </div>
             </div>
 
             <form className="space-y-5" onSubmit={handleSubmit}>

@@ -76,7 +76,6 @@ export default function RootLayout({ children }) {
           {
             '@type': 'ContactPoint',
             contactType: 'sales',
-            telephone: '+1 365 889 5555',
             url: canonicalUrl('/contact'),
           },
         ],

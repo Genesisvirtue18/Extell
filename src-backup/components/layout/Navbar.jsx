@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { ChevronDown, Linkedin, Menu, Moon, Phone, Sun, X } from 'lucide-react';
+import { ChevronDown, Linkedin, Menu, Moon, Sun, X } from 'lucide-react';
 import { navLinks } from '../../data/siteData';
 import SearchBar from '../ui/SearchBar';
 import logo from '../../assets/logo.png';
@@ -117,13 +117,6 @@ function Navbar({ theme = 'light', onToggleTheme }) {
               </NavLink>
             )
           )}
-          <a
-            href="tel:+13658895555"
-            className="ui-surface-1 ui-focus-ring ui-text-muted hover:text-[#fc3725] inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium hover:border-[#fc3725]"
-          >
-            <Phone size={14} />
-            +1 365 889 5555
-          </a>
           <Link
             to="/admin/login"
             className="ui-focus-ring inline-flex items-center gap-2 rounded-full bg-[#fc3725] px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-[#e72f1d]"
@@ -176,13 +169,6 @@ function Navbar({ theme = 'light', onToggleTheme }) {
                 ) : null}
               </div>
             ))}
-            <a
-              href="tel:+13658895555"
-              className="ui-nav-link ui-focus-ring mt-1 inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm"
-            >
-              <Phone size={14} />
-              +1 365 889 5555
-            </a>
             <a
               href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"
               target="_blank"

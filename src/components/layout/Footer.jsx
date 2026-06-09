@@ -11,8 +11,6 @@ const contactTabs = [
   {
     id: 'us',
     label: 'US',
-    phone: '+1 365 889 5555',
-    phoneLink: 'tel:+13658895555',
     email: 'sales@extellsystems.com',
   },
   {
@@ -175,20 +173,6 @@ export default function Footer({ theme = 'light' }) {
               </h4>
 
               <div className="mt-4 sm:mt-6 space-y-4 sm:space-y-5">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-[#ed2125]">
-                    Phone
-                  </p>
-                  <a
-                    href={activeContact.phoneLink}
-                    className={`block mt-1 text-base sm:text-lg break-words ${
-                      isDark ? 'text-slate-300' : 'text-slate-700'
-                    } hover:text-[#ed2125]`}
-                  >
-                    {activeContact.phone}
-                  </a>
-                </div>
-
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-[#ed2125]">
                     Email

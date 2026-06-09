@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { jsPDF } from 'jspdf';
 import { fetchRuntimeCurve, calculateRuntime, fetchUPS, fetchBatteries } from '../Services/api';
 import RuntimeChart from '../Components/RuntimeCharts';
 import {
@@ -17,7 +18,8 @@ import {
   Calculator,
   RefreshCw,
   CheckCircle,
-  XCircle
+  XCircle,
+  Download
 } from 'lucide-react';
 const logo = '/assets/logo.png';
 
@@ -109,6 +111,225 @@ export default function ResultPage() {
     setManualLoad('');
     setCalculatedRuntime(null);
     setCalculationError('');
+  };
+
+  const formatDateForReportId = (date = new Date()) =>
+    date
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+$/, '')
+      .slice(0, 15);
+
+  const downloadBlob = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadReport = async () => {
+    if (!curve.length) return;
+
+    const createdAt = new Date();
+    const modelCode = ups.modelCode || 'N/A';
+    const batteryPack = battery.batteryName || `Battery ${battery.id}`;
+    const reportId = `${modelCode}_${battery.id || 'battery'}_${formatDateForReportId(createdAt)}`;
+    const filename = `ExTell_UPS_Runtime_${modelCode}_${createdAt.toISOString().slice(0, 10).replace(/-/g, '')}.pdf`;
+    const doc = new jsPDF('p', 'pt', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 38;
+    const contentWidth = pageWidth - margin * 2;
+    const accent = '#1b1f3b';
+    const muted = '#4a507c';
+    const lightLine = '#e0e3ff';
+
+    doc.setFillColor(255, 255, 255);
+    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+    doc.setDrawColor(225, 228, 255);
+    doc.setLineWidth(1);
+    doc.roundedRect(margin, 28, contentWidth, pageHeight - 56, 12, 12);
+
+    doc.setTextColor(accent);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.text('ExTell', margin + 6, 58);
+    doc.setFontSize(16);
+    doc.text('UPS RUNTIME ANALYSIS', margin + 6, 80);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(muted);
+    doc.text(`Generated: ${createdAt.toLocaleString()}`, pageWidth - margin - 6, 58, { align: 'right' });
+    doc.text(`Report ID: ${reportId}`, pageWidth - margin - 6, 72, { align: 'right' });
+
+    const startY = 102;
+    const sectionGap = 14;
+
+    const drawSectionTitle = (title, y) => {
+      doc.setTextColor(accent);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.text(title, margin + 6, y);
+      doc.setDrawColor(225, 228, 255);
+      doc.setLineWidth(0.8);
+      doc.line(margin + 6, y + 6, pageWidth - margin - 6, y + 6);
+      return y + 24;
+    };
+
+    const drawKeyValue = (label, value, x, y, valueWidth = 170) => {
+      doc.setTextColor(muted);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(label, x, y);
+      doc.setTextColor(accent);
+      doc.setFont('helvetica', 'bold');
+      const lines = doc.splitTextToSize(String(value ?? 'N/A'), valueWidth);
+      doc.text(lines, x + 120, y);
+      return y + Math.max(14, lines.length * 12);
+    };
+
+    let y = startY;
+    y = drawSectionTitle('UPS Specifications', y);
+    const leftColX = margin + 6;
+    const rightColX = margin + 250;
+    y = drawKeyValue('Model:', modelCode, leftColX, y);
+    y = drawKeyValue('Max Load:', `${ups.maxLoadWatts || 'N/A'} W`, leftColX, y);
+    y = drawKeyValue('Efficiency:', `${ups.efficiency || 'N/A'}%`, leftColX, y);
+    y = startY + 24;
+    y = drawKeyValue('Battery Pack:', batteryPack, rightColX, y);
+    y = drawKeyValue('Units:', battery.batteryCount || 'N/A', rightColX, y);
+    y = drawKeyValue('Capacity:', battery.batteryAh ? `${battery.batteryAh} Ah` : 'N/A', rightColX, y);
+
+    y = Math.max(y, startY + 82) + sectionGap;
+    y = drawSectionTitle('Runtime vs Load Curve', y);
+    const chartTop = y + 6;
+    const chartLeft = margin + 22;
+    const chartWidth = contentWidth - 44;
+    const chartHeight = 118;
+    const chartBottom = chartTop + chartHeight;
+
+    doc.setDrawColor(225, 228, 255);
+    doc.setFillColor(248, 249, 255);
+    doc.roundedRect(chartLeft, chartTop, chartWidth, chartHeight, 10, 10, 'F');
+
+    const points = curve.slice(0, 8);
+    const values = points.map((point) => Number(point.runtimeMinutes) || 0);
+    const loads = points.map((point) => Number(point.loadWatts) || 0);
+    const maxRuntime = Math.max(...values, 1);
+    const minRuntime = Math.min(...values, 0);
+    const maxLoad = Math.max(...loads, 1);
+
+    const plotPaddingX = 24;
+    const plotPaddingY = 18;
+    const plotLeft = chartLeft + plotPaddingX;
+    const plotRight = chartLeft + chartWidth - plotPaddingX;
+    const plotTop = chartTop + plotPaddingY;
+    const plotBottom = chartBottom - plotPaddingY;
+    const plotWidth = plotRight - plotLeft;
+    const plotHeight = plotBottom - plotTop;
+
+    doc.setDrawColor(186, 193, 230);
+    doc.setLineWidth(0.6);
+    for (let i = 0; i < 4; i += 1) {
+      const gy = plotTop + (plotHeight / 3) * i;
+      doc.line(plotLeft, gy, plotRight, gy);
+    }
+
+    if (points.length > 1) {
+      doc.setDrawColor(237, 33, 37);
+      doc.setFillColor(237, 33, 37);
+      doc.setLineWidth(1.8);
+      const coords = points.map((point, index) => {
+        const x = plotLeft + (plotWidth * index) / (points.length - 1);
+        const normalized = maxRuntime === minRuntime ? 0.5 : (Number(point.runtimeMinutes) - minRuntime) / (maxRuntime - minRuntime);
+        const yPos = plotBottom - normalized * plotHeight;
+        return [x, yPos];
+      });
+
+      for (let i = 0; i < coords.length - 1; i += 1) {
+        const [x1, y1] = coords[i];
+        const [x2, y2] = coords[i + 1];
+        doc.line(x1, y1, x2, y2);
+      }
+
+      coords.forEach(([x, yPos]) => {
+        doc.circle(x, yPos, 2.6, 'F');
+      });
+    }
+
+    doc.setFontSize(8);
+    doc.setTextColor(muted);
+    doc.text(`Load range: ${loads[0] || 0}W to ${loads[loads.length - 1] || 0}W`, plotLeft, chartBottom + 14);
+    doc.text(`Peak runtime: ${Math.max(...values, 0)} min`, plotLeft + 170, chartBottom + 14);
+    doc.text(`Max load basis: ${maxLoad}W`, plotLeft + 300, chartBottom + 14);
+
+    y = chartBottom + 30;
+    y = drawSectionTitle('Runtime Data Table', y);
+    const tableTop = y;
+    const tableLeft = margin + 6;
+    const tableWidth = contentWidth - 12;
+    const col1 = 150;
+    const col2 = 170;
+    const col3 = tableWidth - col1 - col2;
+    const rowH = 22;
+
+    doc.setFillColor(248, 249, 255);
+    doc.setDrawColor(225, 228, 255);
+    doc.roundedRect(tableLeft, tableTop, tableWidth, rowH, 6, 6, 'F');
+    doc.setTextColor(accent);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('Load (Watts)', tableLeft + 8, tableTop + 14);
+    doc.text('Runtime (Minutes)', tableLeft + col1 + 8, tableTop + 14);
+    doc.text('Load %', tableLeft + col1 + col2 + 8, tableTop + 14);
+
+    let tableY = tableTop + rowH;
+    const tableRows = curve.slice(0, 5);
+    tableRows.forEach((point, index) => {
+      const isLast = index === tableRows.length - 1;
+      const fill = index % 2 === 0 ? [255, 255, 255] : [248, 249, 255];
+      doc.setFillColor(fill[0], fill[1], fill[2]);
+      doc.roundedRect(tableLeft, tableY, tableWidth, rowH, 0, 0, 'F');
+      doc.setTextColor(accent);
+      doc.setFont('helvetica', 'normal');
+      const loadPercent = Math.round((Number(point.loadWatts) / Number(ups.maxLoadWatts || 1)) * 100);
+      doc.text(String(point.loadWatts), tableLeft + 8, tableY + 14);
+      doc.text(String(point.runtimeMinutes), tableLeft + col1 + 8, tableY + 14);
+      doc.text(`${loadPercent}%`, tableLeft + col1 + col2 + 8, tableY + 14);
+      doc.setDrawColor(225, 228, 255);
+      doc.line(tableLeft, tableY + rowH, tableLeft + tableWidth, tableY + rowH);
+      if (!isLast) {
+        tableY += rowH;
+      }
+    });
+
+    const tableSummaryY = tableTop + rowH + tableRows.length * rowH + 12;
+    doc.setTextColor(muted);
+    doc.setFontSize(9);
+    doc.text(`Showing all ${tableRows.length} data points.`, tableLeft, tableSummaryY);
+
+    const footerY = pageHeight - 58;
+    doc.setDrawColor(225, 228, 255);
+    doc.line(margin + 6, footerY - 14, pageWidth - margin - 6, footerY - 14);
+    doc.setFontSize(9);
+    doc.setTextColor(accent);
+    doc.setFont('helvetica', 'normal');
+    doc.text(
+      'Please contact ExTell Support at support@extellsystems.com for detailed documentation.',
+      margin + 6,
+      footerY
+    );
+    doc.setTextColor(muted);
+    doc.text(`© ${createdAt.getFullYear()} ExTell Systems. All rights reserved.`, pageWidth - margin - 6, footerY + 16, {
+      align: 'right'
+    });
+
+    const blob = doc.output('blob');
+    downloadBlob(blob, filename);
   };
 
   const isCapacityExceededError =
@@ -285,13 +506,13 @@ export default function ResultPage() {
               <div className="bg-white rounded-lg p-4 border border-[#e0e3ff]">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex bg-white rounded p-0.5 border border-[#e0e3ff]">
+                    <div className="flex rounded-xl border border-[#d8def9] bg-white p-1 shadow-[0_2px_8px_rgba(27,31,59,0.04)]">
                       <button
                         onClick={() => setViewMode('chart')}
-                        className={`px-3 py-1.5 rounded flex items-center gap-1.5 transition-all text-sm ${
+                        className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                           viewMode === 'chart'
-                            ? 'bg-[#1b1f3b] text-white'
-                            : 'text-[#4a507c] hover:text-[#1b1f3b] hover:bg-[#f0f2ff]'
+                            ? 'bg-[#1b1f3b] text-white shadow-[0_8px_18px_rgba(27,31,59,0.18)]'
+                            : 'text-[#5a628a] hover:bg-[#f4f6ff] hover:text-[#1b1f3b]'
                         }`}
                       >
                         <BarChart className="w-3.5 h-3.5" />
@@ -299,19 +520,28 @@ export default function ResultPage() {
                       </button>
                       <button
                         onClick={() => setViewMode('table')}
-                        className={`px-3 py-1.5 rounded flex items-center gap-1.5 transition-all text-sm ${
+                        className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                           viewMode === 'table'
-                            ? 'bg-[#1b1f3b] text-white'
-                            : 'text-[#4a507c] hover:text-[#1b1f3b] hover:bg-[#f0f2ff]'
+                            ? 'bg-[#1b1f3b] text-white shadow-[0_8px_18px_rgba(27,31,59,0.18)]'
+                            : 'text-[#5a628a] hover:bg-[#f4f6ff] hover:text-[#1b1f3b]'
                         }`}
                       >
                         <Table className="w-3.5 h-3.5" />
                         Table
                       </button>
                     </div>
-                    <div className="flex items-center gap-2 text-xs bg-[#f0f2ff] px-3 py-1.5 rounded border border-[#e0e3ff]">
-                      <Activity className="w-3.5 h-3.5 text-[#1b1f3b]" />
-                      <span className="text-[#1b1f3b] font-medium">Real-time Calculation</span>
+                    <button
+                      type="button"
+                      onClick={handleDownloadReport}
+                      disabled={!curve.length}
+                      className="inline-flex items-center gap-2 rounded-full border border-[#1b1f3b] bg-white px-5 py-2.5 text-sm font-medium text-[#1b1f3b] transition-all hover:bg-[#f5f7ff] hover:shadow-[0_10px_22px_rgba(27,31,59,0.08)] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Download className="h-4 w-4" />
+                      Download Report
+                    </button>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-[#d9def6] bg-[#eef1ff] px-4 py-2 text-sm font-medium text-[#1b1f3b]">
+                      <Activity className="h-4 w-4" />
+                      <span>Real-time Calculation</span>
                     </div>
                   </div>
                 </div>
