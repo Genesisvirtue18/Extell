@@ -10,7 +10,6 @@ import { getProducts, getProductBySlug } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 
 const placeholderImage = '/assets/placeholder-tech.svg';
-const BASE_URL = 'https://extellsystems.com';
 const slugifyValue = (value) =>
   String(value || '')
     .toLowerCase()

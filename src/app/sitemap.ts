@@ -1,21 +1,10 @@
 import { MetadataRoute } from 'next';
 import { getProducts } from '@/lib/api';
 import { getProductSlug } from '@/lib/productUrl';
+import { CANONICAL_SITE_URL } from '@/lib/siteUrl';
 import { categories as siteCategories, products as siteProducts } from '@/data/siteData';
 
-const getSiteUrl = () => {
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
-  }
-
-  if (process.env.VERCEL_ENV === "production") {
-    return "https://www.extellsystems.com";
-  }
-
-  return `https://${process.env.VERCEL_URL}`;
-};
-
-const BASE_URL = getSiteUrl();
+const BASE_URL = CANONICAL_SITE_URL;
 
 const buildAbsoluteUrl = (path: string) => `${BASE_URL}${path}`;
 

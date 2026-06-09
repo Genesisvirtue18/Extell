@@ -1,10 +1,9 @@
 import { notFound } from 'next/navigation';
 import SiteLayoutWrapper from '@/app/layout-wrapper';
 import ProductDetailPageContent from '@/pages/ProductDetailPage';
+import { canonicalUrl } from '@/lib/siteUrl';
 
 import { getProductBySlug, getProductById } from '@/lib/api';
-
-const BASE_URL = 'https://extellsystems.com';
 
 // ✅ helper (VERY IMPORTANT)
 function normalizeSlug(slug) {
@@ -57,13 +56,13 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const url = `${BASE_URL}/product/${slug}`;
+  const url = canonicalUrl(`/product/${slug}`);
 
   const productImage =
     product.images?.[0] ||
     product.imageList?.[0] ||
     product.heroImage ||
-    `${BASE_URL}/assets/placeholder-tech.svg`;
+    canonicalUrl('/assets/placeholder-tech.svg');
 
   return {
     title: `${productName} | Extell Systems`,

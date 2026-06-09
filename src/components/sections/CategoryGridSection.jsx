@@ -10,22 +10,22 @@ const staticCategories = [
   {
     slug: 'battery',
     name: 'Battery Systems',
-    href: 'https://www.extellsystems.com/products?page=1&category=battery',
+    href: '/products?page=1&category=battery',
   },
   {
     slug: 'ups-accessories',
     name: 'UPS Accessories',
-    href: 'https://www.extellsystems.com/products?page=1&category=ups-accessories',
+    href: '/products?page=1&category=ups-accessories',
   },
   {
     slug: 'passive-network-solutions',
     name: 'Passive Network Solutions',
-    href: 'https://www.extellsystems.com/products?page=1&category=passive-network-solutions',
+    href: '/products?page=1&category=passive-network-solutions',
   },
   {
     slug: 'fiber-accessories',
     name: 'Fiber Accessories',
-    href: 'https://www.extellsystems.com/products?page=1&category=fiber-accessories',
+    href: '/products?page=1&category=fiber-accessories',
   },
 ];
 
