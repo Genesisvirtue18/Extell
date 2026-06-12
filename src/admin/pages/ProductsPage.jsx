@@ -452,6 +452,10 @@ const ProductsPage = () => {
   const watchSubCategory1 = watch('subCategory1');
   const watchSubCategory2 = watch('subCategory2');
   const watchEnableSub = watch('enableSubCategories');
+  const watchHeroImage = watch('heroImage');
+  const watchGalleryImages = watch('images');
+  const watchUploadHeroImage = watchUploads('heroImage');
+  const watchUploadGalleryImages = watchUploads('images');
 
   const lookupTree = useMemo(() => buildLookupTree(categoryTree), [categoryTree]);
   const categoryNames = useMemo(() => normalizeCategoryList(categories), [categories]);
@@ -623,7 +627,7 @@ const ProductsPage = () => {
       infoRows: infoRowsPayload,
       features: featuresPayload,
       images: joinCsv(values.images),
-      heroImage: values.heroImage || existingItem?.heroImage || '',
+      heroImage: values.heroImage ?? '',
       datasheet: values.datasheet || existingItem?.datasheet || existingItem?.Datasheet || '',
       downloadUrl: values.downloadUrl || existingItem?.downloadUrl || '',
       certificationUrl: values.certificationUrl || existingItem?.certificationUrl || '',
@@ -656,7 +660,7 @@ const ProductsPage = () => {
       categorySelect: isKnownCategory ? rootCategory : rootCategory ? 'custom' : '',
       customCategory: isKnownCategory ? '' : rootCategory,
       description: item?.descriptionText || item?.description || '',
-      heroImage: item?.heroImage || item?.Images?.[0] || '',
+      heroImage: item?.heroImage || '',
       images: Array.isArray(item?.Images) ? item.Images.join(', ') : item?.images || item?.Images || '',
       datasheet: item?.datasheet || item?.Datasheet || '',
       downloadUrl: item?.downloadUrl || '',
@@ -688,7 +692,7 @@ const ProductsPage = () => {
     setUploadItem(item);
     resetUploadForm({
       modelNumber: item.modelNumber || item.ModelNumber || item.model_number || item.modelNo || '',
-      heroImage: item.heroImage || (Array.isArray(item.Images) ? item.Images[0] : '') || '',
+      heroImage: item.heroImage || '',
       images: Array.isArray(item.Images) ? item.Images.join(', ') : item.images || item.Images || '',
       datasheet: item.datasheet || item.Datasheet || '',
       downloadUrl: item.downloadUrl || '',
@@ -927,7 +931,7 @@ const ProductsPage = () => {
     </div>
   );
 
-  const renderImageList = (value, onRemove, clear, isUpload = false) => {
+  const renderImageList = (value, onRemove, clear, heroImage = '', onSetHero = null) => {
     const list = splitCsv(value);
     if (!list.length) return null;
 
@@ -940,6 +944,19 @@ const ProductsPage = () => {
               className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700"
             >
               <span className="max-w-[180px] truncate">{url}</span>
+              {heroImage === url ? (
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-700">Hero</span>
+              ) : null}
+              {onSetHero ? (
+                <button
+                  type="button"
+                  onClick={() => onSetHero(url)}
+                  className="text-emerald-600 underline"
+                  aria-label="Make hero image"
+                >
+                  Make hero
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={() => onRemove(url)}
@@ -964,13 +981,26 @@ const ProductsPage = () => {
                 loading="lazy"
                 decoding="async"
               />
-              <button
-                type="button"
-                onClick={() => onRemove(url)}
-                className="self-start text-xs text-rose-600 underline"
-              >
-                Remove
-              </button>
+              <div className="flex flex-wrap gap-2">
+                {heroImage === url ? (
+                  <span className="text-xs font-medium text-amber-700">Current hero</span>
+                ) : onSetHero ? (
+                  <button
+                    type="button"
+                    onClick={() => onSetHero(url)}
+                    className="text-xs text-emerald-600 underline"
+                  >
+                    Make hero
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => onRemove(url)}
+                  className="text-xs text-rose-600 underline"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -1436,13 +1466,22 @@ const ProductsPage = () => {
               <div className="flex flex-col items-start gap-2">
                 <input type="file" accept="image/*" onChange={handleHeroUpload} />
                 {heroUploading ? <span className="text-xs text-slate-500">Uploading...</span> : null}
+                {watchHeroImage ? (
+                  <button
+                    type="button"
+                    onClick={() => clearField('heroImage')}
+                    className="text-xs text-rose-600 underline"
+                  >
+                    Remove hero image
+                  </button>
+                ) : null}
               </div>
             </div>
-            {watch('heroImage') ? (
+            {watchHeroImage ? (
               <div className="rounded-lg border border-slate-200 bg-white p-2 text-xs text-slate-500">
                 <p className="mb-2 font-medium text-slate-700">Preview</p>
                 <img
-                  src={watch('heroImage')}
+                  src={watchHeroImage}
                   alt="Hero"
                   className="h-28 w-40 rounded-lg object-cover"
                   loading="lazy"
@@ -1470,9 +1509,21 @@ const ProductsPage = () => {
               </div>
             </div>
             {renderImageList(
-              watch('images'),
-              (url) => removeUrlFromField('images', url),
-              () => clearField('images')
+              watchGalleryImages,
+              (url) => {
+                removeUrlFromField('images', url);
+                if (watchHeroImage === url) {
+                  clearField('heroImage');
+                }
+              },
+              () => {
+                clearField('images');
+                if (splitCsv(watchGalleryImages).includes(watchHeroImage)) {
+                  clearField('heroImage');
+                }
+              },
+              watchHeroImage,
+              (url) => setValue('heroImage', url)
             )}
           </div>
 
@@ -1632,16 +1683,21 @@ const ProductsPage = () => {
             <div className="flex items-center gap-3">
               <input type="file" accept="image/*" onChange={(e) => handleHeroUpload(e, setUploadValue)} />
               {heroUploading ? <span className="text-xs text-slate-500">Uploading...</span> : null}
-              {watchUploads('heroImage') ? (
+              {watchUploadHeroImage ? (
                 <button
                   type="button"
                   onClick={() => clearUploadField('heroImage')}
                   className="text-xs text-rose-600 underline"
                 >
-                  Remove image
+                  Remove hero image
                 </button>
               ) : null}
             </div>
+            {watchUploadHeroImage ? (
+              <div className="text-xs text-slate-500">
+                This is the current hero image.
+              </div>
+            ) : null}
           </div>
 
           <div className="grid gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -1668,9 +1724,21 @@ const ProductsPage = () => {
               {galleryUploading ? <span className="text-xs text-slate-500">Uploading gallery...</span> : null}
             </div>
             {renderImageList(
-              watchUploads('images'),
-              (url) => removeUploadUrl('images', url),
-              () => clearUploadField('images')
+              watchUploadGalleryImages,
+              (url) => {
+                removeUploadUrl('images', url);
+                if (watchUploadHeroImage === url) {
+                  clearUploadField('heroImage');
+                }
+              },
+              () => {
+                clearUploadField('images');
+                if (splitCsv(watchUploadGalleryImages).includes(watchUploadHeroImage)) {
+                  clearUploadField('heroImage');
+                }
+              },
+              watchUploadHeroImage,
+              (url) => setUploadValue('heroImage', url)
             )}
           </div>
 
