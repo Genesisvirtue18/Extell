@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Mail, Phone, Linkedin, Twitter, Youtube, Globe } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import { categories } from '../../data/siteData';
 
 const logo = '/assets/logo.png';
 const logoWhite = '/assets/logowhite.jpg';
 
-const navLinks = [
+const companyLinks = [
   { label: 'About', href: '/about' },
   { label: 'Solutions', href: '/solutions' },
   { label: 'Support', href: '/support' },
@@ -19,14 +19,10 @@ const navLinks = [
 ];
 
 const offices = [
-  {
-    id: 'us',
-    label: 'United States',
-    email: 'sales@extellsystems.com',
-  },
+  { id: 'us', label: 'US', email: 'sales@extellsystems.com' },
   {
     id: 'uae',
-    label: 'UAE — Sharjah',
+    label: 'UAE',
     phone: '+971 6 779 4299',
     phoneLink: 'tel:+97167794299',
     email: 'sales.imea@extellsystems.com',
@@ -43,187 +39,101 @@ const offices = [
 export default function Footer({ theme = 'light' }) {
   const [activeTab, setActiveTab] = useState('us');
   const isDark = theme === 'dark';
+  const active = offices.find((o) => o.id === activeTab) || offices[0];
 
-  const activeOffice = offices.find((o) => o.id === activeTab) || offices[0];
+  const text = isDark ? 'text-neutral-400' : 'text-slate-500';
+  const hover = 'hover:text-[#ed2125] transition-colors';
+  const divider = isDark ? 'border-white/10' : 'border-slate-200';
 
   return (
-    <footer className={isDark ? 'bg-[#050505]' : 'bg-[#f7f8fc]'}>
+    <footer className={isDark ? 'bg-[#08080a]' : 'bg-white'}>
 
-      {/* ── Pre-footer CTA band ── */}
-      <div className="relative overflow-hidden border-t border-b border-white/[0.06] bg-[#080808]">
-        <div className="absolute inset-0 bg-tech-grid bg-[size:26px_26px] opacity-[0.05]" />
-        <div className="absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#ed2125] opacity-[0.06] blur-3xl" />
-        <div className="relative mx-auto max-w-7xl px-6 py-12 sm:py-14">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#ed2125]">
-                Ready to Deploy
-              </p>
-              <h2 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
-                Power your next project with ExTell
-              </h2>
-              <p className="mt-2 text-sm text-white/45">
-                Get a quote in under 2 hours. No commitment required.
-              </p>
-            </div>
-            <div className="flex shrink-0 flex-wrap gap-3">
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#ed2125] px-6 py-3 text-sm font-bold text-white shadow-[0_8px_28px_rgba(237,33,37,0.35)] transition hover:bg-[#d91f23] hover:shadow-[0_12px_36px_rgba(237,33,37,0.45)]"
-              >
-                Contact Sales
-                <ArrowRight size={15} />
-              </Link>
-              <Link
-                href="/products"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:border-white/30 hover:bg-white/10"
-              >
-                View Products
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* ── Main grid ── */}
+      <div className={`border-t ${divider}`}>
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr]">
 
-      {/* ── Main footer grid ── */}
-      <div className={`border-t ${isDark ? 'border-white/[0.06]' : 'border-slate-200'}`}>
-        <div className="mx-auto max-w-7xl px-6 py-12 sm:py-16">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1.4fr]">
-
-            {/* Col 1 — brand */}
+            {/* Brand */}
             <div>
               <Image
                 src={isDark ? logoWhite : logo}
                 alt="ExTell Systems"
-                width={148}
-                height={38}
-                className="h-9 w-auto object-contain"
+                width={120}
+                height={32}
+                className="h-8 w-auto object-contain"
               />
-              <p className={`mt-4 max-w-[260px] text-sm leading-6 ${isDark ? 'text-white/45' : 'text-slate-500'}`}>
-                Enterprise power electronics, ICT infrastructure, and data center solutions
-                delivered globally.
+              <p className={`mt-3 max-w-[230px] text-sm leading-relaxed ${text}`}>
+                Enterprise power, ICT, and data center infrastructure delivered globally.
               </p>
-
-              {/* Social links */}
-              <div className="mt-6 flex gap-3">
-                {[
-                  { icon: Linkedin, href: '#', label: 'LinkedIn' },
-                  { icon: Twitter, href: '#', label: 'Twitter / X' },
-                  { icon: Youtube, href: '#', label: 'YouTube' },
-                  { icon: Globe, href: '#', label: 'Website' },
-                ].map(({ icon: Icon, href, label }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    aria-label={label}
-                    className={`grid h-8 w-8 place-items-center rounded-lg border transition ${
-                      isDark
-                        ? 'border-white/10 text-white/40 hover:border-[#ed2125]/60 hover:text-[#ed2125]'
-                        : 'border-slate-200 text-slate-400 hover:border-[#ed2125]/60 hover:text-[#ed2125]'
-                    }`}
-                  >
-                    <Icon size={14} />
-                  </a>
-                ))}
-              </div>
+              <Link
+                href="/contact"
+                className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-[#ed2125] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#d91f23]"
+              >
+                Get a Quote
+              </Link>
             </div>
 
-            {/* Col 2 — products */}
+            {/* Products */}
             <div>
-              <h3 className={`mb-4 text-xs font-bold uppercase tracking-[0.16em] ${isDark ? 'text-[#ed2125]' : 'text-[#ed2125]'}`}>
-                Products
-              </h3>
-              <div className="flex flex-col gap-2.5">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#ed2125]">Products</p>
+              <div className="flex flex-col gap-2">
                 {categories.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    href={`/products?category=${cat.slug}`}
-                    className={`text-sm transition hover:text-[#ed2125] ${isDark ? 'text-white/45' : 'text-slate-500'}`}
-                  >
+                  <Link key={cat.slug} href={`/products?category=${cat.slug}`} className={`text-sm ${text} ${hover}`}>
                     {cat.name}
                   </Link>
                 ))}
-                <Link
-                  href="/products"
-                  className={`text-sm font-semibold transition hover:text-[#ed2125] ${isDark ? 'text-white/60' : 'text-slate-600'}`}
-                >
+                <Link href="/products" className={`text-sm font-medium ${isDark ? 'text-white/60' : 'text-slate-600'} ${hover}`}>
                   All Products →
                 </Link>
               </div>
             </div>
 
-            {/* Col 3 — company */}
+            {/* Company */}
             <div>
-              <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-[#ed2125]">
-                Company
-              </h3>
-              <div className="flex flex-col gap-2.5">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`text-sm transition hover:text-[#ed2125] ${isDark ? 'text-white/45' : 'text-slate-500'}`}
-                  >
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#ed2125]">Company</p>
+              <div className="flex flex-col gap-2">
+                {companyLinks.map((link) => (
+                  <Link key={link.href} href={link.href} className={`text-sm ${text} ${hover}`}>
                     {link.label}
                   </Link>
                 ))}
-                <Link
-                  href="/sitemap.xml"
-                  className={`text-sm transition hover:text-[#ed2125] ${isDark ? 'text-white/35' : 'text-slate-400'}`}
-                >
-                  Sitemap
-                </Link>
               </div>
             </div>
 
-            {/* Col 4 — contact tabs */}
+            {/* Contact */}
             <div>
-              <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-[#ed2125]">
-                Contact
-              </h3>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#ed2125]">Contact</p>
 
-              {/* Region tabs */}
-              <div className={`flex gap-1 rounded-xl p-1 ${isDark ? 'bg-white/[0.04]' : 'bg-slate-100'}`}>
+              {/* Tab buttons */}
+              <div className={`flex gap-1 rounded-lg p-1 ${isDark ? 'bg-white/[0.04]' : 'bg-slate-100'}`}>
                 {offices.map((o) => (
                   <button
                     key={o.id}
                     onClick={() => setActiveTab(o.id)}
-                    className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                    className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${
                       activeTab === o.id
-                        ? 'bg-[#ed2125] text-white shadow-sm'
-                        : isDark
-                        ? 'text-white/40 hover:text-white'
-                        : 'text-slate-500 hover:text-slate-800'
+                        ? 'bg-[#ed2125] text-white'
+                        : `${text} hover:${isDark ? 'text-white' : 'text-slate-800'}`
                     }`}
                   >
-                    {o.id === 'us' ? 'US' : o.id === 'uae' ? 'UAE' : 'BH'}
+                    {o.label}
                   </button>
                 ))}
               </div>
 
-              {/* Active office card */}
-              <div className={`mt-3 rounded-xl border p-4 ${isDark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-white'}`}>
-                <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                  {activeOffice.label}
-                </p>
-                <div className="mt-3 flex flex-col gap-2">
-                  {activeOffice.phone && (
-                    <a
-                      href={activeOffice.phoneLink}
-                      className={`flex items-center gap-2 text-sm transition hover:text-[#ed2125] ${isDark ? 'text-white/50' : 'text-slate-500'}`}
-                    >
-                      <Phone size={12} className="shrink-0 text-[#ed2125]" />
-                      {activeOffice.phone}
-                    </a>
-                  )}
-                  <a
-                    href={`mailto:${activeOffice.email}`}
-                    className={`flex items-center gap-2 break-all text-sm transition hover:text-[#ed2125] ${isDark ? 'text-white/50' : 'text-slate-500'}`}
-                  >
-                    <Mail size={12} className="shrink-0 text-[#ed2125]" />
-                    {activeOffice.email}
+              {/* Active office */}
+              <div className={`mt-3 rounded-xl border p-4 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                <p className={`mb-2.5 text-xs font-semibold ${isDark ? 'text-white/80' : 'text-slate-700'}`}>{active.label}</p>
+                {active.phone && (
+                  <a href={active.phoneLink} className={`flex items-center gap-2 mb-1.5 text-sm ${text} ${hover}`}>
+                    <Phone size={11} className="text-[#ed2125] shrink-0" />
+                    {active.phone}
                   </a>
-                </div>
+                )}
+                <a href={`mailto:${active.email}`} className={`flex items-center gap-2 text-sm break-all ${text} ${hover}`}>
+                  <Mail size={11} className="text-[#ed2125] shrink-0" />
+                  {active.email}
+                </a>
               </div>
             </div>
           </div>
@@ -231,24 +141,13 @@ export default function Footer({ theme = 'light' }) {
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className={`border-t ${isDark ? 'border-white/[0.06]' : 'border-slate-200'}`}>
-        <div className="mx-auto max-w-7xl px-6 py-5">
-          <div className="flex flex-col items-center justify-between gap-3 text-xs sm:flex-row">
-            <p className={isDark ? 'text-white/30' : 'text-slate-400'}>
-              © {new Date().getFullYear()} ExTell Systems. All rights reserved.
-            </p>
-            <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 ${isDark ? 'text-white/25' : 'text-slate-400'}`}>
-              <span className="font-semibold uppercase tracking-wider">CE Certified</span>
-              <span className="h-3 w-px bg-current opacity-30" />
-              <span className="font-semibold uppercase tracking-wider">RoHS Compliant</span>
-              <span className="h-3 w-px bg-current opacity-30" />
-              <span className="font-semibold uppercase tracking-wider">ISO 9001</span>
-            </div>
-            <p className={isDark ? 'text-white/25' : 'text-slate-400'}>
+      <div className={`border-t ${divider}`}>
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+          <div className="flex flex-col items-center justify-between gap-2 text-xs sm:flex-row">
+            <p className={text}>© {new Date().getFullYear()} ExTell Systems. All rights reserved.</p>
+            <p className={text}>
               Built by{' '}
-              <a href="#" className="font-semibold text-[#ed2125] hover:underline">
-                Zoed Tech
-              </a>
+              <a href="#" className="font-semibold text-[#ed2125] hover:underline">Zoed Tech</a>
             </p>
           </div>
         </div>
