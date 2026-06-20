@@ -3,38 +3,46 @@ import SiteLayoutWrapper from '@/app/layout-wrapper';
 import ProductDetailPageContent from '@/pages/ProductDetailPage';
 import { canonicalUrl } from '@/lib/siteUrl';
 import { getProductBySlug, getProductById } from '@/lib/api';
-import { getProductSlug } from '@/lib/productUrl';
+import { getProductId, getProductSlug } from '@/lib/productUrl';
 import { products as siteProducts } from '@/data/siteData';
 
-function normalizeSlug(slug) {
-  return String(slug || '').toLowerCase().trim();
+// Normalise whatever comes in from the URL param
+function normaliseParam(raw) {
+  return String(raw || '').toLowerCase().trim();
 }
 
-async function resolveProduct(slug) {
-  const normalizedSlug = normalizeSlug(slug);
+// Resolve a product by URL param — tries ID first, then name-slug, then static data
+async function resolveProduct(param) {
+  const p = normaliseParam(param);
   let product = null;
 
   try {
-    const slugRes = await getProductBySlug(normalizedSlug).catch(() => null);
-    product = slugRes?.item || null;
+    // 1. Primary: look up by product ID / SKU (the canonical URL format)
+    const byId = await getProductById(p).catch(() => null);
+    product = byId?.item || null;
 
-    if (!product && normalizedSlug) {
-      const idRes = await getProductById(normalizedSlug).catch(() => null);
-      product = idRes?.item || null;
+    // 2. Fallback: slug-based lookup (handles old name-slug URLs gracefully)
+    if (!product) {
+      const bySlug = await getProductBySlug(p).catch(() => null);
+      product = bySlug?.item || null;
     }
 
-    if (!product && normalizedSlug) {
-      const { products: seedProducts } = await import('@/data/siteData');
-      const { findProductBySlug } = await import('@/lib/productUrl');
-      product = findProductBySlug(seedProducts, normalizedSlug) || null;
+    // 3. Static-data fallback — match by ID/SKU, then by name-slug
+    if (!product) {
+      const { findProductById, findProductBySlug } = await import('@/lib/productUrl');
+      product =
+        findProductById(siteProducts, p) ||
+        findProductBySlug(siteProducts, p) ||
+        null;
     }
   } catch (err) {
-    console.error('Resolve product error:', err);
+    console.error('resolveProduct error:', err);
   }
 
   return product;
 }
 
+// ─── Static params — use product ID/SKU as the URL segment ───────────────────
 export async function generateStaticParams() {
   try {
     const { getProducts } = await import('@/lib/api');
@@ -42,15 +50,17 @@ export async function generateStaticParams() {
     const items = response?.items || (Array.isArray(response) ? response : []);
     if (items.length) {
       return items
-        .map((p) => ({ slug: p.slug || getProductSlug(p) }))
+        .map((p) => ({ slug: getProductId(p) }))
         .filter((p) => p.slug);
     }
   } catch {}
+  // Static-data fallback
   return siteProducts
-    .map((p) => ({ slug: getProductSlug(p) }))
+    .map((p) => ({ slug: getProductId(p) }))
     .filter((p) => p.slug);
 }
 
+// ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = await resolveProduct(slug);
@@ -63,30 +73,45 @@ export async function generateMetadata({ params }) {
   }
 
   const productName = product?.Name || product?.name || 'Product';
+  const sku = product?.SKU || product?.sku || product?.id || '';
   const productCategory =
     product?.topCategory || product?.Categories || product?.category || 'Products';
-  const url = canonicalUrl(`/product/${slug}`);
+  const url = canonicalUrl(`/product/${getProductId(product)}`);
   const productImage =
     product?.images?.[0] ||
     product?.imageList?.[0] ||
     product?.heroImage ||
     canonicalUrl('/assets/placeholder-tech.svg');
 
+  const titleSku = sku ? ` — ${sku.toUpperCase()}` : '';
+  const descriptionBase =
+    product.shortDescription ||
+    (product.description ? String(product.description).slice(0, 120) : null) ||
+    `Premium ${productCategory} from ExTell Systems`;
+
   return {
-    title: `${productName} | ExTell Systems`,
-    description:
-      product.shortDescription ||
-      (product.description ? String(product.description).slice(0, 160) : null) ||
-      `Premium ${productCategory} from ExTell Systems`,
-    keywords: [productName, productCategory, 'power solutions', 'UPS', 'ICT infrastructure'],
+    title: `${productName}${titleSku} | ExTell Systems`,
+    description: sku
+      ? `${descriptionBase} Model: ${sku.toUpperCase()}.`
+      : descriptionBase,
+    keywords: [
+      productName,
+      sku,
+      sku.toUpperCase(),
+      productCategory,
+      'UPS',
+      'power solutions',
+      'ICT infrastructure',
+      'ExTell Systems',
+    ].filter(Boolean),
     alternates: {
       canonical: url,
     },
     openGraph: {
-      title: productName,
-      description:
-        product.shortDescription ||
-        (product.description ? String(product.description).slice(0, 160) : null),
+      title: `${productName}${titleSku}`,
+      description: sku
+        ? `${descriptionBase} Model: ${sku.toUpperCase()}.`
+        : descriptionBase,
       url,
       siteName: 'ExTell Systems',
       type: 'website',
@@ -94,15 +119,16 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: 'summary_large_image',
-      title: productName,
-      description:
-        product.shortDescription ||
-        (product.description ? String(product.description).slice(0, 160) : null),
+      title: `${productName}${titleSku}`,
+      description: sku
+        ? `${descriptionBase} Model: ${sku.toUpperCase()}.`
+        : descriptionBase,
       images: [productImage],
     },
   };
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
   const { slug } = await params;
   const product = await resolveProduct(slug);
@@ -112,7 +138,8 @@ export default async function Page({ params }) {
   }
 
   const name = product?.Name || product?.name || 'Product';
-  const url = canonicalUrl(`/product/${slug}`);
+  const sku = product?.SKU || product?.sku || product?.id || '';
+  const url = canonicalUrl(`/product/${getProductId(product)}`);
   const productImage =
     product?.images?.[0] ||
     product?.imageList?.[0] ||
@@ -136,6 +163,7 @@ export default async function Page({ params }) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name,
+    ...(sku ? { sku: sku.toUpperCase(), mpn: sku.toUpperCase() } : {}),
     image: product.imageList?.length
       ? product.imageList
       : product.images?.length

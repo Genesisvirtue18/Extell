@@ -32,6 +32,55 @@ const nextConfig = {
       ],
     };
   },
+  // Redirect old name-based product slugs to the new ID-based URLs.
+  // The product page resolver handles ID-first lookup, so visiting
+  // /product/<name-slug> still works via the fallback — but any link
+  // that Google already knows about (301) gets pointed at the canonical URL.
+  redirects: async () => {
+    let redirectList = [];
+
+    try {
+      // Build-time: fetch all products from the API and generate permanent
+      // redirects from the old name-slug form to the authoritative ID form.
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiBase}/api/products?limit=500`).catch(() => null);
+      if (res?.ok) {
+        const data = await res.json().catch(() => null);
+        const items = data?.items || (Array.isArray(data) ? data : []);
+
+        const slugify = (str) =>
+          String(str || '')
+            .trim()
+            .toLowerCase()
+            .replace(/&/g, 'and')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+        const getProductId = (p) =>
+          String(p?.SKU || p?.sku || p?.id || p?._id || '')
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-');
+
+        for (const product of items) {
+          const id = getProductId(product);
+          const nameslug = slugify(product?.Name || product?.name || '');
+
+          if (id && nameslug && id !== nameslug) {
+            redirectList.push({
+              source: `/product/${nameslug}`,
+              destination: `/product/${id}`,
+              permanent: true,
+            });
+          }
+        }
+      }
+    } catch {
+      // API unavailable at build time — skip redirects, pages still resolve
+    }
+
+    return redirectList;
+  },
 };
 
 export default nextConfig;

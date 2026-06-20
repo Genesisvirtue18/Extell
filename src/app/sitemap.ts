@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getProducts } from '@/lib/api';
-import { getProductSlug } from '@/lib/productUrl';
+import { getProductId } from '@/lib/productUrl';
 import { CANONICAL_SITE_URL } from '@/lib/siteUrl';
 import { products as siteProducts, categories as siteCategories } from '@/data/siteData';
 
@@ -163,9 +163,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const productUrls: MetadataRoute.Sitemap = productSource.map((product: any) => {
-    const slug = product.slug || getProductSlug(product);
+    const id = getProductId(product);
     return {
-      url: buildAbsoluteUrl(`/product/${encodeURIComponent(slug)}`),
+      url: buildAbsoluteUrl(`/product/${encodeURIComponent(id)}`),
       lastModified: asLastModified(product.updatedAt),
       changeFrequency: 'weekly' as const,
       priority: 0.8,
