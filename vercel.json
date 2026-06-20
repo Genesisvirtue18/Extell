@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/login",
-      "destination": "https://dev-apps.getzino.site/login"
+      "destination": "https://portal.extellsystems.com/login"
     }
   ]
 }

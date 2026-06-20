@@ -1,11 +1,7 @@
-import { AdminAuthProvider } from '@/admin/hooks/useAdminAuth';
 import { categories as siteCategories } from '@/data/siteData';
 import { CANONICAL_SITE_URL, canonicalUrl } from '@/lib/siteUrl';
 import '@/tailwind.css';
 import '@/styles.css';
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export const metadata = {
   metadataBase: new URL(CANONICAL_SITE_URL),
@@ -16,7 +12,7 @@ export const metadata = {
   description:
     'ExTell Systems provides UPS, power backup, structured cabling, and ICT infrastructure solutions for enterprise customers.',
   alternates: {
-    canonical: '/',
+    canonical: CANONICAL_SITE_URL,
   },
   openGraph: {
     title: 'ExTell Systems | UPS, Power Backup & ICT Infrastructure',
@@ -27,10 +23,10 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: '/favicon.png',
-        width: 512,
-        height: 512,
-        alt: 'ExTell Systems',
+        url: '/assets/homebg.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'ExTell Systems — Enterprise Power & ICT Infrastructure',
       },
     ],
   },
@@ -39,7 +35,7 @@ export const metadata = {
     title: 'ExTell Systems | UPS, Power Backup & ICT Infrastructure',
     description:
       'ExTell Systems provides UPS, power backup, structured cabling, and ICT infrastructure solutions for enterprise customers.',
-    images: ['/favicon.png'],
+    images: ['/assets/homebg.jpg'],
   },
   icons: {
     icon: '/favicon.png',

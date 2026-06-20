@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { categories } from '../../data/siteData';
 
@@ -51,9 +52,11 @@ export default function Footer({ theme = 'light' }) {
 
           {/* LEFT */}
           <div>
-            <img
+            <Image
               src={isDark ? logo : logoWhite}
-              alt="Extell Systems"
+              alt="ExTell Systems"
+              width={160}
+              height={40}
               className="h-9 sm:h-10 w-auto object-contain"
             />
 

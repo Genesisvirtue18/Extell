@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { useRouter } from 'next/navigation';
@@ -428,14 +429,13 @@ function Navbar({
           href="/"
           className="shrink-0"
         >
-          <img
-            src={
-              theme === 'light'
-                ? logoWhite
-                : logo
-            }
-            alt="Extell Systems"
+          <Image
+            src={theme === 'light' ? logoWhite : logo}
+            alt="ExTell Systems"
+            width={160}
+            height={40}
             className="h-10 w-auto object-contain"
+            priority
           />
         </Link>
 

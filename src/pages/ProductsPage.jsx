@@ -1,12 +1,12 @@
 'use client';
-import { Metadata } from 'next';
+
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Heart, SlidersHorizontal } from 'lucide-react';
 
 import ComparisonModal from '../components/ui/ComparisonModal';
-import { getProducts, getProductBySlug } from '../lib/api';
+import { getProducts } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 
 const placeholderImage = '/assets/placeholder-tech.svg';
@@ -23,7 +23,7 @@ const parseCategoryPath = (rawValue) =>
     .map((part) => part.split(',')[0].trim())
     .filter(Boolean);
 
-function ProductsPage() {
+function ProductsPage({ initialProducts = [], initialCategories = [], initialPagination }) {
   const searchParams = useSearchParams();
 
   const router = useRouter();
@@ -44,18 +44,16 @@ function ProductsPage() {
     searchParams?.get('q') || ''
   );
 
-  const [products, setProducts] = useState([]);
+  // Initialise with SSR data so the first render has real products for crawlers
+  const [products, setProducts] = useState(initialProducts);
 
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(initialCategories);
 
   const [types, setTypes] = useState([]);
 
-  const [pagination, setPagination] = useState({
-    total: 0,
-    page: 1,
-    totalPages: 1,
-    limit: 12
-  });
+  const [pagination, setPagination] = useState(
+    initialPagination || { total: 0, page: 1, totalPages: 1, limit: 12 }
+  );
 
   const [loading, setLoading] = useState(true);
 
@@ -620,9 +618,13 @@ function ProductsPage() {
 
             <div>
 
-              <h1>INDUSTRIAL POWER SOLUTIONS</h1>
+              <h1>
+                {selectedCategory
+                  ? (categories.find((c) => c.slug === selectedCategory)?.name || 'Products')
+                  : 'UPS, Fiber & ICT Products'}
+              </h1>
 
-              <p>Live catalog connected to your products database.</p>
+              <p>Enterprise power electronics and ICT infrastructure product catalog.</p>
 
             </div>
 

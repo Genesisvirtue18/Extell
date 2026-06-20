@@ -36,11 +36,12 @@ function HomeHero() {
       >
         <p className="accent-chip text-xs font-semibold uppercase tracking-[0.24em]">Enterprise Infrastructure</p>
         <h1 className=" mt-4 max-w-3xl text-xl font-extrabold leading-tight md:text-4xl">
-          <span className="text-[#ed2125]">Power Electronics</span>{' '}
-          <span className="">and ICT Network Solutions</span>
+          <span className="text-[#ed2125]">UPS Systems, Fiber Cables</span>{' '}
+          <span className="">&amp; ICT Infrastructure Solutions</span>
         </h1>
         <p className="mt-5 max-w-2xl text-base ui-text-muted md:text-lg">
-          Global distribution across <span className="font-semibold text-[#ed2125]">20+</span> countries
+          Enterprise power electronics and network infrastructure — global distribution across{' '}
+          <span className="font-semibold text-[#ed2125]">20+</span> countries
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button
