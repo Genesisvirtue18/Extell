@@ -63,13 +63,26 @@ const nextConfig = {
             .replace(/\s+/g, '-');
 
         for (const product of items) {
-          const id = getProductId(product);
+          // apiSlug is the canonical param the backend knows about
+          const apiSlug = String(product?.slug || '').toLowerCase().trim();
           const nameslug = slugify(product?.Name || product?.name || '');
+          const sku = getProductId(product);
 
-          if (id && nameslug && id !== nameslug) {
+          // If the API provides a slug, and it's not the same as the name slug,
+          // redirect the name slug → api slug.
+          if (apiSlug && nameslug && apiSlug !== nameslug) {
             redirectList.push({
               source: `/product/${nameslug}`,
-              destination: `/product/${id}`,
+              destination: `/product/${apiSlug}`,
+              permanent: true,
+            });
+          }
+
+          // Also redirect raw SKU URLs → the canonical api slug.
+          if (apiSlug && sku && apiSlug !== sku) {
+            redirectList.push({
+              source: `/product/${sku}`,
+              destination: `/product/${apiSlug}`,
               permanent: true,
             });
           }

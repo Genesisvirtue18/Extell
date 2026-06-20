@@ -1,4 +1,6 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://extell-backend.onrender.com';
 
 const buildUrl = (path, params) => {
   const fullUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;

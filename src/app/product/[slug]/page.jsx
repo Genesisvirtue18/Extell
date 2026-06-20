@@ -2,14 +2,13 @@ import { notFound } from 'next/navigation';
 import SiteLayoutWrapper from '@/app/layout-wrapper';
 import ProductDetailPageContent from '@/pages/ProductDetailPage';
 import { canonicalUrl } from '@/lib/siteUrl';
-import { getProductBySlug, getProductById } from '@/lib/api';
-import { getProductId, getProductSlug } from '@/lib/productUrl';
+import { getProductBySlug, getProductById, getProducts } from '@/lib/api';
+import { getProductId, getProductUrlParam } from '@/lib/productUrl';
 import { products as siteProducts } from '@/data/siteData';
 import {
   buildProductSchema,
   buildProductFAQSchema,
   buildBreadcrumbSchema,
-  ORG_ID,
   WEBSITE_ID,
 } from '@/lib/schemas';
 
@@ -22,14 +21,30 @@ async function resolveProduct(param) {
   let product = null;
 
   try {
-    const byId = await getProductById(p).catch(() => null);
-    product = byId?.item || null;
+    // 1. Try backend slug lookup (covers name-slug URLs like /product/spirent-firehawk)
+    const bySlug = await getProductBySlug(p).catch(() => null);
+    product = bySlug?.item || null;
 
+    // 2. Try backend ID lookup (covers MongoDB ObjectId in the URL, rare)
     if (!product) {
-      const bySlug = await getProductBySlug(p).catch(() => null);
-      product = bySlug?.item || null;
+      const byId = await getProductById(p).catch(() => null);
+      product = byId?.item || null;
     }
 
+    // 3. Try text search — covers SKU-as-URL-param like /product/e003spir31.
+    //    Searches products for the param, then picks the one whose SKU or slug matches.
+    if (!product) {
+      const searchRes = await getProducts({ q: p, limit: 20 }).catch(() => null);
+      const items = searchRes?.items || [];
+      product =
+        items.find((item) => {
+          const sku = (item?.SKU || item?.sku || '').toLowerCase().replace(/\s+/g, '-');
+          const slug = (item?.slug || '').toLowerCase();
+          return sku === p || slug === p;
+        }) || null;
+    }
+
+    // 4. Static-data fallback
     if (!product) {
       const { findProductById, findProductBySlug } = await import('@/lib/productUrl');
       product =
@@ -49,10 +64,14 @@ export async function generateStaticParams() {
     const response = await getProducts({ limit: 500 });
     const items = response?.items || (Array.isArray(response) ? response : []);
     if (items.length) {
-      return items.map((p) => ({ slug: getProductId(p) })).filter((p) => p.slug);
+      return items
+        .map((p) => ({ slug: getProductUrlParam(p) }))
+        .filter((p) => p.slug);
     }
   } catch {}
-  return siteProducts.map((p) => ({ slug: getProductId(p) })).filter((p) => p.slug);
+  return siteProducts
+    .map((p) => ({ slug: getProductUrlParam(p) }))
+    .filter((p) => p.slug);
 }
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
@@ -71,7 +90,7 @@ export async function generateMetadata({ params }) {
   const sku = (product?.SKU || product?.sku || product?.id || '').toUpperCase();
   const productCategory =
     product?.topCategory || product?.Categories || product?.category || 'Products';
-  const url = canonicalUrl(`/product/${getProductId(product)}`);
+  const url = canonicalUrl(`/product/${getProductUrlParam(product)}`);
   const productImage =
     product?.images?.[0] ||
     product?.imageList?.[0] ||
@@ -86,9 +105,7 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `${productName}${titleSku} | ExTell Systems`,
-    description: sku
-      ? `${descriptionBase} Model: ${sku}.`
-      : descriptionBase,
+    description: sku ? `${descriptionBase} Model: ${sku}.` : descriptionBase,
     keywords: [
       productName,
       sku,
@@ -125,7 +142,7 @@ export default async function Page({ params }) {
 
   const name = product?.Name || product?.name || 'Product';
   const sku = (product?.SKU || product?.sku || product?.id || '').toUpperCase();
-  const url = canonicalUrl(`/product/${getProductId(product)}`);
+  const url = canonicalUrl(`/product/${getProductUrlParam(product)}`);
 
   const categoryPath = String(
     product?.Categories || product?.topCategory || product?.category || ''
@@ -140,16 +157,10 @@ export default async function Page({ params }) {
     { name, url },
   ];
 
-  // ── Product schema (GEO: full product entity with specs as additionalProperty) ──
   const productSchemaObj = buildProductSchema(product, url);
-
-  // ── BreadcrumbList (AEO: breadcrumb rich result) ──────────────────────────
   const breadcrumbSchemaObj = buildBreadcrumbSchema(breadcrumbItems);
-
-  // ── FAQPage (AEO: People Also Ask + voice search) ─────────────────────────
   const faqSchemaObj = buildProductFAQSchema(product, url);
 
-  // ── WebPage entity (GEO: connects page to site/org entities) ──────────────
   const webPageSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemPage',
@@ -170,22 +181,18 @@ export default async function Page({ params }) {
 
   return (
     <SiteLayoutWrapper>
-      {/* GEO: Full product entity with SKU, MPN, specs, brand, seller */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchemaObj) }}
       />
-      {/* AEO: BreadcrumbList for rich breadcrumb in SERPs */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchemaObj) }}
       />
-      {/* AEO: FAQ rich result — People Also Ask + voice-search answers */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchemaObj) }}
       />
-      {/* GEO: ItemPage + Speakable entity */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}

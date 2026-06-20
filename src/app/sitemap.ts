@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getProducts } from '@/lib/api';
-import { getProductId } from '@/lib/productUrl';
+import { getProductUrlParam } from '@/lib/productUrl';
 import { CANONICAL_SITE_URL } from '@/lib/siteUrl';
 import { products as siteProducts, categories as siteCategories } from '@/data/siteData';
 
@@ -163,7 +163,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const productUrls: MetadataRoute.Sitemap = productSource.map((product: any) => {
-    const id = getProductId(product);
+    const id = getProductUrlParam(product);
     return {
       url: buildAbsoluteUrl(`/product/${encodeURIComponent(id)}`),
       lastModified: asLastModified(product.updatedAt),
