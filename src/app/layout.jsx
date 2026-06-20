@@ -1,5 +1,6 @@
 import { categories as siteCategories } from '@/data/siteData';
 import { CANONICAL_SITE_URL, canonicalUrl } from '@/lib/siteUrl';
+import { organizationSchema, websiteSchema, ORG_ID, WEBSITE_ID, toJsonLd } from '@/lib/schemas';
 import '@/tailwind.css';
 import '@/styles.css';
 
@@ -10,14 +11,14 @@ export const metadata = {
     template: '%s | ExTell Systems',
   },
   description:
-    'ExTell Systems provides UPS, power backup, structured cabling, and ICT infrastructure solutions for enterprise customers.',
+    'ExTell Systems provides UPS systems, power backup, fiber cables, structured cabling, and ICT infrastructure solutions for enterprise customers across 20+ countries.',
   alternates: {
     canonical: CANONICAL_SITE_URL,
   },
   openGraph: {
     title: 'ExTell Systems | UPS, Power Backup & ICT Infrastructure',
     description:
-      'ExTell Systems provides UPS, power backup, structured cabling, and ICT infrastructure solutions for enterprise customers.',
+      'ExTell Systems provides UPS systems, power backup, fiber cables, structured cabling, and ICT infrastructure solutions for enterprise customers across 20+ countries.',
     url: CANONICAL_SITE_URL,
     siteName: 'ExTell Systems',
     type: 'website',
@@ -34,7 +35,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'ExTell Systems | UPS, Power Backup & ICT Infrastructure',
     description:
-      'ExTell Systems provides UPS, power backup, structured cabling, and ICT infrastructure solutions for enterprise customers.',
+      'ExTell Systems provides UPS systems, power backup, fiber cables, and ICT infrastructure solutions for enterprise customers.',
     images: ['/assets/homebg.jpg'],
   },
   icons: {
@@ -43,65 +44,43 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const navigationLinks = [
-    { name: 'Home', url: canonicalUrl('/') },
-    { name: 'Products', url: canonicalUrl('/products') },
-    { name: 'Solutions', url: canonicalUrl('/solutions') },
-    { name: 'Support', url: canonicalUrl('/support') },
-    { name: 'About', url: canonicalUrl('/about') },
-    { name: 'Contact', url: canonicalUrl('/contact') },
-  ];
-
-  const categoryLinks = siteCategories.map((category, index) => ({
-    '@type': 'ListItem',
-    position: index + 1,
-    name: category.name,
-    item: canonicalUrl(`/products?category=${encodeURIComponent(category.slug)}`),
-  }));
-
-  const schema = {
+  // Full @graph for the whole site — loaded on every page.
+  // Individual pages add their own page-specific schemas on top of this.
+  const globalGraph = {
     '@context': 'https://schema.org',
     '@graph': [
+      // ── Organization (GEO: primary company entity) ─────────────────────────
+      organizationSchema,
+
+      // ── WebSite with SiteLinksSearchBox ───────────────────────────────────
+      websiteSchema,
+
+      // ── ItemList: primary navigation (GEO: site structure for AI) ─────────
       {
-        '@type': 'Organization',
-        name: 'ExTell Systems',
-        url: CANONICAL_SITE_URL,
-        logo: canonicalUrl('/favicon.png'),
-        sameAs: ['https://www.linkedin.com/company/extellsystems/'],
-        contactPoint: [
-          {
-            '@type': 'ContactPoint',
-            contactType: 'sales',
-            url: canonicalUrl('/contact'),
-          },
+        '@type': 'ItemList',
+        '@id': `${CANONICAL_SITE_URL}/#nav`,
+        name: 'Primary Navigation',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: canonicalUrl('/') },
+          { '@type': 'ListItem', position: 2, name: 'Products', item: canonicalUrl('/products') },
+          { '@type': 'ListItem', position: 3, name: 'Solutions', item: canonicalUrl('/solutions') },
+          { '@type': 'ListItem', position: 4, name: 'Support', item: canonicalUrl('/support') },
+          { '@type': 'ListItem', position: 5, name: 'About', item: canonicalUrl('/about') },
+          { '@type': 'ListItem', position: 6, name: 'Contact', item: canonicalUrl('/contact') },
         ],
       },
-      {
-        '@type': 'WebSite',
-        url: CANONICAL_SITE_URL,
-        name: 'ExTell Systems',
-        description:
-          'UPS, power backup, structured cabling, and ICT infrastructure solutions for enterprise customers.',
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: `${CANONICAL_SITE_URL}/products?q={search_term_string}`,
-          'query-input': 'required name=search_term_string',
-        },
-      },
+
+      // ── ItemList: product categories (GEO: catalog taxonomy) ──────────────
       {
         '@type': 'ItemList',
-        name: 'Primary Navigation',
-        itemListElement: navigationLinks.map((link, index) => ({
+        '@id': `${CANONICAL_SITE_URL}/#categories`,
+        name: 'Product Categories',
+        itemListElement: siteCategories.map((category, index) => ({
           '@type': 'ListItem',
           position: index + 1,
-          name: link.name,
-          item: link.url,
+          name: category.name,
+          item: canonicalUrl(`/category/${category.slug}`),
         })),
-      },
-      {
-        '@type': 'ItemList',
-        name: 'Product Categories',
-        itemListElement: categoryLinks,
       },
     ],
   };
@@ -111,7 +90,7 @@ export default function RootLayout({ children }) {
       <body className="bg-white">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(globalGraph) }}
         />
         {children}
       </body>
