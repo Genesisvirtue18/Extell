@@ -129,7 +129,7 @@ html,
   -moz-tab-size: 4;
   -o-tab-size: 4;
   tab-size: 4;
-  font-family: Montserrat, Inter, IBM Plex Sans, sans-serif;
+  font-family: var(--font-montserrat), Montserrat, Inter, sans-serif;
   font-feature-settings: normal;
   font-variation-settings: normal;
   -webkit-tap-highlight-color: transparent
@@ -1592,7 +1592,7 @@ body,
 
 body {
   margin: 0;
-  font-family: Montserrat, Inter, IBM Plex Sans, sans-serif;
+  font-family: var(--font-montserrat), Montserrat, Inter, sans-serif;
   background: radial-gradient(1200px 500px at 80% -10%, rgba(0, 0, 0, .4), transparent 70%), radial-gradient(900px 460px at 12% 20%, rgba(237, 33, 37, .12), transparent 76%), linear-gradient(145deg, #070707, #101010 48%, #170708);
   color: #fff;
   text-rendering: optimizeLegibility
@@ -1621,6 +1621,28 @@ button {
   background: linear-gradient(130deg, #ffffff14, #ffffff03), linear-gradient(155deg, #0e0e0ee6, #080808d9);
   border: 1px solid rgba(255, 255, 255, .14);
   box-shadow: 0 20px 60px #02081873
+}
+
+.contact-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 0.72rem 0.9rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none
+}
+
+.contact-input::placeholder {
+  color: rgba(255, 255, 255, 0.25)
+}
+
+.contact-input:focus {
+  border-color: rgba(237, 33, 37, 0.5);
+  box-shadow: 0 0 0 3px rgba(237, 33, 37, 0.1)
 }
 
 .accent-chip {

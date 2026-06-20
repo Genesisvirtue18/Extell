@@ -1,4 +1,12 @@
+import { Montserrat } from 'next/font/google';
 import { categories as siteCategories } from '@/data/siteData';
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-montserrat',
+  display: 'swap',
+});
 import { CANONICAL_SITE_URL, canonicalUrl } from '@/lib/siteUrl';
 import { organizationSchema, websiteSchema, ORG_ID, WEBSITE_ID, toJsonLd } from '@/lib/schemas';
 import '@/tailwind.css';
@@ -86,8 +94,8 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en">
-      <body className="bg-white">
+    <html lang="en" className={montserrat.variable}>
+      <body className={`${montserrat.variable} font-sans bg-white`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(globalGraph) }}

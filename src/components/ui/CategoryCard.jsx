@@ -2,35 +2,67 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+
+const categoryIcons = {
+  battery: '⚡',
+  ups: '🔋',
+  fiber: '🔌',
+  cabling: '📡',
+  networking: '🌐',
+  power: '⚡',
+  default: '◈',
+};
+
+function getCategoryIcon(slug = '') {
+  const s = slug.toLowerCase();
+  for (const [key, icon] of Object.entries(categoryIcons)) {
+    if (s.includes(key)) return icon;
+  }
+  return categoryIcons.default;
+}
 
 function CategoryCard({ category, index = 0 }) {
-
-  const badge = String(index + 1).padStart(2, '0');
+  const num = String(index + 1).padStart(2, '0');
+  const icon = getCategoryIcon(category.slug);
 
   return (
     <motion.article
-      whileHover={{ y: -5 }}
-      className="card-lift ui-surface-1 rounded-xl p-6 ui-text shadow-[0_14px_34px_rgba(0,0,0,0.22)]"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.5, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -6 }}
+      className="group tech-panel red-wash relative flex flex-col overflow-hidden rounded-2xl p-6 shadow-[0_14px_34px_rgba(0,0,0,0.28)] transition-[border-color,box-shadow] hover:border-[#ed2125]/30 hover:shadow-[0_0_0_1px_rgba(237,33,37,0.2),0_24px_48px_rgba(4,17,40,0.45)]"
     >
-      <div className="flex items-center justify-between gap-3">
-        <p className="ui-border ui-bg-soft inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold tracking-[0.14em] ui-text-muted">
-          {badge}
-        </p>
-        
+      {/* Top row */}
+      <div className="flex items-start justify-between">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#ed2125]/20 bg-[#ed2125]/10 text-xl">
+          {icon}
+        </span>
+        <span className="text-[0.65rem] font-bold tracking-[0.14em] text-white/20">{num}</span>
       </div>
-      <h3 className="mt-3 text-2xl font-extrabold leading-tight ui-text">{category.name}</h3>
-      <p className="mt-2 text-sm leading-relaxed ui-text-muted">
-        Browse live catalog items for this category with backend-powered filters and availability.
+
+      {/* Name */}
+      <h3 className="mt-4 text-lg font-extrabold leading-tight tracking-tight text-white">
+        {category.name}
+      </h3>
+
+      {/* Description */}
+      <p className="mt-2 flex-1 text-xs leading-relaxed text-white/40">
+        Enterprise-grade products with live catalog and availability filters.
       </p>
+
+      {/* CTA */}
       <Link
         href={`/products?category=${category.slug}`}
-        className="mt-5 inline-flex items-center rounded-md border border-[#ff5a73] bg-[#ed2125] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#d91f23]"
+        className="mt-5 inline-flex w-fit items-center gap-2 rounded-lg border border-[#ed2125]/40 bg-[#ed2125]/10 px-4 py-2 text-xs font-bold tracking-wide text-[#ed2125] transition hover:bg-[#ed2125] hover:text-white"
       >
-        View category
+        View Category
+        <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
       </Link>
     </motion.article>
   );
 }
 
 export default CategoryCard;
-
