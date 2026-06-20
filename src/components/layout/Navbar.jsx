@@ -98,29 +98,28 @@ function Navbar({
   }, []);
 
   useEffect(() => {
-    const handleOutsideClick = (
-      event
-    ) => {
+    const handleOutsideClick = (event) => {
       if (
         productMenuRef.current &&
-        !productMenuRef.current.contains(
-          event.target
-        )
+        !productMenuRef.current.contains(event.target)
       ) {
         setProductMenuOpen(false);
       }
     };
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setProductMenuOpen(false);
+        setIsOpen(false);
+      }
+    };
 
-    document.addEventListener(
-      'mousedown',
-      handleOutsideClick
-    );
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleEscape);
 
-    return () =>
-      document.removeEventListener(
-        'mousedown',
-        handleOutsideClick
-      );
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
+    };
   }, []);
 
   useEffect(() => {
@@ -430,7 +429,7 @@ function Navbar({
           className="shrink-0"
         >
           <Image
-            src={theme === 'light' ? logoWhite : logo}
+            src={theme === 'dark' ? logoWhite : logo}
             alt="ExTell Systems"
             width={160}
             height={40}
@@ -477,7 +476,7 @@ function Navbar({
                             !prev
                         )
                       }
-                      className="inline-flex items-center gap-1 text-sm font-medium text-slate-700 transition hover:text-[#fc3725]"
+                      className="inline-flex items-center gap-1 text-sm font-medium text-slate-700 transition hover:text-[#ed2125]"
                     >
                       Products
 
@@ -543,7 +542,7 @@ function Navbar({
                   <Link
                     key={item.path}
                     href={item.path}
-                    className="text-sm font-medium text-slate-700 transition hover:text-[#fc3725]"
+                    className="text-sm font-medium text-slate-700 transition hover:text-[#ed2125]"
                   >
                     {item.label}
                   </Link>
@@ -583,7 +582,7 @@ function Navbar({
               href="https://portal.extellsystems.com/login"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center rounded-full bg-[#fc3725] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e72f1d]"
+              className="inline-flex items-center rounded-full bg-[#ed2125] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e72f1d]"
             >
               Login
             </a>
@@ -593,7 +592,7 @@ function Navbar({
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Extell on LinkedIn"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border text-slate-700 transition hover:border-[#fc3725] hover:text-[#fc3725]"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border text-slate-700 transition hover:border-[#fc3725] hover:text-[#ed2125]"
             >
               <Linkedin
                 size={16}
@@ -605,7 +604,7 @@ function Navbar({
               onClick={
                 onToggleTheme
               }
-              className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-[#fc3725] hover:text-[#fc3725]"
+              className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-[#fc3725] hover:text-[#ed2125]"
             >
               {theme ===
               'light' ? (
@@ -687,7 +686,7 @@ function Navbar({
                                 false
                               )
                             }
-                            className={`rounded-md px-2 py-1 text-xs transition ${
+                            className={`block rounded-md px-2 py-2.5 text-sm transition ${
                               isDarkTheme
                                 ? 'text-slate-300 hover:bg-slate-900 hover:text-white'
                                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'

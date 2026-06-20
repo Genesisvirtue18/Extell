@@ -11,7 +11,12 @@ function SolutionsShowcaseSection() {
         <div className="tech-panel red-wash ui-surface-1 rounded-xl p-6">
           <h3 className="accent-title text-xl font-bold">Solution Showcase</h3>
           <ul className="mt-4 space-y-3 ui-text-muted">
-            {solutionShowcaseItems.map((solution) => <li key={solution}>- {solution}</li>)}
+            {solutionShowcaseItems.map((solution) => (
+              <li key={solution} className="flex items-start gap-2">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                {solution}
+              </li>
+            ))}
           </ul>
         </div>
         <div className="tech-panel red-wash ui-surface-1 rounded-xl p-6">

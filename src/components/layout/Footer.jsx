@@ -53,7 +53,7 @@ export default function Footer({ theme = 'light' }) {
           {/* LEFT */}
           <div>
             <Image
-              src={isDark ? logo : logoWhite}
+              src={isDark ? logoWhite : logo}
               alt="ExTell Systems"
               width={160}
               height={40}

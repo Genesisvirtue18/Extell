@@ -33,18 +33,18 @@ function AboutPage() {
         <div className="ui-hero-overlay-strong absolute inset-0" />
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 md:py-20">
           <p className="text-sm ui-text-muted">About Us</p>
-          <h1 className="mt-4 text-3xl font-semibold leading-tight ui-text md:text-5xl">
-            <span className="text-[#ff304a]">Global Clients</span>
+          <h1 className="mt-4 text-3xl font-extrabold leading-[1.15] ui-text md:text-5xl">
+            <span className="text-[#ed2125]">Global Clients</span>
             <br />
             World Class Projects
           </h1>
           <p className="mt-5 max-w-3xl text-lg ui-text md:text-2xl">
-            Office Locations <span className="text-[#ff304a]">USA, UAE</span> and{' '}
-            <span className="text-[#ff304a]">India</span>
+            Office Locations <span className="text-[#ed2125]">USA, UAE</span> and{' '}
+            <span className="text-[#ed2125]">India</span>
           </p>
           <a
             href="/contact"
-            className="ui-border ui-text ui-focus-ring mt-8 inline-flex rounded-full border px-8 py-3 text-lg font-semibold transition hover:border-[#ff304a] hover:text-[#ff304a]"
+            className="ui-border ui-text ui-focus-ring mt-8 inline-flex rounded-full border px-8 py-3 text-lg font-semibold transition hover:border-[#ff304a] hover:text-[#ed2125]"
           >
             Contact Us
           </a>
@@ -54,13 +54,13 @@ function AboutPage() {
       <div className="ui-bg-soft">
         <section className="mx-auto max-w-7xl px-6 py-12 md:py-16">
           <div className="space-y-6 text-base leading-relaxed ui-text-muted md:text-lg">
-            <p className="text-base leading-relaxed md:text-[1 rem] md:leading-snug">
+            <p className="text-base leading-relaxed md:text-lg md:leading-snug">
               ExTell Systems is an international Power Backup Solutions and ICT manufacturer with
               office locations in USA, UAE and India. We are positioned as a competitive,
               value-based manufacturer of high quality IT Networking Products and Energy Solutions
               with a focus on providing solutions that meet real market requirements.
             </p>
-            <p className="text-base leading-relaxed md:text-[1 rem] md:leading-snug">
+            <p className="text-base leading-relaxed md:text-lg md:leading-snug">
               By simplifying the supply chain and bringing much-needed execution efficiency, we
               work closely with our clients to provide everything needed to build resilient and
               reliable Network and Data Center Infrastructure.
@@ -105,7 +105,7 @@ function AboutPage() {
                   key={office.country}
                   className="ui-surface-1 rounded-xl p-4"
                 >
-                  <h3 className="text-lg font-semibold text-[#ff4b64]">{office.country}</h3>
+                  <h3 className="text-lg font-semibold text-[#ed2125]">{office.country}</h3>
                   <p className="mt-2 text-sm ui-text-muted">{office.detail}</p>
                 </article>
               ))}

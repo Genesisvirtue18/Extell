@@ -10,10 +10,6 @@ export default function ThemeWrapper({ children }) {
   const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  useEffect(() => {
     const savedTheme = window.localStorage.getItem('theme');
     if (savedTheme === 'dark' || savedTheme === 'light') {
       setTheme(savedTheme);

@@ -34,8 +34,8 @@ function HomeHero() {
         animate={{ opacity: 1, y: 0 }}
         className="relative mx-auto max-w-7xl px-6 py-24 md:py-32"
       >
-        <p className="accent-chip text-xs font-semibold uppercase tracking-[0.24em]">Enterprise Infrastructure</p>
-        <h1 className=" mt-4 max-w-3xl text-xl font-extrabold leading-tight md:text-4xl">
+        <p className="accent-chip text-xs font-semibold uppercase tracking-[0.12em]">Enterprise Infrastructure</p>
+        <h1 className="mt-5 max-w-3xl text-3xl font-extrabold leading-[1.15] md:text-5xl lg:text-6xl">
           <span className="text-[#ed2125]">UPS Systems, Fiber Cables</span>{' '}
           <span className="">&amp; ICT Infrastructure Solutions</span>
         </h1>
