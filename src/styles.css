@@ -4672,6 +4672,12 @@ body[data-theme="light"] h6 {
   color: #111111 !important;
 }
 
+/* Hero always sits on a dark overlay — headings must stay white regardless of theme */
+body[data-theme="light"] .home-hero h1,
+body[data-theme="light"] .home-hero h2 {
+  color: #ffffff !important;
+}
+
 body[data-theme="light"] .tech-panel {
   background: var(--ui-surface-1);
   border: 1px solid var(--ui-border-subtle);

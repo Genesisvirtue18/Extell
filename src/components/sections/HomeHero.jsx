@@ -73,12 +73,12 @@ function HomeHero() {
 
           {/* Headline */}
           <h1
-            className="mt-4 font-bold leading-[1.12] tracking-[-0.015em] text-white sm:mt-5"
-            style={{ fontSize: 'clamp(1.85rem, 5vw, 3.6rem)' }}
+            className="mt-4 font-bold leading-[1.1] tracking-[-0.02em]"
+            style={{ fontSize: 'clamp(1.85rem, 5vw, 3.6rem)', color: '#ffffff' }}
           >
-            Powering the World's{' '}
+            Powering the World&apos;s{' '}
             <span style={{ color: '#ed2125' }}>Critical</span>
-            <br className="hidden sm:block" /> Infrastructure
+            {' '}Infrastructure
           </h1>
 
           {/* Sub-heading */}
