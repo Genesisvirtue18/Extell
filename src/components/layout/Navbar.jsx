@@ -429,7 +429,7 @@ function Navbar({
           className="shrink-0"
         >
           <Image
-            src={theme === 'dark' ? logoWhite : logo}
+            src={theme === 'dark' ? logo : logoWhite}
             alt="ExTell Systems"
             width={160}
             height={40}
