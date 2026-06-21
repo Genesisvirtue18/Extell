@@ -24,6 +24,14 @@ export const metadata = {
     url: canonicalUrl('/industry-solutions'),
     siteName: 'ExTell Systems',
     type: 'website',
+    images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: 'ExTell Systems Industry Solutions' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Industry Solutions | ExTell Systems',
+    description:
+      'Tailored power and ICT infrastructure for telecom, data centers, banking, government, manufacturing, and utilities.',
+    images: ['/assets/homebg.jpg'],
   },
 };
 

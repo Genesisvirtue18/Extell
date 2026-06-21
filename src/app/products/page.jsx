@@ -7,6 +7,7 @@ import { canonicalUrl } from '@/lib/siteUrl';
 import {
   buildCollectionPageSchema,
   buildBreadcrumbSchema,
+  productCatalogFAQSchema,
   WEBSITE_ID,
 } from '@/lib/schemas';
 
@@ -24,6 +25,14 @@ export const metadata = {
     url: canonicalUrl('/products'),
     siteName: 'ExTell Systems',
     type: 'website',
+    images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: 'ExTell Systems Product Catalog' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'UPS Systems, Fiber & ICT Products | ExTell Systems',
+    description:
+      'Browse enterprise UPS systems, fiber cables, structured cabling, and ICT infrastructure from ExTell Systems.',
+    images: ['/assets/homebg.jpg'],
   },
 };
 
@@ -86,6 +95,11 @@ export default async function Page() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      {/* AEO: catalog FAQ — People Also Ask + AI knowledge panel */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productCatalogFAQSchema) }}
       />
       <Suspense fallback={<p className="p-8 text-center">Loading products...</p>}>
         <ProductsPage

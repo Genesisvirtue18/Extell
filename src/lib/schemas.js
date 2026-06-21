@@ -27,13 +27,13 @@ export const organizationSchema = {
   '@id': ORG_ID,
   name: 'ExTell Systems',
   legalName: 'ExTell Systems Pvt Ltd',
-  alternateName: ['ExTell', 'Extell Systems'],
+  alternateName: ['ExTell', 'Extell Systems', 'ExTell Systems Pvt Ltd'],
   url: CANONICAL_SITE_URL,
   logo: {
     '@type': 'ImageObject',
     '@id': `${CANONICAL_SITE_URL}/#logo`,
-    url: canonicalUrl('/assets/logo.png'),
-    contentUrl: canonicalUrl('/assets/logo.png'),
+    url: canonicalUrl('/assets/logowhite.jpg'),
+    contentUrl: canonicalUrl('/assets/logowhite.jpg'),
     width: 400,
     height: 100,
     caption: 'ExTell Systems',
@@ -44,11 +44,21 @@ export const organizationSchema = {
   slogan: 'Enterprise Power & ICT Infrastructure',
   foundingDate: '2020',
   numberOfEmployees: { '@type': 'QuantitativeValue', minValue: 10, maxValue: 50 },
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Ernakulam',
+    addressRegion: 'Kerala',
+    addressCountry: 'IN',
+  },
+  email: 'sales@extellsystems.com',
   areaServed: [
     { '@type': 'Country', name: 'India', sameAs: 'https://www.wikidata.org/wiki/Q668' },
     { '@type': 'Country', name: 'United Arab Emirates', sameAs: 'https://www.wikidata.org/wiki/Q878' },
     { '@type': 'Country', name: 'Bahrain', sameAs: 'https://www.wikidata.org/wiki/Q398' },
     { '@type': 'Country', name: 'United States', sameAs: 'https://www.wikidata.org/wiki/Q30' },
+    { '@type': 'Country', name: 'Saudi Arabia', sameAs: 'https://www.wikidata.org/wiki/Q851' },
+    { '@type': 'Country', name: 'Kuwait', sameAs: 'https://www.wikidata.org/wiki/Q817' },
+    { '@type': 'Country', name: 'Oman', sameAs: 'https://www.wikidata.org/wiki/Q842' },
   ],
   knowsAbout: [
     'UPS Systems',
@@ -65,6 +75,10 @@ export const organizationSchema = {
     'Solar Power Solutions',
     'Power Electronics',
     'Enterprise Networking',
+    'DCIM',
+    'Battery Backup Systems',
+    'Critical Power Infrastructure',
+    'Enterprise Data Center Solutions',
   ],
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
@@ -80,6 +94,7 @@ export const organizationSchema = {
   },
   sameAs: [
     'https://www.linkedin.com/company/extellsystems/',
+    'https://www.linkedin.com/company/extellsystems/?viewAsMember=true',
     'https://www.justdial.com/jdmart/Ernakulam/ExTell-Systems-HMT-Colony/0484PX484-X484-221214162013-A6L7_BZDET/catalogue',
   ],
   contactPoint: [
@@ -89,13 +104,14 @@ export const organizationSchema = {
       email: 'sales@extellsystems.com',
       areaServed: 'US',
       availableLanguage: ['English'],
+      contactOption: 'TollFree',
     },
     {
       '@type': 'ContactPoint',
       contactType: 'sales',
       telephone: '+971-6-779-4299',
       email: 'sales.imea@extellsystems.com',
-      areaServed: ['AE', 'BH'],
+      areaServed: ['AE', 'BH', 'SA', 'KW', 'OM'],
       availableLanguage: ['English', 'Arabic'],
     },
     {
@@ -257,6 +273,10 @@ export const buildProductFAQSchema = (product, url) => {
 export const buildProductSchema = (product, url) => {
   const name = product?.Name || product?.name || 'Product';
   const sku = (product?.SKU || product?.sku || product?.id || '').toUpperCase();
+  const category = String(
+    product?.topCategory || product?.Categories || product?.category || ''
+  ).split('>')[0].split(',')[0].trim() || 'Enterprise Products';
+
   const productImage =
     product?.images?.[0] ||
     product?.imageList?.[0] ||
@@ -269,22 +289,34 @@ export const buildProductSchema = (product, url) => {
     ? Object.entries(product.specs).map(([parameter, value]) => ({ parameter, value }))
     : [];
 
+  // availability: default InStock for B2B catalog; only OutOfStock when explicitly false
+  const availability =
+    product.inStock === false
+      ? 'https://schema.org/OutOfStock'
+      : 'https://schema.org/InStock';
+
+  // priceValidUntil: 1 year from now (required by Google Merchant for rich results)
+  const priceValidUntil = new Date(
+    Date.now() + 365 * 24 * 60 * 60 * 1000
+  ).toISOString().split('T')[0];
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': `${url}#product`,
     name,
     ...(sku ? { sku, mpn: sku } : {}),
+    category,
     image: product.imageList?.length
       ? product.imageList
       : product.images?.length
       ? product.images
       : [productImage],
-    description: product.description || product.descriptionText || name,
+    description: product.description || product.descriptionText || product.short || name,
     brand: {
       '@type': 'Brand',
       name: 'ExTell Systems',
-      logo: canonicalUrl('/assets/logo.png'),
+      logo: canonicalUrl('/assets/logowhite.jpg'),
     },
     manufacturer: { '@id': ORG_ID },
     seller: { '@id': ORG_ID },
@@ -300,18 +332,89 @@ export const buildProductSchema = (product, url) => {
     offers: {
       '@type': 'Offer',
       '@id': `${url}#offer`,
-      priceCurrency: 'INR',
-      ...(product.price && !Number.isNaN(Number(product.price))
-        ? { price: Number(product.price) }
-        : {}),
-      availability: product.inStock
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
       url,
+      // B2B quote-based pricing — Google shows "Check price" when price omitted
+      priceCurrency: 'USD',
+      ...(product.price && !Number.isNaN(Number(product.price))
+        ? { price: Number(product.price), priceValidUntil }
+        : {}),
+      availability,
+      itemCondition: 'https://schema.org/NewCondition',
       seller: { '@id': ORG_ID },
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          currency: 'USD',
+        },
+        shippingDestination: [
+          { '@type': 'DefinedRegion', addressCountry: 'IN' },
+          { '@type': 'DefinedRegion', addressCountry: 'AE' },
+          { '@type': 'DefinedRegion', addressCountry: 'BH' },
+          { '@type': 'DefinedRegion', addressCountry: 'US' },
+        ],
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          businessDays: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
+          cutoffTime: '17:00',
+          handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+          transitTime: { '@type': 'QuantitativeValue', minValue: 3, maxValue: 14, unitCode: 'DAY' },
+        },
+      },
     },
   };
 };
+
+/**
+ * AEO FAQ for the products catalog listing page.
+ * Targets "where to buy UPS", "ExTell catalog" type queries.
+ */
+export const productCatalogFAQSchema = buildFAQSchema([
+  {
+    q: 'What types of products does ExTell Systems sell?',
+    a: 'ExTell Systems offers enterprise UPS systems (modular and static), fiber optic cables, structured cabling solutions, data center PDUs, networking equipment, and ICT infrastructure products for commercial and industrial use.',
+  },
+  {
+    q: 'Can I buy ExTell Systems products online?',
+    a: 'ExTell Systems is a B2B supplier. Products are available via quote request. Browse the product catalog at extellsystems.com/products and submit a "Get a Quote" request from any product page, or email sales@extellsystems.com.',
+  },
+  {
+    q: 'Does ExTell Systems ship internationally?',
+    a: 'Yes. ExTell Systems ships enterprise products to customers across 20+ countries, including India, UAE, Bahrain, Saudi Arabia, Kuwait, Oman, and the United States. Contact sales@extellsystems.com for shipping terms.',
+  },
+  {
+    q: 'What is the minimum order quantity for ExTell Systems products?',
+    a: 'ExTell Systems serves enterprise and commercial customers. Minimum order quantities vary by product line. Contact sales@extellsystems.com or use the quote form to discuss project-specific requirements.',
+  },
+  {
+    q: 'Are ExTell Systems products certified for use in the Middle East?',
+    a: 'Yes. ExTell Systems products meet relevant regional standards and certifications for Middle East markets including UAE, Bahrain, and GCC countries. Visit extellsystems.com/certifications for details.',
+  },
+]);
+
+/**
+ * AEO FAQ builder for product category pages.
+ * Targets "best UPS for data centers", "[category] products" etc.
+ */
+export const buildCategoryFAQSchema = (categoryName, categoryUrl) =>
+  buildFAQSchema([
+    {
+      q: `What ${categoryName} products does ExTell Systems offer?`,
+      a: `ExTell Systems offers a comprehensive range of ${categoryName} for enterprise, data center, and industrial applications. Browse the full selection at ${categoryUrl}.`,
+    },
+    {
+      q: `How do I get a quote for ${categoryName} from ExTell Systems?`,
+      a: `Select your preferred ${categoryName} product from the catalog, then click "Get a Quote" on the product page. You can also email sales@extellsystems.com or call the nearest ExTell office.`,
+    },
+    {
+      q: `Are ExTell Systems ${categoryName} suitable for data centers?`,
+      a: `Yes. ExTell Systems ${categoryName} are designed for enterprise and data center environments, including high-availability, N+1 redundancy, and 24/7 operation requirements.`,
+    },
+    {
+      q: `What is the warranty on ExTell Systems ${categoryName}?`,
+      a: `Warranty periods vary by product model. Most ExTell Systems products carry a 1–2 year manufacturer warranty. Register your product at extellsystems.com/warranty or contact support@extellsystems.com.`,
+    },
+  ]);
 
 /**
  * Service schema for solution/industry pages.
@@ -339,18 +442,18 @@ export const buildServiceSchema = ({ name, description, url, serviceType }) => (
  * AEO: Triggers local pack results and Google Maps associations.
  */
 export const localBusinessSchemas = [
+  // ── India HQ ──────────────────────────────────────────────────────────────
   {
     '@context': 'https://schema.org',
     '@type': ['LocalBusiness', 'Store', 'ElectronicsStore'],
     '@id': `${CANONICAL_SITE_URL}/#localbusiness-india`,
-    name: 'ExTell Systems — India',
+    name: 'ExTell Systems',
     legalName: 'ExTell Systems Pvt Ltd',
     url: CANONICAL_SITE_URL,
-    logo: canonicalUrl('/assets/logo.png'),
+    logo: canonicalUrl('/assets/logowhite.jpg'),
     image: canonicalUrl('/assets/homebg.jpg'),
     description:
-      'Enterprise UPS systems, fiber cables, data center infrastructure, and ICT products. Engineering, sourcing, and execution support hub.',
-    telephone: null,
+      'Enterprise UPS systems, fiber optic cables, data center infrastructure, and ICT products. Global headquarters and engineering hub.',
     email: 'sales@extellsystems.com',
     address: {
       '@type': 'PostalAddress',
@@ -371,25 +474,37 @@ export const localBusinessSchemas = [
         closes: '18:00',
       },
     ],
-    currenciesAccepted: 'INR',
+    currenciesAccepted: 'INR, USD',
     priceRange: '$$',
+    hasMap: 'https://maps.google.com/?q=Ernakulam,Kerala,India',
+    sameAs: [
+      'https://www.linkedin.com/company/extellsystems/',
+      'https://www.justdial.com/jdmart/Ernakulam/ExTell-Systems-HMT-Colony/0484PX484-X484-221214162013-A6L7_BZDET/catalogue',
+    ],
     parentOrganization: { '@id': ORG_ID },
   },
+  // ── UAE (Sharjah) ─────────────────────────────────────────────────────────
   {
     '@context': 'https://schema.org',
     '@type': ['LocalBusiness', 'Store', 'ElectronicsStore'],
     '@id': `${CANONICAL_SITE_URL}/#localbusiness-uae`,
     name: 'ExTell Systems — UAE',
     url: CANONICAL_SITE_URL,
-    logo: canonicalUrl('/assets/logo.png'),
+    logo: canonicalUrl('/assets/logowhite.jpg'),
+    image: canonicalUrl('/assets/homebg.jpg'),
     description:
-      'ExTell Systems UAE — Regional operations and distribution hub for enterprise UPS, fiber cables, and ICT infrastructure in the Middle East.',
-    telephone: '+97167794299',
+      'ExTell Systems UAE — Regional distribution hub for enterprise UPS, fiber cables, and ICT infrastructure across the Middle East.',
+    telephone: '+971-6-779-4299',
     email: 'sales.imea@extellsystems.com',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Sharjah',
       addressCountry: 'AE',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 25.3463,
+      longitude: 55.4209,
     },
     openingHoursSpecification: [
       {
@@ -399,25 +514,65 @@ export const localBusinessSchemas = [
         closes: '18:00',
       },
     ],
-    currenciesAccepted: 'AED',
+    currenciesAccepted: 'AED, USD',
+    priceRange: '$$',
+    hasMap: 'https://maps.google.com/?q=Sharjah,UAE',
     parentOrganization: { '@id': ORG_ID },
   },
+  // ── Bahrain (Manama) ──────────────────────────────────────────────────────
   {
     '@context': 'https://schema.org',
     '@type': ['LocalBusiness', 'Store', 'ElectronicsStore'],
     '@id': `${CANONICAL_SITE_URL}/#localbusiness-bahrain`,
     name: 'ExTell Systems — Bahrain',
     url: CANONICAL_SITE_URL,
-    logo: canonicalUrl('/assets/logo.png'),
+    logo: canonicalUrl('/assets/logowhite.jpg'),
+    image: canonicalUrl('/assets/homebg.jpg'),
     description:
-      'ExTell Systems Bahrain — enterprise UPS systems, fiber cables, and ICT infrastructure solutions.',
-    telephone: '+97338835435',
+      'ExTell Systems Bahrain — enterprise UPS systems, fiber cables, and ICT infrastructure solutions for Bahrain and GCC markets.',
+    telephone: '+973-3883-5435',
     email: 'sales.imea@extellsystems.com',
     address: {
       '@type': 'PostalAddress',
+      addressLocality: 'Manama',
       addressCountry: 'BH',
     },
-    currenciesAccepted: 'BHD',
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 26.2285,
+      longitude: 50.5860,
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        opens: '09:00',
+        closes: '18:00',
+      },
+    ],
+    currenciesAccepted: 'BHD, USD',
+    priceRange: '$$',
+    hasMap: 'https://maps.google.com/?q=Manama,Bahrain',
+    parentOrganization: { '@id': ORG_ID },
+  },
+  // ── United States ─────────────────────────────────────────────────────────
+  {
+    '@context': 'https://schema.org',
+    '@type': ['LocalBusiness', 'Store', 'ElectronicsStore'],
+    '@id': `${CANONICAL_SITE_URL}/#localbusiness-us`,
+    name: 'ExTell Systems — United States',
+    url: CANONICAL_SITE_URL,
+    logo: canonicalUrl('/assets/logowhite.jpg'),
+    image: canonicalUrl('/assets/homebg.jpg'),
+    description:
+      'ExTell Systems US — enterprise UPS systems, fiber cables, and ICT infrastructure solutions for North American customers.',
+    email: 'sales@extellsystems.com',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'US',
+    },
+    currenciesAccepted: 'USD',
+    priceRange: '$$',
     parentOrganization: { '@id': ORG_ID },
   },
 ];

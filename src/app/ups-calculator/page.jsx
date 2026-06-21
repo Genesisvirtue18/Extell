@@ -31,6 +31,14 @@ export const metadata = {
     url: canonicalUrl('/ups-calculator'),
     siteName: 'ExTell Systems',
     type: 'website',
+    images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: 'UPS Runtime Calculator — ExTell Systems' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'UPS Runtime Calculator | ExTell Systems',
+    description:
+      'Calculate UPS battery runtime based on connected load. Free tool from ExTell Systems.',
+    images: ['/assets/homebg.jpg'],
   },
 };
 

@@ -30,6 +30,14 @@ export const metadata = {
     url: canonicalUrl('/contact'),
     siteName: 'ExTell Systems',
     type: 'website',
+    images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: 'Contact ExTell Systems' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact ExTell Systems | Sales & Technical Inquiries',
+    description:
+      'Reach our sales and engineering teams in India, UAE, Bahrain, and the US for enterprise UPS and ICT infrastructure solutions.',
+    images: ['/assets/homebg.jpg'],
   },
 };
 

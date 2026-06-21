@@ -23,6 +23,14 @@ export const metadata = {
     url: canonicalUrl('/support'),
     siteName: 'ExTell Systems',
     type: 'website',
+    images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: 'ExTell Systems Support Center' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Support Center | ExTell Systems',
+    description:
+      'Warranty registration, downloads, FAQs, and UPS runtime calculator — ExTell Systems enterprise support.',
+    images: ['/assets/homebg.jpg'],
   },
 };
 

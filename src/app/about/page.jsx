@@ -23,6 +23,14 @@ export const metadata = {
     url: canonicalUrl('/about'),
     siteName: 'ExTell Systems',
     type: 'website',
+    images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: 'About ExTell Systems' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About ExTell Systems | Enterprise Power & ICT Infrastructure',
+    description:
+      'Learn about ExTell Systems — enterprise UPS, fiber, and ICT infrastructure solutions provider across 20+ countries.',
+    images: ['/assets/homebg.jpg'],
   },
 };
 

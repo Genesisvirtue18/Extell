@@ -7,6 +7,7 @@ import {
   buildCollectionPageSchema,
   buildBreadcrumbSchema,
   buildItemListSchema,
+  buildCategoryFAQSchema,
   WEBSITE_ID,
 } from '@/lib/schemas';
 
@@ -37,6 +38,13 @@ export async function generateMetadata({ params }) {
       url,
       siteName: 'ExTell Systems',
       type: 'website',
+      images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: `${category.name} — ExTell Systems` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${category.name} | ExTell Systems`,
+      description: `Enterprise ${category.name} from ExTell Systems for data centers, telecom, and industrial environments.`,
+      images: ['/assets/homebg.jpg'],
     },
   };
 }
@@ -88,6 +96,9 @@ export default async function Page({ params }) {
     breadcrumb: breadcrumbSchema,
   };
 
+  // AEO: category-specific FAQ — People Also Ask for category queries
+  const categoryFAQSchema = buildCategoryFAQSchema(category.name, url);
+
   return (
     <SiteLayoutWrapper>
       {/* AEO: BreadcrumbList */}
@@ -109,6 +120,11 @@ export default async function Page({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      {/* AEO: category FAQ — People Also Ask */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryFAQSchema) }}
       />
       <CategoryPage slug={slug} />
     </SiteLayoutWrapper>
