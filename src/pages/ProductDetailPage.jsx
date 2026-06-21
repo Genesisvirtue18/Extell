@@ -68,6 +68,7 @@ function ProductDetailPage({ slug, initialProduct }) {
   });
   const [quoteStatus, setQuoteStatus] = useState({ type: '', message: '' });
   const [quoteSubmitting, setQuoteSubmitting] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
 
   useEffect(() => {
     // On first mount with initialProduct from SSR, skip the API fetch.
@@ -255,7 +256,28 @@ function ProductDetailPage({ slug, initialProduct }) {
             <p className="product-detail-kicker">{category}</p>
             <h1>{name}</h1>
             <h2>Model: {sku}</h2>
-            <p className="product-detail-copy">{description}</p>
+            <div className="product-detail-copy-wrap">
+              <p
+                className="product-detail-copy"
+                style={!descExpanded ? {
+                  display: '-webkit-box',
+                  WebkitLineClamp: 4,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                } : {}}
+              >
+                {description}
+              </p>
+              {description && description.length > 220 ? (
+                <button
+                  type="button"
+                  onClick={() => setDescExpanded((v) => !v)}
+                  className="product-detail-read-more"
+                >
+                  {descExpanded ? 'Read Less ↑' : 'Read More ↓'}
+                </button>
+              ) : null}
+            </div>
             <p className="feature-title">Key Features</p>
             <ul>
               {features.length ? (

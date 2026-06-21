@@ -2024,6 +2024,20 @@ button {
   line-height: 1.36
 }
 
+.catalog-read-more {
+  display: inline-block;
+  margin-top: .3rem;
+  color: #ed2125;
+  font-size: .72rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity .15s
+}
+
+.catalog-read-more:hover {
+  opacity: .75
+}
+
 .catalog-spec-grid {
   margin-top: .52rem;
   display: grid;
@@ -2228,11 +2242,31 @@ button {
   font-weight: 700
 }
 
+.product-detail-copy-wrap {
+  margin: .55rem 0 0
+}
+
 .product-detail-copy {
-  margin: .55rem 0 0;
   color: #bcbcbc;
   font-size: .9rem;
   line-height: 1.45
+}
+
+.product-detail-read-more {
+  display: inline-block;
+  margin-top: .45rem;
+  color: #ed2125;
+  font-size: .8rem;
+  font-weight: 700;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity .15s
+}
+
+.product-detail-read-more:hover {
+  opacity: .7
 }
 
 .product-detail-summary ul {

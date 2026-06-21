@@ -756,7 +756,17 @@ function ProductsPage({ initialProducts = [], initialCategories = [], initialPag
 
                     <h3>{product.name}</h3>
 
-                    <p className="catalog-short">{product.short}</p>
+                    <p className="catalog-short" style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}>{product.short}</p>
+                    {product.short ? (
+                      <Link href={getProductPath(product)} className="catalog-read-more">
+                        Read more →
+                      </Link>
+                    ) : null}
 
                     <div className="catalog-spec-grid">
 
