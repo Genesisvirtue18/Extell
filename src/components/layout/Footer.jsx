@@ -36,8 +36,8 @@ const offices = [
   },
 ];
 
-const BG = '#0d3535';
-const GOLD = '#c5933a';
+const BG = '#08080a';
+const RED = '#ed2125';
 
 export default function Footer() {
   const [activeTab, setActiveTab] = useState('us');
@@ -50,25 +50,8 @@ export default function Footer() {
     <footer style={{ background: BG }}>
 
       {/* ── Main section ── */}
-      <div className="relative overflow-hidden">
-
-        {/* Wireframe triangle decoration */}
-        <svg
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full"
-          preserveAspectRatio="xMidYMid slice"
-          viewBox="0 0 1200 480"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M600 0 L1200 460 L0 460 Z" stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
-          <path d="M600 55 L1145 460 L55 460 Z" stroke="rgba(255,255,255,0.055)" strokeWidth="1" />
-          <path d="M600 110 L1090 460 L110 460 Z" stroke="rgba(255,255,255,0.045)" strokeWidth="1" />
-          <path d="M600 170 L1030 460 L170 460 Z" stroke="rgba(255,255,255,0.035)" strokeWidth="1" />
-          <path d="M600 230 L970 460 L230 460 Z" stroke="rgba(255,255,255,0.025)" strokeWidth="1" />
-        </svg>
-
-        <div className="relative mx-auto max-w-7xl px-6 pb-14 pt-16 sm:px-8">
+      <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+        <div className="mx-auto max-w-5xl px-6 pb-12 pt-12 sm:px-8">
           <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1fr_1.4fr]">
 
             {/* ── Brand column ── */}
@@ -120,8 +103,8 @@ export default function Footer() {
             {/* ── Site Map (Products) ── */}
             <div>
               <p
-                className="mb-5 text-sm font-semibold"
-                style={{ color: 'rgba(255,255,255,0.9)' }}
+                className="mb-5 text-xs font-bold uppercase tracking-[0.12em]"
+                style={{ color: RED }}
               >
                 Site Map
               </p>
@@ -156,8 +139,8 @@ export default function Footer() {
             {/* ── Company ── */}
             <div>
               <p
-                className="mb-5 text-sm font-semibold"
-                style={{ color: 'rgba(255,255,255,0.9)' }}
+                className="mb-5 text-xs font-bold uppercase tracking-[0.12em]"
+                style={{ color: RED }}
               >
                 Company
               </p>
@@ -178,8 +161,8 @@ export default function Footer() {
             {/* ── Contact ── */}
             <div>
               <p
-                className="mb-5 text-sm font-semibold"
-                style={{ color: 'rgba(255,255,255,0.9)' }}
+                className="mb-5 text-xs font-bold uppercase tracking-[0.12em]"
+                style={{ color: RED }}
               >
                 Contact Us
               </p>
@@ -197,7 +180,7 @@ export default function Footer() {
                     className="flex-1 rounded-md py-1.5 text-xs font-semibold transition"
                     style={
                       activeTab === o.id
-                        ? { background: GOLD, color: '#1a1208' }
+                        ? { background: RED, color: '#fff' }
                         : { color: 'rgba(255,255,255,0.55)' }
                     }
                   >
@@ -223,7 +206,7 @@ export default function Footer() {
                     className="mb-2 flex items-center gap-2 text-sm transition-opacity hover:opacity-100"
                     style={{ color: 'rgba(255,255,255,0.55)' }}
                   >
-                    <Phone size={11} style={{ color: GOLD }} className="shrink-0" />
+                    <Phone size={11} style={{ color: RED }} className="shrink-0" />
                     {active.phone}
                   </a>
                 )}
@@ -232,7 +215,7 @@ export default function Footer() {
                   className="flex items-center gap-2 break-all text-sm transition-opacity hover:opacity-100"
                   style={{ color: 'rgba(255,255,255,0.55)' }}
                 >
-                  <Mail size={11} style={{ color: GOLD }} className="shrink-0" />
+                  <Mail size={11} style={{ color: RED }} className="shrink-0" />
                   {active.email}
                 </a>
               </div>
@@ -251,16 +234,13 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── Gold bottom bar ── */}
-      <div style={{ background: GOLD }}>
-        <div className="mx-auto max-w-7xl px-6 py-3.5 sm:px-8">
-          <p
-            className="text-center text-[0.72rem] font-medium"
-            style={{ color: '#1a1208' }}
-          >
-            Copyright © {new Date().getFullYear()}, extellsystems.com. All Rights Reserved.{' '}
-            &nbsp;·&nbsp; Created by{' '}
-            <span className="font-bold">Geode Tech</span>
+      {/* ── Red bottom bar ── */}
+      <div style={{ background: RED }}>
+        <div className="mx-auto max-w-5xl px-6 py-3 sm:px-8">
+          <p className="text-center text-[0.72rem] font-medium text-white">
+            Copyright © {new Date().getFullYear()}, extellsystems.com. All Rights Reserved.
+            {' '}&nbsp;·&nbsp;{' '}
+            Created by <span className="font-bold">Geode Tech</span>
           </p>
         </div>
       </div>
