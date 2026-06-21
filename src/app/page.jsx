@@ -1,8 +1,10 @@
 import SiteLayoutWrapper from './layout-wrapper';
 import HomeHero from '@/components/sections/HomeHero';
 import CategoryGridSection from '@/components/sections/CategoryGridSection';
+import CategoryProductsSection from '@/components/sections/CategoryProductsSection';
 import FeaturedProductsSection from '@/components/sections/FeaturedProductsSection';
 import SolutionsShowcaseSection from '@/components/sections/SolutionsShowcaseSection';
+import HomeFAQSection from '@/components/sections/HomeFAQSection';
 import { canonicalUrl } from '@/lib/siteUrl';
 import { buildFAQSchema, buildSpeakableSchema, ORG_ID, WEBSITE_ID, toJsonLd } from '@/lib/schemas';
 
@@ -103,8 +105,10 @@ export default function HomePage() {
       />
       <HomeHero />
       <CategoryGridSection />
+      <CategoryProductsSection />
       <FeaturedProductsSection />
       <SolutionsShowcaseSection />
+      <HomeFAQSection />
     </SiteLayoutWrapper>
   );
 }

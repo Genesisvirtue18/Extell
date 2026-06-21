@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Download, FileText, X, ZoomIn } from 'lucide-react';
+import { ChevronDown, Download, FileText, X, ZoomIn } from 'lucide-react';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 
@@ -46,6 +46,133 @@ const getInitialImage = (product) => {
   const list = Array.isArray(product.imageList) ? product.imageList : [];
   return [product.heroImage, ...list].filter(Boolean)[0] || placeholderImage;
 };
+
+const RED = '#ed2125';
+
+function buildProductFAQs(product) {
+  const name = product?.Name || product?.name || 'this product';
+  const sku = product?.SKU || product?.sku || product?.id || '';
+  const desc = product?.descriptionText || product?.description || product?.short || '';
+  const inStock = product?.inStock !== false;
+  const category = product?.topCategory || product?.Categories || product?.category || 'Power & ICT';
+
+  return [
+    {
+      q: `What is the model number of the ${name}?`,
+      a: sku
+        ? `The model number of the ${name} is ${sku}. Use this SKU when requesting a quote or contacting our support team.`
+        : `Please contact sales@extellsystems.com with the product name to obtain the exact model number.`,
+    },
+    {
+      q: `Is the ${name} available for purchase?`,
+      a: inStock
+        ? `Yes, the ${name} is currently in stock and available for purchase. Submit a quote request on this page or email sales@extellsystems.com for pricing and lead time.`
+        : `The ${name} is currently available to order. Contact sales@extellsystems.com to confirm stock availability and expected delivery dates.`,
+    },
+    {
+      q: `How do I get a price quote for the ${name}?`,
+      a: `Use the "Request Custom Quote" form on this page and provide your requirements. You can also email sales@extellsystems.com or call your nearest ExTell office. Our team typically responds within 2 business hours during weekdays.`,
+    },
+    {
+      q: `What is the warranty on the ${name}?`,
+      a: `ExTell Systems ${category} products carry a standard 1–2 year manufacturer warranty. Extended warranty options may be available. Register your product at extellsystems.com/warranty or contact support@extellsystems.com for product-specific terms.`,
+    },
+    {
+      q: `What is the ${name} used for?`,
+      a: desc
+        ? desc.slice(0, 300) + (desc.length > 300 ? '…' : '')
+        : `The ${name} is an enterprise-grade ${category} solution designed for critical infrastructure applications. Contact our technical team for a detailed application assessment.`,
+    },
+    {
+      q: `Where can I buy the ${name}?`,
+      a: `The ${name} is available through ExTell Systems directly. Visit extellsystems.com/contact, use the quote form on this page, or email sales@extellsystems.com. ExTell ships to India, UAE, Bahrain, the US, and 20+ countries worldwide.`,
+    },
+  ];
+}
+
+function ProductFAQSection({ product }) {
+  const [open, setOpen] = useState(null);
+  const faqs = buildProductFAQs(product);
+
+  return (
+    <section style={{ padding: '2.5rem 2rem', borderTop: '1px solid var(--ui-border-subtle)' }}>
+      <div style={{ maxWidth: 820, margin: '0 auto' }}>
+        <h2 style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)', fontWeight: 700, marginBottom: '0.3rem' }}>
+          Frequently Asked Questions
+        </h2>
+        <p style={{ fontSize: '0.82rem', color: 'var(--ui-text-muted)', marginBottom: '1.5rem' }}>
+          Common questions about the {product?.Name || product?.name || 'this product'}.
+        </p>
+
+        <div style={{ borderTop: '1px solid var(--ui-border-subtle)' }}>
+          {faqs.map((faq, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={i} style={{ borderBottom: '1px solid var(--ui-border-subtle)' }}>
+                <button
+                  type="button"
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.9rem 0',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: 'var(--ui-text)',
+                  }}
+                >
+                  <span
+                    style={{
+                      flexShrink: 0,
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      border: `2px solid ${isOpen ? RED : 'var(--ui-border-subtle)'}`,
+                      background: isOpen ? RED : 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <ChevronDown
+                      size={12}
+                      style={{
+                        color: isOpen ? '#fff' : 'var(--ui-text-muted)',
+                        transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
+                        transition: 'transform 0.2s',
+                      }}
+                    />
+                  </span>
+                  <span style={{ fontSize: '0.88rem', fontWeight: 500, flex: 1 }}>
+                    {faq.q}
+                  </span>
+                </button>
+                {isOpen && (
+                  <div
+                    style={{
+                      paddingLeft: '2.25rem',
+                      paddingBottom: '0.9rem',
+                      fontSize: '0.85rem',
+                      lineHeight: 1.7,
+                      color: 'var(--ui-text-muted)',
+                    }}
+                  >
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function ProductDetailPage({ slug, initialProduct }) {
   const router = useRouter();
@@ -423,6 +550,8 @@ function ProductDetailPage({ slug, initialProduct }) {
             </div>
           </aside>
         </div>
+
+        <ProductFAQSection product={product} />
 
         <div className="product-detail-related">
           <h3>You might also be interested in</h3>
