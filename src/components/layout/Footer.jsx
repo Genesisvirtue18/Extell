@@ -51,8 +51,8 @@ export default function Footer() {
 
       {/* ── Main section ── */}
       <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-        <div className="mx-auto max-w-5xl px-6 pb-12 pt-12 sm:px-8">
-          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1fr_1.4fr]">
+        <div className="mx-auto max-w-6xl px-6 pb-12 pt-12 sm:px-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1.3fr]">
 
             {/* ── Brand column ── */}
             <div>
@@ -65,14 +65,23 @@ export default function Footer() {
               />
 
               <p
-                className="mt-5 max-w-[260px] text-sm leading-relaxed"
+                className="mt-5 max-w-[240px] text-sm leading-relaxed"
                 style={{ color: 'rgba(255,255,255,0.58)' }}
               >
                 Enterprise power, ICT, and data center infrastructure delivered globally.
               </p>
 
+              {/* Get a Quote CTA */}
+              <Link
+                href="/contact"
+                className="mt-5 inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition hover:opacity-90"
+                style={{ background: '#ed2125', color: '#fff' }}
+              >
+                Get a Quote
+              </Link>
+
               {/* Social icons */}
-              <div className="mt-7 flex items-center gap-4">
+              <div className="mt-6 flex items-center gap-4">
                 <a
                   href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"
                   target="_blank"
@@ -220,14 +229,6 @@ export default function Footer() {
                 </a>
               </div>
 
-              {/* Quick contact CTA */}
-              <Link
-                href="/contact"
-                className="mt-4 inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition hover:opacity-90"
-                style={{ background: '#ed2125', color: '#fff' }}
-              >
-                Get a Quote
-              </Link>
             </div>
 
           </div>
@@ -236,7 +237,7 @@ export default function Footer() {
 
       {/* ── Red bottom bar ── */}
       <div style={{ background: RED }}>
-        <div className="mx-auto max-w-5xl px-6 py-3 sm:px-8">
+        <div className="mx-auto max-w-6xl px-6 py-3 sm:px-8">
           <p className="text-center text-[0.72rem] font-medium text-white">
             Copyright © {new Date().getFullYear()}, extellsystems.com. All Rights Reserved.
             {' '}&nbsp;·&nbsp;{' '}
