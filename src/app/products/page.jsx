@@ -1,6 +1,9 @@
 import { Suspense } from 'react';
 import SiteLayoutWrapper from '@/app/layout-wrapper';
 import ProductsPage from '@/pages/ProductsPage';
+
+// ISR: revalidate every hour — prevents 5xx when Render backend is sleeping
+export const revalidate = 3600;
 import { getProducts } from '@/lib/api';
 import { products as siteProducts } from '@/data/siteData';
 import { canonicalUrl } from '@/lib/siteUrl';

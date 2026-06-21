@@ -33,17 +33,49 @@ const nextConfig = {
     };
   },
   // Redirect old name-based product slugs to the new ID-based URLs.
-  // The product page resolver handles ID-first lookup, so visiting
-  // /product/<name-slug> still works via the fallback — but any link
-  // that Google already knows about (301) gets pointed at the canonical URL.
   redirects: async () => {
-    let redirectList = [];
+    // ── Static redirects for old WordPress/legacy URLs that Google has indexed ──
+    // These were causing 526 404 errors in Google Search Console.
+    const staticRedirects = [
+      // Old WordPress shop/product URLs → current equivalents
+      { source: '/shop', destination: '/products', permanent: true },
+      { source: '/shop/:path*', destination: '/products', permanent: true },
+      { source: '/store', destination: '/products', permanent: true },
+      { source: '/store/:path*', destination: '/products', permanent: true },
+      // WordPress category archive URLs → our category pages
+      { source: '/product-category/:slug', destination: '/category/:slug', permanent: true },
+      { source: '/product-category/:slug/', destination: '/category/:slug', permanent: true },
+      // WordPress tag/author/date archive URLs → home
+      { source: '/tag/:path*', destination: '/', permanent: true },
+      { source: '/author/:path*', destination: '/about', permanent: true },
+      // Old WordPress admin/system paths → gone
+      { source: '/wp-admin', destination: '/', permanent: true },
+      { source: '/wp-admin/:path*', destination: '/', permanent: true },
+      { source: '/wp-login.php', destination: '/', permanent: true },
+      { source: '/xmlrpc.php', destination: '/', permanent: true },
+      // Old "products" with trailing slash or page query
+      { source: '/products/', destination: '/products', permanent: true },
+      // Old contact/about URL variants
+      { source: '/contact-us', destination: '/contact', permanent: true },
+      { source: '/contact-us/', destination: '/contact', permanent: true },
+      { source: '/about-us', destination: '/about', permanent: true },
+      { source: '/about-us/', destination: '/about', permanent: true },
+      // Old blog/news paths → home
+      { source: '/blog', destination: '/', permanent: true },
+      { source: '/blog/:path*', destination: '/', permanent: true },
+      { source: '/news', destination: '/', permanent: true },
+      { source: '/news/:path*', destination: '/', permanent: true },
+    ];
+
+    let dynamicRedirects = [];
 
     try {
-      // Build-time: fetch all products from the API and generate permanent
-      // redirects from the old name-slug form to the authoritative ID form.
+      // Build-time: fetch all products and generate permanent redirects
+      // from old name-slug form to the authoritative ID form.
       const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${apiBase}/api/products?limit=500`).catch(() => null);
+      const res = await fetch(`${apiBase}/api/products?limit=500`, {
+        signal: AbortSignal.timeout(8000),
+      }).catch(() => null);
       if (res?.ok) {
         const data = await res.json().catch(() => null);
         const items = data?.items || (Array.isArray(data) ? data : []);
@@ -63,24 +95,20 @@ const nextConfig = {
             .replace(/\s+/g, '-');
 
         for (const product of items) {
-          // apiSlug is the canonical param the backend knows about
           const apiSlug = String(product?.slug || '').toLowerCase().trim();
           const nameslug = slugify(product?.Name || product?.name || '');
           const sku = getProductId(product);
 
-          // If the API provides a slug, and it's not the same as the name slug,
-          // redirect the name slug → api slug.
           if (apiSlug && nameslug && apiSlug !== nameslug) {
-            redirectList.push({
+            dynamicRedirects.push({
               source: `/product/${nameslug}`,
               destination: `/product/${apiSlug}`,
               permanent: true,
             });
           }
 
-          // Also redirect raw SKU URLs → the canonical api slug.
           if (apiSlug && sku && apiSlug !== sku) {
-            redirectList.push({
+            dynamicRedirects.push({
               source: `/product/${sku}`,
               destination: `/product/${apiSlug}`,
               permanent: true,
@@ -89,10 +117,10 @@ const nextConfig = {
         }
       }
     } catch {
-      // API unavailable at build time — skip redirects, pages still resolve
+      // API unavailable at build time — skip dynamic redirects
     }
 
-    return redirectList;
+    return [...staticRedirects, ...dynamicRedirects];
   },
 };
 

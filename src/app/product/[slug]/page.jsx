@@ -57,6 +57,10 @@ async function resolveProduct(param) {
   return product;
 }
 
+// ISR: revalidate every hour so Googlebot always gets a cached response
+// even if the Render backend is sleeping (prevents 5xx in Search Console).
+export const revalidate = 3600;
+
 // ─── Static params ────────────────────────────────────────────────────────────
 export async function generateStaticParams() {
   try {

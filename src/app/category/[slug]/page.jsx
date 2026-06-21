@@ -49,6 +49,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
+// ISR: revalidate every hour — prevents 5xx when Render backend is sleeping
+export const revalidate = 3600;
+
 export function generateStaticParams() {
   return categories.map((cat) => ({ slug: cat.slug }));
 }

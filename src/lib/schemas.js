@@ -333,18 +333,26 @@ export const buildProductSchema = (product, url) => {
       '@type': 'Offer',
       '@id': `${url}#offer`,
       url,
-      // B2B quote-based pricing — Google shows "Check price" when price omitted
-      priceCurrency: 'USD',
-      ...(product.price && !Number.isNaN(Number(product.price))
-        ? { price: Number(product.price), priceValidUntil }
-        : {}),
       availability,
       itemCondition: 'https://schema.org/NewCondition',
       seller: { '@id': ORG_ID },
+      // Only emit price + priceCurrency together — never one without the other.
+      // priceCurrency alone (without price) causes "Invalid price format" in GSC.
+      // For B2B quote-only products, omit both fields; Google shows "Check price".
+      ...(product.price && Number(product.price) > 0 && !Number.isNaN(Number(product.price))
+        ? {
+            price: String(Number(product.price).toFixed(2)),
+            priceCurrency: 'USD',
+            priceValidUntil,
+          }
+        : {}),
+      // shippingRate.value MUST be a valid float — omitting value causes
+      // "Invalid floating point number in property 'price'" in Merchant Listings.
       shippingDetails: {
         '@type': 'OfferShippingDetails',
         shippingRate: {
           '@type': 'MonetaryAmount',
+          value: '0',
           currency: 'USD',
         },
         shippingDestination: [
@@ -355,11 +363,22 @@ export const buildProductSchema = (product, url) => {
         ],
         deliveryTime: {
           '@type': 'ShippingDeliveryTime',
-          businessDays: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
+          businessDays: {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          },
           cutoffTime: '17:00',
           handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
           transitTime: { '@type': 'QuantitativeValue', minValue: 3, maxValue: 14, unitCode: 'DAY' },
         },
+      },
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: ['IN', 'AE', 'BH', 'US'],
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: 30,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        returnFees: 'https://schema.org/FreeReturn',
       },
     },
   };
