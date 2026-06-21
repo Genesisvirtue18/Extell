@@ -15,20 +15,30 @@ const buildUrl = (path, params) => {
   return url.toString();
 };
 
-const requestJson = async (path, { method = 'GET', params, body, headers } = {}) => {
-  const response = await fetch(buildUrl(path, params), {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(headers || {})
-    },
-    body: body ? JSON.stringify(body) : undefined
-  });
-  if (!response.ok) {
-    const payload = await response.json().catch(() => ({}));
-    throw new Error(payload.message || 'Request failed');
+const requestJson = async (path, { method = 'GET', params, body, headers, timeout = 10000 } = {}) => {
+  // Default 10 s timeout prevents the Render free-tier cold-start (30-60 s)
+  // from hanging SSR pages and sitemap generation, which caused 5xx in GSC.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(buildUrl(path, params), {
+      method,
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(headers || {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(payload.message || 'Request failed');
+    }
+    return response.json();
+  } finally {
+    clearTimeout(timer);
   }
-  return response.json();
 };
 
 const getJson = (path, params) => requestJson(path, { params });
