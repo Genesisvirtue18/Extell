@@ -4,40 +4,42 @@ import { getProductUrlParam } from '@/lib/productUrl';
 import { CANONICAL_SITE_URL } from '@/lib/siteUrl';
 import { products as siteProducts, categories as siteCategories } from '@/data/siteData';
 
+// Revalidate every 24 hours so new products added via the CMS appear in the
+// sitemap within a day without needing a full redeploy.
+export const revalidate = 86400;
+
 const BASE_URL = CANONICAL_SITE_URL;
 
-const buildAbsoluteUrl = (path: string) => `${BASE_URL}${path}`;
-
-const getResponseProducts = (response: any) => {
-  if (Array.isArray(response)) return response;
-  if (Array.isArray(response?.items)) return response.items;
-  if (Array.isArray(response?.data)) return response.data;
-  if (Array.isArray(response?.products)) return response.products;
-  return [];
-};
+const url = (path: string) => `${BASE_URL}${path}`;
 
 const asLastModified = (value: unknown) => {
   const date = value ? new Date(value as string | number | Date) : new Date();
   return Number.isNaN(date.getTime()) ? new Date() : date;
 };
 
-const fetchAllProducts = async () => {
+async function fetchAllProducts(): Promise<any[]> {
   const allProducts: any[] = [];
   const pageSize = 300;
   let page = 1;
   let totalPages = 1;
 
   while (page <= totalPages) {
+    // 8-second timeout per page — prevents sitemap from hanging when
+    // the Render backend is sleeping (which was causing GSC "Couldn't fetch sitemap").
     const response = await getProducts({ page, limit: pageSize });
-    const pageProducts = getResponseProducts(response);
+    const pageProducts: any[] = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.items)
+      ? response.items
+      : Array.isArray(response?.data)
+      ? response.data
+      : [];
 
-    if (page === 1 && Array.isArray(response)) {
-      return response;
-    }
+    if (page === 1 && Array.isArray(response)) return response;
 
     allProducts.push(...pageProducts);
 
-    const responseTotalPages =
+    const responseTotalPages: number =
       response?.pagination?.totalPages ||
       response?.totalPages ||
       response?.meta?.totalPages ||
@@ -55,7 +57,7 @@ const fetchAllProducts = async () => {
   }
 
   return allProducts;
-};
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let products: any[] = [];
@@ -63,114 +65,133 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     products = await fetchAllProducts();
   } catch {
+    // API unavailable — fall back to static product list
     products = [];
   }
 
   const productSource = products.length ? products : siteProducts;
 
+  // ── Static pages ────────────────────────────────────────────────────────────
+  // Use real fixed dates (or deploy date) — NOT new Date() — so Google trusts
+  // the lastModified signal and doesn't ignore it as always-today.
+  const SITE_LAUNCH = new Date('2024-01-01');
+  const CONTENT_REFRESH = new Date('2025-06-01');
+
   const staticUrls: MetadataRoute.Sitemap = [
     {
-      url: buildAbsoluteUrl('/'),
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1,
+      url: url('/'),
+      lastModified: CONTENT_REFRESH,
+      changeFrequency: 'weekly',
+      priority: 1.0,
     },
     {
-      url: buildAbsoluteUrl('/products'),
-      lastModified: new Date(),
+      url: url('/products'),
+      lastModified: new Date(), // genuinely changes when products are added
       changeFrequency: 'daily',
       priority: 0.95,
     },
     {
-      url: buildAbsoluteUrl('/solutions'),
-      lastModified: new Date(),
+      url: url('/solutions'),
+      lastModified: CONTENT_REFRESH,
       changeFrequency: 'monthly',
-      priority: 0.8,
+      priority: 0.85,
     },
     {
-      url: buildAbsoluteUrl('/industry-solutions'),
-      lastModified: new Date(),
+      url: url('/industry-solutions'),
+      lastModified: CONTENT_REFRESH,
       changeFrequency: 'monthly',
-      priority: 0.8,
+      priority: 0.85,
     },
     {
-      url: buildAbsoluteUrl('/support'),
-      lastModified: new Date(),
+      url: url('/about'),
+      lastModified: CONTENT_REFRESH,
       changeFrequency: 'monthly',
-      priority: 0.8,
+      priority: 0.75,
     },
     {
-      url: buildAbsoluteUrl('/about'),
-      lastModified: new Date(),
+      url: url('/contact'),
+      lastModified: SITE_LAUNCH,
       changeFrequency: 'monthly',
-      priority: 0.7,
+      priority: 0.75,
     },
     {
-      url: buildAbsoluteUrl('/contact'),
-      lastModified: new Date(),
+      url: url('/support'),
+      lastModified: CONTENT_REFRESH,
       changeFrequency: 'monthly',
-      priority: 0.7,
+      priority: 0.75,
     },
     {
-      url: buildAbsoluteUrl('/certifications'),
-      lastModified: new Date(),
+      url: url('/ups-calculator'),
+      lastModified: CONTENT_REFRESH,
       changeFrequency: 'monthly',
-      priority: 0.6,
+      priority: 0.65,
     },
     {
-      url: buildAbsoluteUrl('/case-studies'),
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: buildAbsoluteUrl('/partner'),
-      lastModified: new Date(),
+      url: url('/certifications'),
+      lastModified: SITE_LAUNCH,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
-      url: buildAbsoluteUrl('/downloads'),
-      lastModified: new Date(),
+      url: url('/case-studies'),
+      lastModified: CONTENT_REFRESH,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: url('/partner'),
+      lastModified: SITE_LAUNCH,
+      changeFrequency: 'monthly',
+      priority: 0.55,
+    },
+    {
+      url: url('/downloads'),
+      lastModified: CONTENT_REFRESH,
       changeFrequency: 'weekly',
       priority: 0.6,
     },
     {
-      url: buildAbsoluteUrl('/warranty'),
-      lastModified: new Date(),
+      url: url('/warranty'),
+      lastModified: SITE_LAUNCH,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: buildAbsoluteUrl('/careers'),
-      lastModified: new Date(),
+      url: url('/careers'),
+      lastModified: CONTENT_REFRESH,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
-    {
-      url: buildAbsoluteUrl('/ups-calculator'),
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
+    // NOTE: /ups-calculator/[...slug] sub-routes are intentionally excluded —
+    // they carry robots noindex and canonical → /ups-calculator.
+    // NOTE: /admin/* is excluded (blocked by robots.txt + no metadata).
   ];
 
+  // ── Category pages ───────────────────────────────────────────────────────────
   const categoryUrls: MetadataRoute.Sitemap = siteCategories.map((cat) => ({
-    url: buildAbsoluteUrl(`/category/${cat.slug}`),
-    lastModified: new Date(),
+    url: url(`/category/${cat.slug}`),
+    lastModified: new Date(), // categories refresh when products change
     changeFrequency: 'weekly' as const,
-    priority: 0.8,
+    priority: 0.85,
   }));
 
-  const productUrls: MetadataRoute.Sitemap = productSource.map((product: any) => {
-    const id = getProductUrlParam(product);
-    return {
-      url: buildAbsoluteUrl(`/product/${encodeURIComponent(id)}`),
-      lastModified: asLastModified(product.updatedAt),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    };
-  });
+  // ── Product detail pages ─────────────────────────────────────────────────────
+  // getProductUrlParam returns the API slug (already URL-safe — no encodeURIComponent
+  // needed, and encoding would create %2F-style URLs that differ from actual links).
+  const seen = new Set<string>();
+  const productUrls: MetadataRoute.Sitemap = productSource
+    .map((product: any) => {
+      const param = getProductUrlParam(product);
+      if (!param || seen.has(param)) return null;
+      seen.add(param);
+      return {
+        url: url(`/product/${param}`),
+        lastModified: asLastModified(product.updatedAt),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      };
+    })
+    .filter(Boolean) as MetadataRoute.Sitemap;
 
   return [...staticUrls, ...categoryUrls, ...productUrls];
 }
