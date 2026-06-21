@@ -6,7 +6,7 @@ const CANONICAL_ORIGIN = 'https://extellsystems.com';
 const PARAMETERISED_PATHS = ['/products', '/category'];
 
 export function middleware(request: NextRequest) {
-  const { pathname, searchParams, origin } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
 
   // 1. www → non-www redirect (fixes "Duplicate without user-selected canonical"
   //    when Google crawls both www.extellsystems.com and extellsystems.com)
