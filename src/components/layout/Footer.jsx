@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mail, Phone } from 'lucide-react';
+import { Linkedin, Mail, Phone, ChevronsUp } from 'lucide-react';
 import { categories } from '../../data/siteData';
 
-const logo = '/assets/logo.png';
-const logoWhite = '/assets/logowhite.jpg';
+/* logo.png = all-white transparent logo — always used on the dark footer */
+const logoWhite = '/assets/logo.png';
 
 const companyLinks = [
   { label: 'About', href: '/about' },
@@ -36,122 +36,235 @@ const offices = [
   },
 ];
 
-export default function Footer({ theme = 'light' }) {
+const BG = '#0d3535';
+const GOLD = '#c5933a';
+
+export default function Footer() {
   const [activeTab, setActiveTab] = useState('us');
-  const isDark = theme === 'dark';
   const active = offices.find((o) => o.id === activeTab) || offices[0];
 
-  const text = isDark ? 'text-neutral-400' : 'text-slate-500';
-  const hover = 'hover:text-[#ed2125] transition-colors';
-  const divider = isDark ? 'border-white/10' : 'border-slate-200';
+  const scrollToTop = () =>
+    typeof window !== 'undefined' && window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
-    <footer className={isDark ? 'bg-[#08080a]' : 'bg-white'}>
+    <footer style={{ background: BG }}>
 
-      {/* ── Main grid ── */}
-      <div className={`border-t ${divider}`}>
-        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr]">
+      {/* ── Main section ── */}
+      <div className="relative overflow-hidden">
 
-            {/* Brand */}
+        {/* Wireframe triangle decoration */}
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          preserveAspectRatio="xMidYMid slice"
+          viewBox="0 0 1200 480"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M600 0 L1200 460 L0 460 Z" stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
+          <path d="M600 55 L1145 460 L55 460 Z" stroke="rgba(255,255,255,0.055)" strokeWidth="1" />
+          <path d="M600 110 L1090 460 L110 460 Z" stroke="rgba(255,255,255,0.045)" strokeWidth="1" />
+          <path d="M600 170 L1030 460 L170 460 Z" stroke="rgba(255,255,255,0.035)" strokeWidth="1" />
+          <path d="M600 230 L970 460 L230 460 Z" stroke="rgba(255,255,255,0.025)" strokeWidth="1" />
+        </svg>
+
+        <div className="relative mx-auto max-w-7xl px-6 pb-14 pt-16 sm:px-8">
+          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1fr_1.4fr]">
+
+            {/* ── Brand column ── */}
             <div>
               <Image
-                src={isDark ? logo : logoWhite}
+                src={logoWhite}
                 alt="ExTell Systems"
-                width={120}
-                height={32}
-                className="h-8 w-auto object-contain"
+                width={140}
+                height={36}
+                className="h-9 w-auto object-contain"
               />
-              <p className={`mt-3 max-w-[230px] text-sm leading-relaxed ${text}`}>
+
+              <p
+                className="mt-5 max-w-[260px] text-sm leading-relaxed"
+                style={{ color: 'rgba(255,255,255,0.58)' }}
+              >
                 Enterprise power, ICT, and data center infrastructure delivered globally.
               </p>
-              <Link
-                href="/contact"
-                className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-[#ed2125] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#d91f23]"
+
+              {/* Social icons */}
+              <div className="mt-7 flex items-center gap-4">
+                <a
+                  href="https://www.linkedin.com/company/extellsystems/?viewAsMember=true"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="ExTell on LinkedIn"
+                  className="transition-opacity hover:opacity-80"
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
+                >
+                  <Linkedin size={18} />
+                </a>
+              </div>
+
+              {/* Back to top */}
+              <button
+                type="button"
+                onClick={scrollToTop}
+                className="mt-10 inline-flex items-center gap-2.5 px-5 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.16em] transition hover:bg-white/10"
+                style={{
+                  color: 'rgba(255,255,255,0.8)',
+                  border: '1px solid rgba(255,255,255,0.28)',
+                }}
               >
-                Get a Quote
-              </Link>
+                <ChevronsUp size={15} />
+                Back to Top
+              </button>
             </div>
 
-            {/* Products */}
+            {/* ── Site Map (Products) ── */}
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#ed2125]">Products</p>
-              <div className="flex flex-col gap-2">
+              <p
+                className="mb-5 text-sm font-semibold"
+                style={{ color: 'rgba(255,255,255,0.9)' }}
+              >
+                Site Map
+              </p>
+              <nav className="flex flex-col gap-3">
+                <Link
+                  href="/"
+                  className="text-sm transition-opacity hover:opacity-100"
+                  style={{ color: 'rgba(255,255,255,0.6)' }}
+                >
+                  Homepage
+                </Link>
                 {categories.map((cat) => (
-                  <Link key={cat.slug} href={`/products?category=${cat.slug}`} className={`text-sm ${text} ${hover}`}>
+                  <Link
+                    key={cat.slug}
+                    href={`/products?category=${cat.slug}`}
+                    className="text-sm transition-opacity hover:opacity-100"
+                    style={{ color: 'rgba(255,255,255,0.6)' }}
+                  >
                     {cat.name}
                   </Link>
                 ))}
-                <Link href="/products" className={`text-sm font-medium ${isDark ? 'text-white/60' : 'text-slate-600'} ${hover}`}>
+                <Link
+                  href="/products"
+                  className="text-sm font-medium transition-opacity hover:opacity-100"
+                  style={{ color: 'rgba(255,255,255,0.45)' }}
+                >
                   All Products →
                 </Link>
-              </div>
+              </nav>
             </div>
 
-            {/* Company */}
+            {/* ── Company ── */}
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#ed2125]">Company</p>
-              <div className="flex flex-col gap-2">
+              <p
+                className="mb-5 text-sm font-semibold"
+                style={{ color: 'rgba(255,255,255,0.9)' }}
+              >
+                Company
+              </p>
+              <nav className="flex flex-col gap-3">
                 {companyLinks.map((link) => (
-                  <Link key={link.href} href={link.href} className={`text-sm ${text} ${hover}`}>
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-sm transition-opacity hover:opacity-100"
+                    style={{ color: 'rgba(255,255,255,0.6)' }}
+                  >
                     {link.label}
                   </Link>
                 ))}
-              </div>
+              </nav>
             </div>
 
-            {/* Contact */}
+            {/* ── Contact ── */}
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#ed2125]">Contact</p>
+              <p
+                className="mb-5 text-sm font-semibold"
+                style={{ color: 'rgba(255,255,255,0.9)' }}
+              >
+                Contact Us
+              </p>
 
-              {/* Tab buttons */}
-              <div className={`flex gap-1 rounded-lg p-1 ${isDark ? 'bg-white/[0.04]' : 'bg-slate-100'}`}>
+              {/* Office tabs */}
+              <div
+                className="flex gap-1 rounded-lg p-1"
+                style={{ background: 'rgba(255,255,255,0.06)' }}
+              >
                 {offices.map((o) => (
                   <button
                     key={o.id}
+                    type="button"
                     onClick={() => setActiveTab(o.id)}
-                    className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${
+                    className="flex-1 rounded-md py-1.5 text-xs font-semibold transition"
+                    style={
                       activeTab === o.id
-                        ? 'bg-[#ed2125] text-white'
-                        : `${text} hover:${isDark ? 'text-white' : 'text-slate-800'}`
-                    }`}
+                        ? { background: GOLD, color: '#1a1208' }
+                        : { color: 'rgba(255,255,255,0.55)' }
+                    }
                   >
                     {o.label}
                   </button>
                 ))}
               </div>
 
-              {/* Active office */}
-              <div className={`mt-3 rounded-xl border p-4 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-                <p className={`mb-2.5 text-xs font-semibold ${isDark ? 'text-white/80' : 'text-slate-700'}`}>{active.label}</p>
+              {/* Active office details */}
+              <div
+                className="mt-3 rounded-xl p-4"
+                style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                <p
+                  className="mb-3 text-xs font-semibold"
+                  style={{ color: 'rgba(255,255,255,0.8)' }}
+                >
+                  {active.label}
+                </p>
                 {active.phone && (
-                  <a href={active.phoneLink} className={`flex items-center gap-2 mb-1.5 text-sm ${text} ${hover}`}>
-                    <Phone size={11} className="text-[#ed2125] shrink-0" />
+                  <a
+                    href={active.phoneLink}
+                    className="mb-2 flex items-center gap-2 text-sm transition-opacity hover:opacity-100"
+                    style={{ color: 'rgba(255,255,255,0.55)' }}
+                  >
+                    <Phone size={11} style={{ color: GOLD }} className="shrink-0" />
                     {active.phone}
                   </a>
                 )}
-                <a href={`mailto:${active.email}`} className={`flex items-center gap-2 text-sm break-all ${text} ${hover}`}>
-                  <Mail size={11} className="text-[#ed2125] shrink-0" />
+                <a
+                  href={`mailto:${active.email}`}
+                  className="flex items-center gap-2 break-all text-sm transition-opacity hover:opacity-100"
+                  style={{ color: 'rgba(255,255,255,0.55)' }}
+                >
+                  <Mail size={11} style={{ color: GOLD }} className="shrink-0" />
                   {active.email}
                 </a>
               </div>
+
+              {/* Quick contact CTA */}
+              <Link
+                href="/contact"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition hover:opacity-90"
+                style={{ background: '#ed2125', color: '#fff' }}
+              >
+                Get a Quote
+              </Link>
             </div>
+
           </div>
         </div>
       </div>
 
-      {/* ── Bottom bar ── */}
-      <div className={`border-t ${divider}`}>
-        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
-          <div className="flex flex-col items-center justify-between gap-2 text-xs sm:flex-row">
-            <p className={text}>© {new Date().getFullYear()} ExTell Systems. All rights reserved.</p>
-            <p className={text}>
-              Built by{' '}
-              <a href="#" className="font-semibold text-[#ed2125] hover:underline">Zoed Tech</a>
-            </p>
-          </div>
+      {/* ── Gold bottom bar ── */}
+      <div style={{ background: GOLD }}>
+        <div className="mx-auto max-w-7xl px-6 py-3.5 sm:px-8">
+          <p
+            className="text-center text-[0.72rem] font-medium"
+            style={{ color: '#1a1208' }}
+          >
+            Copyright © {new Date().getFullYear()}, extellsystems.com. All Rights Reserved.{' '}
+            &nbsp;·&nbsp; Created by{' '}
+            <span className="font-bold">Geode Tech</span>
+          </p>
         </div>
       </div>
+
     </footer>
   );
 }
