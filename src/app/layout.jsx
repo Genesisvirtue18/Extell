@@ -1,5 +1,6 @@
 import { Montserrat } from 'next/font/google';
 import { categories as siteCategories } from '@/data/siteData';
+import NavigationProgress from '@/components/ui/NavigationProgress';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -96,6 +97,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={montserrat.variable}>
       <body className={`${montserrat.variable} font-sans bg-white`}>
+        <NavigationProgress />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(globalGraph) }}

@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Clock } from 'lucide-react';
 import { getProducts } from '../../lib/api';
 import { categories as siteCategories } from '../../data/siteData';
 
 const PLACEHOLDER = '/assets/placeholder-tech.svg';
 const RED = '#ed2125';
-
-const TABS = siteCategories; // [{ name, slug }]
 
 function getBestImage(item) {
   const list = Array.isArray(item?.imageList) ? item.imageList : [];
@@ -33,11 +31,47 @@ function productPath(p) {
 }
 
 export default function CategoryProductsSection() {
-  const [activeSlug, setActiveSlug] = useState(TABS[2]?.slug || TABS[0]?.slug); // default UPS Systems
+  const [counts, setCounts] = useState({});
+  const [countsReady, setCountsReady] = useState(false);
+  const [activeSlug, setActiveSlug] = useState(null);
   const [cache, setCache] = useState({});
   const [loading, setLoading] = useState(false);
   const [broken, setBroken] = useState({});
 
+  // Fetch product count for every category in parallel
+  useEffect(() => {
+    let alive = true;
+    Promise.allSettled(
+      siteCategories.map((cat) =>
+        getProducts({ category: cat.slug, limit: 1, page: 1 })
+          .then((res) => ({
+            slug: cat.slug,
+            count:
+              res?.pagination?.total ??
+              res?.total ??
+              (Array.isArray(res?.items) ? res.items.length : 0),
+          }))
+          .catch(() => ({ slug: cat.slug, count: 0 }))
+      )
+    ).then((results) => {
+      if (!alive) return;
+      const map = {};
+      results.forEach((r) => {
+        if (r.status === 'fulfilled') map[r.value.slug] = r.value.count;
+      });
+      setCounts(map);
+      setCountsReady(true);
+
+      const withProducts = siteCategories.filter((c) => (map[c.slug] || 0) > 0);
+      const first = withProducts[0] || siteCategories[0];
+      setActiveSlug(first?.slug || null);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Fetch products when active tab changes
   useEffect(() => {
     if (!activeSlug || cache[activeSlug] !== undefined) return;
     let alive = true;
@@ -50,28 +84,40 @@ export default function CategoryProductsSection() {
       .catch(() => {
         if (alive) setCache((prev) => ({ ...prev, [activeSlug]: [] }));
       })
-      .finally(() => { if (alive) setLoading(false); });
-    return () => { alive = false; };
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
   }, [activeSlug]);
 
-  const activeCat = TABS.find((t) => t.slug === activeSlug);
-  const products = cache[activeSlug] || [];
+  // Only show categories that have products; fallback to all if API returns nothing
+  const withProducts = countsReady
+    ? siteCategories.filter((c) => (counts[c.slug] || 0) > 0)
+    : [];
+  const visibleTabs = withProducts.length > 0 ? withProducts : (countsReady ? siteCategories : siteCategories);
+
+  const activeCat = visibleTabs.find((t) => t.slug === activeSlug) || visibleTabs[0];
+  const products = activeSlug ? cache[activeSlug] || [] : [];
+  const isLoading = loading || !countsReady || !activeSlug;
 
   return (
     <section className="ui-section py-16">
       <div className="mx-auto max-w-7xl px-6">
 
-        {/* ── Tab pills ─────────────────────────────────────────────────── */}
+        {/* Tab pills */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '2.5rem' }}>
-          {TABS.map((tab) => {
+          {visibleTabs.map((tab) => {
             const isActive = tab.slug === activeSlug;
+            const count = counts[tab.slug] || 0;
             return (
               <button
                 key={tab.slug}
                 type="button"
                 onClick={() => setActiveSlug(tab.slug)}
                 style={{
-                  padding: '0.45rem 1.15rem',
+                  padding: '0.45rem 1rem',
                   borderRadius: 9999,
                   border: `2px solid ${isActive ? RED : 'var(--ui-border-subtle)'}`,
                   background: isActive ? RED : 'transparent',
@@ -81,15 +127,33 @@ export default function CategoryProductsSection() {
                   cursor: 'pointer',
                   transition: 'all 0.15s',
                   letterSpacing: '0.01em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
                 }}
               >
                 {tab.name}
+                {countsReady && count > 0 && (
+                  <span
+                    style={{
+                      background: isActive ? 'rgba(255,255,255,0.25)' : `${RED}18`,
+                      color: isActive ? '#fff' : RED,
+                      borderRadius: 9999,
+                      fontSize: '0.63rem',
+                      fontWeight: 700,
+                      padding: '0.08rem 0.42rem',
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {count > 99 ? '99+' : count}
+                  </span>
+                )}
               </button>
             );
           })}
         </div>
 
-        {/* ── Body: left panel + cards ──────────────────────────────────── */}
+        {/* Body */}
         <div className="cat-section-body">
 
           {/* Left info panel */}
@@ -104,7 +168,7 @@ export default function CategoryProductsSection() {
               Sourced from leading manufacturers, tested for critical environments, and backed by ExTell's global support network.
             </p>
             <Link
-              href={`/category/${activeSlug}`}
+              href={`/category/${activeSlug || ''}`}
               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.83rem', fontWeight: 700, color: RED, textDecoration: 'none' }}
             >
               Explore all <ArrowRight size={13} />
@@ -113,7 +177,7 @@ export default function CategoryProductsSection() {
 
           {/* Product cards */}
           <div className="cat-section-cards">
-            {loading
+            {isLoading
               ? [...Array(4)].map((_, i) => (
                   <div
                     key={i}
@@ -121,7 +185,7 @@ export default function CategoryProductsSection() {
                     style={{ borderRadius: 14, height: 270, animation: 'cat-pulse 1.4s ease-in-out infinite' }}
                   />
                 ))
-              : products.length
+              : products.length > 0
               ? products.map((product) => {
                   const name = product.Name || product.name || 'Product';
                   const sku = product.SKU || product.sku || '';
@@ -137,7 +201,6 @@ export default function CategoryProductsSection() {
                         className="ui-surface-1 cat-card"
                         style={{ borderRadius: 14, overflow: 'hidden', cursor: 'pointer' }}
                       >
-                        {/* Image area */}
                         <div style={{ background: 'var(--ui-surface-2)', height: 155, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.75rem' }}>
                           <img
                             src={imgSrc}
@@ -146,18 +209,11 @@ export default function CategoryProductsSection() {
                             style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
                           />
                         </div>
-                        {/* Info */}
                         <div style={{ padding: '0.75rem 0.9rem 0.9rem' }}>
-                          <p style={{ fontSize: '0.62rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: RED, marginBottom: '0.25rem' }}>
-                            {cat}
-                          </p>
-                          <p style={{ fontSize: '0.83rem', fontWeight: 600, lineHeight: 1.35, marginBottom: '0.3rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                            {name}
-                          </p>
+                          <p style={{ fontSize: '0.62rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: RED, marginBottom: '0.25rem' }}>{cat}</p>
+                          <p style={{ fontSize: '0.83rem', fontWeight: 600, lineHeight: 1.35, marginBottom: '0.3rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{name}</p>
                           {sku && (
-                            <p style={{ fontSize: '0.7rem', color: 'var(--ui-text-muted)', marginTop: '0.2rem' }}>
-                              SKU: {sku}
-                            </p>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--ui-text-muted)', marginTop: '0.2rem' }}>SKU: {sku}</p>
                           )}
                         </div>
                       </article>
@@ -168,9 +224,15 @@ export default function CategoryProductsSection() {
                   <div
                     key={i}
                     className="ui-surface-1"
-                    style={{ borderRadius: 14, height: 270, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: 'var(--ui-text-muted)' }}
+                    style={{ borderRadius: 14, height: 270, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', padding: '1rem' }}
                   >
-                    No products
+                    <span style={{ width: 40, height: 40, borderRadius: '50%', background: `${RED}12`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Clock size={18} color={RED} />
+                    </span>
+                    <p style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--ui-text)', margin: 0 }}>Coming Soon</p>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--ui-text-muted)', margin: 0, textAlign: 'center' }}>
+                      New products launching soon
+                    </p>
                   </div>
                 ))}
           </div>
@@ -178,32 +240,12 @@ export default function CategoryProductsSection() {
       </div>
 
       <style>{`
-        .cat-section-body {
-          display: flex;
-          gap: 2.5rem;
-          align-items: flex-start;
-        }
-        .cat-section-left {
-          flex-shrink: 0;
-          width: 210px;
-        }
-        .cat-section-cards {
-          flex: 1;
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1rem;
-        }
-        .cat-card {
-          transition: box-shadow 0.2s, transform 0.15s;
-        }
-        .cat-card:hover {
-          box-shadow: 0 6px 24px rgba(0,0,0,0.12);
-          transform: translateY(-2px);
-        }
-        @keyframes cat-pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
+        .cat-section-body { display: flex; gap: 2.5rem; align-items: flex-start; }
+        .cat-section-left { flex-shrink: 0; width: 210px; }
+        .cat-section-cards { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .cat-card { transition: box-shadow 0.2s, transform 0.15s; }
+        .cat-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.12); transform: translateY(-2px); }
+        @keyframes cat-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
         @media (max-width: 1024px) {
           .cat-section-body { flex-direction: column; }
           .cat-section-left { width: 100%; }
