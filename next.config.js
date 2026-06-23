@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -8,6 +9,7 @@ const nextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+
   images: {
     remotePatterns: [
       {
@@ -21,6 +23,7 @@ const nextConfig = {
       },
     ],
   },
+
   // Proxy API requests to Express backend
   rewrites: async () => {
     return {
@@ -32,35 +35,84 @@ const nextConfig = {
       ],
     };
   },
-  // Redirect old name-based product slugs to the new ID-based URLs.
+
   redirects: async () => {
-    // ── Static redirects for old WordPress/legacy URLs that Google has indexed ──
-    // These were causing 526 404 errors in Google Search Console.
     const staticRedirects = [
       // Old WordPress shop/product URLs → current equivalents
       { source: '/shop', destination: '/products', permanent: true },
       { source: '/shop/:path*', destination: '/products', permanent: true },
       { source: '/store', destination: '/products', permanent: true },
       { source: '/store/:path*', destination: '/products', permanent: true },
+
+      // =====================================================
+      // CUSTOM CATEGORY REDIRECTS
+      // =====================================================
+
+      {
+        source: '/category/calculator',
+        destination: '/products?category=battery&page=1',
+        permanent: true,
+      },
+      {
+        source: '/category/data-center-solutions',
+        destination: '/products?page=1&category=pdu',
+        permanent: true,
+      },
+      {
+        source: '/category/ups-systems',
+        destination: '/ups-calculator',
+        permanent: true,
+      },
+
+      // If old WordPress URLs also exist
+      {
+        source: '/product-category/calculator',
+        destination: '/products?category=battery&page=1',
+        permanent: true,
+      },
+      {
+        source: '/product-category/data-center-solutions',
+        destination: '/products?page=1&category=pdu',
+        permanent: true,
+      },
+      {
+        source: '/product-category/ups-systems',
+        destination: '/ups-calculator',
+        permanent: true,
+      },
+
       // WordPress category archive URLs → our category pages
-      { source: '/product-category/:slug', destination: '/category/:slug', permanent: true },
-      { source: '/product-category/:slug/', destination: '/category/:slug', permanent: true },
+      {
+        source: '/product-category/:slug',
+        destination: '/category/:slug',
+        permanent: true,
+      },
+      {
+        source: '/product-category/:slug/',
+        destination: '/category/:slug',
+        permanent: true,
+      },
+
       // WordPress tag/author/date archive URLs → home
       { source: '/tag/:path*', destination: '/', permanent: true },
       { source: '/author/:path*', destination: '/about', permanent: true },
-      // Old WordPress admin/system paths → gone
+
+      // Old WordPress admin/system paths → home
       { source: '/wp-admin', destination: '/', permanent: true },
       { source: '/wp-admin/:path*', destination: '/', permanent: true },
       { source: '/wp-login.php', destination: '/', permanent: true },
       { source: '/xmlrpc.php', destination: '/', permanent: true },
-      // Old "products" with trailing slash or page query
+
+      // Products URL cleanup
       { source: '/products/', destination: '/products', permanent: true },
-      // Old contact/about URL variants
+
+      // Contact/About URL variants
       { source: '/contact-us', destination: '/contact', permanent: true },
       { source: '/contact-us/', destination: '/contact', permanent: true },
       { source: '/about-us', destination: '/about', permanent: true },
       { source: '/about-us/', destination: '/about', permanent: true },
-      // Old blog/news paths → home
+
+      // Blog/News URLs → home
       { source: '/blog', destination: '/', permanent: true },
       { source: '/blog/:path*', destination: '/', permanent: true },
       { source: '/news', destination: '/', permanent: true },
@@ -70,12 +122,13 @@ const nextConfig = {
     let dynamicRedirects = [];
 
     try {
-      // Build-time: fetch all products and generate permanent redirects
-      // from old name-slug form to the authoritative ID form.
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiBase =
+        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
       const res = await fetch(`${apiBase}/api/products?limit=500`, {
         signal: AbortSignal.timeout(8000),
       }).catch(() => null);
+
       if (res?.ok) {
         const data = await res.json().catch(() => null);
         const items = data?.items || (Array.isArray(data) ? data : []);
@@ -95,8 +148,14 @@ const nextConfig = {
             .replace(/\s+/g, '-');
 
         for (const product of items) {
-          const apiSlug = String(product?.slug || '').toLowerCase().trim();
-          const nameslug = slugify(product?.Name || product?.name || '');
+          const apiSlug = String(product?.slug || '')
+            .toLowerCase()
+            .trim();
+
+          const nameslug = slugify(
+            product?.Name || product?.name || ''
+          );
+
           const sku = getProductId(product);
 
           if (apiSlug && nameslug && apiSlug !== nameslug) {
