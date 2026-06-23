@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronDown, Download, FileText, X, ZoomIn } from 'lucide-react';
@@ -46,6 +46,13 @@ const getInitialImage = (product) => {
   const list = Array.isArray(product.imageList) ? product.imageList : [];
   return [product.heroImage, ...list].filter(Boolean)[0] || placeholderImage;
 };
+
+const getProductDatasheetUrl = (product) =>
+  product?.datasheet ||
+  product?.Datasheet ||
+  product?.datasheetUrl ||
+  product?.DatasheetUrl ||
+  '';
 
 const RED = '#ed2125';
 
@@ -177,10 +184,6 @@ function ProductFAQSection({ product }) {
 function ProductDetailPage({ slug, initialProduct }) {
   const router = useRouter();
 
-  // useRef tracks whether we should skip the first useEffect fetch
-  // (i.e. we already have initialProduct from SSR)
-  const skipFirstFetch = useRef(Boolean(initialProduct));
-
   const [product, setProduct] = useState(initialProduct || null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -198,25 +201,11 @@ function ProductDetailPage({ slug, initialProduct }) {
   const [descExpanded, setDescExpanded] = useState(false);
 
   useEffect(() => {
-    // On first mount with initialProduct from SSR, skip the API fetch.
-    // On subsequent slug changes (client-side navigation), fetch fresh data.
-    if (skipFirstFetch.current) {
-      skipFirstFetch.current = false;
-      // Still fetch related products if we have initialProduct
-      getProducts({ limit: 8 })
-        .then((res) => {
-          const items = res?.items || [];
-          setRelated(items.filter((item) => item.id !== initialProduct?.id).slice(0, 4));
-        })
-        .catch(() => {});
-      return;
-    }
-
     let mounted = true;
 
     const load = async () => {
       try {
-        setLoading(true);
+        setLoading(!initialProduct);
         setError('');
         const normalizedSlug = String(slug || '').toLowerCase().trim();
         const [slugResponse, relatedResponse] = await Promise.all([
@@ -239,7 +228,9 @@ function ProductDetailPage({ slug, initialProduct }) {
         setRelated(relatedItems);
       } catch (err) {
         if (!mounted) return;
-        setError(err.message || 'Unable to load product');
+        if (!initialProduct) {
+          setError(err.message || 'Unable to load product');
+        }
       } finally {
         if (mounted) setLoading(false);
       }
@@ -285,7 +276,7 @@ function ProductDetailPage({ slug, initialProduct }) {
   const sku = product?.SKU || product?.sku || product?.id || '';
   const description = product?.descriptionText || product?.description || product?.short || '';
   const category = product?.topCategory || product?.Categories || product?.category || 'Products';
-  const datasheet = product?.datasheet || '';
+  const datasheet = getProductDatasheetUrl(product);
   const categoryPath = parseCategoryPath(product?.Categories || category || '');
   const breadcrumbItems = ['Home', ...categoryPath, name];
   const similarProducts = related.slice(0, 3);

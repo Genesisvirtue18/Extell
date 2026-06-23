@@ -19,13 +19,16 @@ export const getProductId = (product) => {
   return String(raw).toLowerCase().trim().replace(/\s+/g, '-');
 };
 
-// Returns the URL path parameter — prefers the API-stored slug (what the
-// backend /api/products/slug/:slug endpoint uses), falls back to SKU for
-// static-data products that have no slug field.
+// Returns the URL path parameter — prefers SKU/ID for public product URLs,
+// falls back to the API slug for older static-data products.
 export const getProductUrlParam = (product) => {
+  const productId = getProductId(product);
+  if (productId) return productId;
+
   const apiSlug = product?.slug;
   if (apiSlug) return String(apiSlug).toLowerCase().trim();
-  return getProductId(product);
+
+  return slugifyProductName(getProductName(product));
 };
 
 export const getProductPath = (product) => {

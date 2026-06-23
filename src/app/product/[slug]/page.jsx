@@ -3,7 +3,7 @@ import SiteLayoutWrapper from '@/app/layout-wrapper';
 import ProductDetailPageContent from '@/pages/ProductDetailPage';
 import { canonicalUrl } from '@/lib/siteUrl';
 import { getProductBySlug, getProductById, getProducts } from '@/lib/api';
-import { getProductId, getProductUrlParam } from '@/lib/productUrl';
+import { getProductUrlParam } from '@/lib/productUrl';
 import { products as siteProducts } from '@/data/siteData';
 import {
   buildProductSchema,
@@ -21,18 +21,17 @@ async function resolveProduct(param) {
   let product = null;
 
   try {
-    // 1. Try backend slug lookup (covers name-slug URLs like /product/spirent-firehawk)
-    const bySlug = await getProductBySlug(p).catch(() => null);
-    product = bySlug?.item || null;
+    // 1. Try backend ID/SKU lookup first, because public URLs now use product codes.
+    const byId = await getProductById(p).catch(() => null);
+    product = byId?.item || null;
 
-    // 2. Try backend ID lookup (covers MongoDB ObjectId in the URL, rare)
+    // 2. Fall back to backend slug lookup for older links.
     if (!product) {
-      const byId = await getProductById(p).catch(() => null);
-      product = byId?.item || null;
+      const bySlug = await getProductBySlug(p).catch(() => null);
+      product = bySlug?.item || null;
     }
 
-    // 3. Try text search — covers SKU-as-URL-param like /product/e003spir31.
-    //    Searches products for the param, then picks the one whose SKU or slug matches.
+    // 3. Try text search — covers products whose SKU is searchable but not a direct match.
     if (!product) {
       const searchRes = await getProducts({ q: p, limit: 20 }).catch(() => null);
       const items = searchRes?.items || [];
@@ -40,7 +39,8 @@ async function resolveProduct(param) {
         items.find((item) => {
           const sku = (item?.SKU || item?.sku || '').toLowerCase().replace(/\s+/g, '-');
           const slug = (item?.slug || '').toLowerCase();
-          return sku === p || slug === p;
+          const id = String(item?.id || item?._id || '').toLowerCase().trim();
+          return sku === p || id === p || slug === p;
         }) || null;
     }
 

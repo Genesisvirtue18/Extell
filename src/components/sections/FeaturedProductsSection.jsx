@@ -6,26 +6,16 @@ import { Heart } from 'lucide-react';
 import SectionHeader from '../ui/SectionHeader';
 import ComparisonModal from '../ui/ComparisonModal';
 import { getProducts } from '../../lib/api';
+import { getProductUrlParam } from '../../lib/productUrl';
 
 const placeholderImage = '/assets/placeholder-tech.svg';
 
 // ✅ ADD THIS
-function slugify(text) {
-  return String(text || '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
-
 // ✅ ADD THIS (REPLACES getProductPath)
 function getProductPath(product) {
-  const slug =
-    product.slug ||
-    slugify(product.name) ||
-    product.id;
+  const param = getProductUrlParam(product);
 
-  return `/product/${slug}`;
+  return param ? `/product/${param}` : '/products';
 }
 
 function FeaturedProductsSection() {
@@ -84,7 +74,7 @@ function FeaturedProductsSection() {
 
       return {
         id: item.id,
-        slug: item.slug || slugify(name), // ✅ IMPORTANT
+        slug: getProductUrlParam(item),
         sku: item.SKU || item.sku || item.id,
         name,
         short:
