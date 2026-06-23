@@ -145,7 +145,7 @@ function HomeHero() {
             {[
               { icon: ShieldCheck, text: 'ISO Certified' },
               { icon: Globe, text: 'Global Distribution' },
-              { icon: Zap, text: '2-Hr Response SLA' },
+             
             ].map(({ icon: Icon, text }) => (
               <span
                 key={text}
