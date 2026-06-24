@@ -152,6 +152,11 @@ const nextConfig = {
         destination: '/products?category=battery&page=1',
         permanent: true,
       },
+        {
+        source: '/product/E003GER31',
+        destination: '/product/e003gir31',
+        permanent: true,
+      },
       {
         source: '/product-category/data-center-solutions',
         destination: '/products?page=1&category=pdu',
