@@ -7,8 +7,8 @@ const RED = '#ed2125';
 
 const FAQS = [
   {
-    q: 'What products does ExTell Systems sell?',
-    a: 'ExTell Systems sells UPS systems, fiber optic cables, data center power solutions, networking products, power distribution units, and structured cabling systems for enterprise customers globally.',
+    q: 'What are the solution offerings from ExTell?',
+    a: 'ExTell’s solution offerings include Passive Structured Cabling systems, UPS and Power Backup solutions, Active Networking Solutions, Power Distribution units, Control Cables etc. Kindly reach to our team to know more.',
   },
   {
     q: 'Does ExTell Systems provide UPS systems for data centers?',
