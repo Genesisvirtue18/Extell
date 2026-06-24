@@ -48,11 +48,93 @@ const nextConfig = {
       // CUSTOM CATEGORY REDIRECTS
       // =====================================================
 
+      // ===============================
+// Custom Extell Redirects
+// ===============================
+
+// Category redirects
+{
+  source: '/category/calculator',
+  destination: '/products?category=battery&page=1',
+  permanent: true,
+},
+{
+  source: '/category/data-center-solutions',
+  destination: '/products?page=1&category=pdu',
+  permanent: true,
+},
+{
+  source: '/category/ups-systems',
+  destination: '/ups-calculator',
+  permanent: true,
+},
+{
+  source: '/category/power-electronics',
+  destination: '/products?category=power-distribution&page=1',
+  permanent: true,
+},
+
+// Additional pages
+{
+  source: '/calculator',
+  destination: '/ups-calculator',
+  permanent: true,
+},
+{
+  source: '/industrial-ups-solutions-copy',
+  destination: '/products?category=ups&page=1',
+  permanent: true,
+},
+
+// Product category redirects
+{
+  source: '/product-category/copper-accessories/cat6-ks-jacks',
+  destination: '/products?page=1&category=copper-accessories',
+  permanent: true,
+},
+
+// Product redirects
+{
+  source: '/product/extell-magna-pro-tower-ups-33-phase-pf-1-0-10kva',
+  destination: '/product/e060mpet33',
+  permanent: true,
+},
+{
+  source: '/product/cat6a-utp-26awg-patch-cord-lszh-2',
+  destination: '/product/hxv6x24s-mpp-bk',
+  permanent: true,
+},
+{
+  source: '/product/dxl-g-61027-bk',
+  destination: '/product/dxl-g-60842-xx',
+  permanent: true,
+},
+{
+  source: '/product/efu016-tb-wh',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/magna-rt-online-ups-33-phase-pf-1-0-10-to-20kva-copy-36',
+  destination: '/product/e010mper33',
+  permanent: true,
+},
+{
+  source: '/product/dxl-g-80842-bk',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/cat6a-utp-24awg-patch-cord-pvc',
+  destination: '/product/hxv6x24u-mpp-bk',
+  permanent: true,
+},
       {
         source: '/category/calculator',
         destination: '/products?category=battery&page=1',
         permanent: true,
       },
+
       {
         source: '/category/data-center-solutions',
         destination: '/products?page=1&category=pdu',
