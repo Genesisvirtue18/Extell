@@ -29,7 +29,7 @@ function SolutionsShowcaseSection() {
         </div>
       </div>
       <div className="ui-surface-2 mt-8 rounded-xl p-6">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#ed2125]">Technology Partners</p>
+        <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#ed2125]">Product Families</p>
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {partnerLogos.map((logo) => (
             <div key={logo} className="ui-surface-1 rounded-md py-3 text-center text-sm font-semibold ui-text">{logo}</div>
