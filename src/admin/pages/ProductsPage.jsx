@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import Modal from '../components/Modal';
+import { buildProductSeoDraft } from '../../lib/productSeo';
 import {
   fetchAdminProducts,
   createAdminProduct,
@@ -44,6 +45,8 @@ const sanitizeFileName = (value) =>
     .replace(/[^a-z0-9_-]+/gi, '_')
     .replace(/_+/g, '_')
     .replace(/^_|_$/g, '');
+
+const normalizeSeoText = (value) => String(value || '').trim();
 
 const LOCAL_CATEGORY_TREE = {
   'ups systems': {
@@ -164,6 +167,32 @@ const parseFeatureRows = (item) => {
   }
 
   return [emptyRow('title', 'detail')];
+};
+
+const parseFaqRows = (item) => {
+  const faqCandidates = [item?.faqs, item?.faq, item?.faqItems, item?.faqSections].find(
+    (entry) => Array.isArray(entry) && entry.length
+  );
+
+  if (Array.isArray(faqCandidates)) {
+    return faqCandidates
+      .map((entry) => {
+        if (typeof entry === 'object' && entry !== null) {
+          const question = String(entry.question || entry.q || entry.title || entry.heading || entry.label || '').trim();
+          const answer = String(entry.answer || entry.a || entry.detail || entry.text || entry.content || '').trim();
+          return question || answer ? { question, answer } : null;
+        }
+
+        if (typeof entry === 'string') {
+          return { question: entry.trim(), answer: '' };
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+  }
+
+  return [emptyRow('question', 'answer')];
 };
 
 const parseCategoryParts = (value) =>
@@ -398,6 +427,11 @@ const ProductsPage = () => {
       categorySelect: '',
       customCategory: '',
       description: '',
+      metaTitle: '',
+      metaDescription: '',
+      metaKeywords: '',
+      imageTitle: '',
+      imageAlt: '',
       heroImage: '',
       images: '',
       datasheet: '',
@@ -408,6 +442,7 @@ const ProductsPage = () => {
       specRows: [emptyRow('name', 'value')],
       infoRows: [emptyRow('title', 'detail')],
       features: [emptyRow('title', 'detail')],
+      faqs: [emptyRow('question', 'answer')],
       subCategory1: '',
       subCategory2: '',
       subCategory3: '',
@@ -446,6 +481,10 @@ const ProductsPage = () => {
   const { fields: featureRows, append: appendFeatureRow, remove: removeFeatureRow, replace: replaceFeatureRows } = useFieldArray({
     control,
     name: 'features'
+  });
+  const { fields: faqRows, append: appendFaqRow, remove: removeFaqRow, replace: replaceFaqRows } = useFieldArray({
+    control,
+    name: 'faqs'
   });
 
   const watchCategorySelect = watch('categorySelect');
@@ -595,6 +634,30 @@ const ProductsPage = () => {
       }))
       .filter((row) => row.title || row.detail);
 
+  const buildFaqPayload = (rows = []) =>
+    rows
+      .map((row) => ({
+        question: asText(row.question).trim(),
+        answer: asText(row.answer).trim()
+      }))
+      .filter((row) => row.question || row.answer);
+
+  const buildSeoPayload = (values, existingItem = null) => {
+    const source = {
+      ...(existingItem || {}),
+      ...(values || {})
+    };
+    const draft = buildProductSeoDraft(source);
+
+    return {
+      metaTitle: normalizeSeoText(values?.metaTitle) || draft.metaTitle,
+      metaDescription: normalizeSeoText(values?.metaDescription) || draft.metaDescription,
+      metaKeywords: normalizeSeoText(values?.metaKeywords) || draft.metaKeywords,
+      imageTitle: normalizeSeoText(values?.imageTitle) || draft.imageTitle,
+      imageAlt: normalizeSeoText(values?.imageAlt) || draft.imageAlt
+    };
+  };
+
   const buildProductPayload = (values, existingItem = null) => {
     const resolvedCategory = values.categorySelect === 'custom' ? values.customCategory : values.categorySelect;
     const categoryParts = values.enableSubCategories
@@ -604,6 +667,8 @@ const ProductsPage = () => {
     const specRowsPayload = buildSpecPayload(values.specRows || []);
     const infoRowsPayload = buildInfoPayload(values.infoRows || []);
     const featuresPayload = buildFeaturePayload(values.features || []);
+    const faqsPayload = buildFaqPayload(values.faqs || []);
+    const seoPayload = buildSeoPayload(values, existingItem);
     const specsObject = {};
 
     specRowsPayload.forEach(({ name, value }) => {
@@ -626,6 +691,12 @@ const ProductsPage = () => {
       infoSections: infoRowsPayload.map(({ title, detail }) => ({ title, detail })),
       infoRows: infoRowsPayload,
       features: featuresPayload,
+      faqs: faqsPayload,
+      metaTitle: seoPayload.metaTitle,
+      metaDescription: seoPayload.metaDescription,
+      metaKeywords: seoPayload.metaKeywords,
+      imageTitle: seoPayload.imageTitle,
+      imageAlt: seoPayload.imageAlt,
       images: joinCsv(values.images),
       heroImage: values.heroImage ?? '',
       datasheet: values.datasheet || existingItem?.datasheet || existingItem?.Datasheet || '',
@@ -652,6 +723,8 @@ const ProductsPage = () => {
     const parsedSpecs = parseSpecRows(item);
     const parsedInfo = parseInfoRows(item);
     const parsedFeatures = parseFeatureRows(item);
+    const parsedFaqs = parseFaqRows(item);
+    const seoDraft = buildSeoPayload(item, item);
 
     reset({
       name: item?.Name || item?.name || '',
@@ -660,6 +733,11 @@ const ProductsPage = () => {
       categorySelect: isKnownCategory ? rootCategory : rootCategory ? 'custom' : '',
       customCategory: isKnownCategory ? '' : rootCategory,
       description: item?.descriptionText || item?.description || '',
+      metaTitle: seoDraft.metaTitle,
+      metaDescription: seoDraft.metaDescription,
+      metaKeywords: seoDraft.metaKeywords,
+      imageTitle: seoDraft.imageTitle,
+      imageAlt: seoDraft.imageAlt,
       heroImage: item?.heroImage || '',
       images: Array.isArray(item?.Images) ? item.Images.join(', ') : item?.images || item?.Images || '',
       datasheet: item?.datasheet || item?.Datasheet || '',
@@ -670,6 +748,7 @@ const ProductsPage = () => {
       specRows: parsedSpecs.length ? parsedSpecs : [emptyRow('name', 'value')],
       infoRows: parsedInfo.length ? parsedInfo : [emptyRow('title', 'detail')],
       features: parsedFeatures.length ? parsedFeatures : [emptyRow('title', 'detail')],
+      faqs: parsedFaqs.length ? parsedFaqs : [emptyRow('question', 'answer')],
       subCategory1,
       subCategory2,
       subCategory3,
@@ -680,6 +759,7 @@ const ProductsPage = () => {
     replaceSpecRows(parsedSpecs.length ? parsedSpecs : [emptyRow('name', 'value')]);
     replaceInfoRows(parsedInfo.length ? parsedInfo : [emptyRow('title', 'detail')]);
     replaceFeatureRows(parsedFeatures.length ? parsedFeatures : [emptyRow('title', 'detail')]);
+    replaceFaqRows(parsedFaqs.length ? parsedFaqs : [emptyRow('question', 'answer')]);
   };
 
   const closeModal = () => {
@@ -784,6 +864,23 @@ const ProductsPage = () => {
     }
   };
 
+  const handleSeoAutofill = () => {
+    const draft = buildProductSeoDraft({
+      ...(activeItem || {}),
+      ...getValues(),
+      metaTitle: '',
+      metaDescription: '',
+      metaKeywords: '',
+      imageTitle: '',
+      imageAlt: ''
+    });
+    setValue('metaTitle', draft.metaTitle);
+    setValue('metaDescription', draft.metaDescription);
+    setValue('metaKeywords', draft.metaKeywords);
+    setValue('imageTitle', draft.imageTitle);
+    setValue('imageAlt', draft.imageAlt);
+  };
+
   const submitUploadOnly = async (values) => {
     if (!uploadItem?._id) return;
     const payload = buildProductPayload(
@@ -792,7 +889,8 @@ const ProductsPage = () => {
         ...values,
         specRows: getValues('specRows'),
         infoRows: getValues('infoRows'),
-        features: getValues('features')
+        features: getValues('features'),
+        faqs: getValues('faqs')
       },
       uploadItem
     );
@@ -834,6 +932,7 @@ const ProductsPage = () => {
           specRows: parseSpecRows(item),
           infoRows: parseInfoRows(item),
           features: parseFeatureRows(item),
+          faqs: parseFaqRows(item),
           subCategory1: item.subCategory1 || parseCategoryParts(item.category || item.Categories || '')[1] || '',
           subCategory2: item.subCategory2 || parseCategoryParts(item.category || item.Categories || '')[2] || '',
           subCategory3: item.subCategory3 || parseCategoryParts(item.category || item.Categories || '')[3] || '',
@@ -897,39 +996,49 @@ const ProductsPage = () => {
     URL.revokeObjectURL(url);
   };
 
-  const renderRows = (fields, append, remove, prefixA, prefixB, kind = 'spec') => (
-    <div className="space-y-3">
-      {fields.map((field, index) => (
-        <div key={field.id} className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-          <input
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            placeholder={kind === 'spec' ? 'Parameter' : 'Title'}
-            {...register(`${kind === 'spec' ? 'specRows' : kind === 'info' ? 'infoRows' : 'features'}.${index}.${prefixA}`)}
-          />
-          <input
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            placeholder={kind === 'spec' ? 'Value' : 'Detail'}
-            {...register(`${kind === 'spec' ? 'specRows' : kind === 'info' ? 'infoRows' : 'features'}.${index}.${prefixB}`)}
-          />
-          <button
-            type="button"
-            onClick={() => remove(index)}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-rose-600 hover:bg-rose-50"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() => append(kind === 'spec' ? emptyRow('name', 'value') : emptyRow('title', 'detail'))}
-        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
-      >
-        <Plus size={16} />
-        Add {kind === 'spec' ? 'Spec' : kind === 'info' ? 'Info' : 'Feature'}
-      </button>
-    </div>
-  );
+  const renderRows = (fields, append, remove, prefixA, prefixB, kind = 'spec', emptyFactory = null) => {
+    const getEmptyRow = () => {
+      if (emptyFactory) return emptyFactory();
+      return kind === 'spec' ? emptyRow('name', 'value') : emptyRow('title', 'detail');
+    };
+
+    const fieldName = kind === 'spec' ? 'specRows' : kind === 'info' ? 'infoRows' : kind === 'faq' ? 'faqs' : 'features';
+    const labelPrefix = kind === 'spec' ? 'Spec' : kind === 'info' ? 'Info' : kind === 'faq' ? 'FAQ' : 'Feature';
+
+    return (
+      <div className="space-y-3">
+        {fields.map((field, index) => (
+          <div key={field.id} className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+            <input
+              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              placeholder={kind === 'spec' ? 'Parameter' : kind === 'faq' ? 'Question' : 'Title'}
+              {...register(`${fieldName}.${index}.${prefixA}`)}
+            />
+            <input
+              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              placeholder={kind === 'spec' ? 'Value' : kind === 'faq' ? 'Answer' : 'Detail'}
+              {...register(`${fieldName}.${index}.${prefixB}`)}
+            />
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-rose-600 hover:bg-rose-50"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => append(getEmptyRow())}
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+        >
+          <Plus size={16} />
+          Add {labelPrefix}
+        </button>
+      </div>
+    );
+  };
 
   const renderImageList = (value, onRemove, clear, heroImage = '', onSetHero = null) => {
     const list = splitCsv(value);
@@ -1427,6 +1536,70 @@ const ProductsPage = () => {
             />
           </label>
 
+          <div className="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900">SEO Metadata</h3>
+                <p className="text-xs text-slate-500">
+                  Fill these manually or use autofill to draft from the current product data.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleSeoAutofill}
+                className="rounded-lg border border-slate-900 px-3 py-2 text-xs font-semibold text-slate-900"
+              >
+                Autofill SEO
+              </button>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="text-sm text-slate-600">
+                Meta Title
+                <input
+                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2"
+                  placeholder="SEO title for search results"
+                  {...register('metaTitle')}
+                />
+              </label>
+              <label className="text-sm text-slate-600">
+                Image Title
+                <input
+                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2"
+                  placeholder="Shown on the main product image"
+                  {...register('imageTitle')}
+                />
+              </label>
+              <label className="text-sm text-slate-600 md:col-span-2">
+                Meta Description
+                <textarea
+                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2"
+                  rows={3}
+                  placeholder="Short search snippet description"
+                  {...register('metaDescription')}
+                />
+              </label>
+              <label className="text-sm text-slate-600 md:col-span-2">
+                Keywords
+                <textarea
+                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2"
+                  rows={2}
+                  placeholder="keyword one, keyword two, keyword three"
+                  {...register('metaKeywords')}
+                />
+              </label>
+              <label className="text-sm text-slate-600 md:col-span-2">
+                Image Alt Text
+                <textarea
+                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2"
+                  rows={2}
+                  placeholder="Accessible alt text for the product image"
+                  {...register('imageAlt')}
+                />
+              </label>
+            </div>
+          </div>
+
           <div className="md:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
             <div className="mb-3 flex items-center gap-2">
               <Layers3 className="h-4 w-4 text-slate-700" />
@@ -1449,6 +1622,15 @@ const ProductsPage = () => {
               <h3 className="text-sm font-semibold text-slate-900">Features</h3>
             </div>
             {renderRows(featureRows, appendFeatureRow, removeFeatureRow, 'title', 'detail', 'feature')}
+          </div>
+
+          <div className="md:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <BadgeInfo className="h-4 w-4 text-slate-700" />
+              <h3 className="text-sm font-semibold text-slate-900">FAQs</h3>
+              <p className="text-xs text-slate-500">These will appear on the product detail page when available.</p>
+            </div>
+            {renderRows(faqRows, appendFaqRow, removeFaqRow, 'question', 'answer', 'faq', () => emptyRow('question', 'answer'))}
           </div>
 
           <div className="md:col-span-2 grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">

@@ -7,11 +7,10 @@ import SectionHeader from '../ui/SectionHeader';
 import ComparisonModal from '../ui/ComparisonModal';
 import { getProducts } from '../../lib/api';
 import { getProductUrlParam } from '../../lib/productUrl';
+import { pickBestProductImage } from '../../lib/productSeo';
 
 const placeholderImage = '/assets/placeholder-tech.svg';
 
-// ✅ ADD THIS
-// ✅ ADD THIS (REPLACES getProductPath)
 function getProductPath(product) {
   const param = getProductUrlParam(product);
 
@@ -38,23 +37,6 @@ function FeaturedProductsSection() {
 
   useEffect(() => {
     let mounted = true;
-
-    const getCardImage = (item) => {
-      const imageList = Array.isArray(item?.imageList) ? item.imageList : [];
-
-      const scoreImage = (entry) => {
-        const value = String(entry || '').toLowerCase();
-        let score = 0;
-        if (value.includes('/elementor/thumbs/')) score -= 40;
-        if (value.includes('front-hero') || value.includes('hero')) score -= 20;
-        if (value.includes('iso')) score += 18;
-        if (value.includes('side') || value.includes('rear') || value.includes('front')) score += 8;
-        return score;
-      };
-
-      const sorted = [...imageList].sort((a, b) => scoreImage(b) - scoreImage(a));
-      return sorted[0] || item?.heroImage || placeholderImage;
-    };
 
     const normalizeProduct = (item) => {
       const detailRows = Array.isArray(item.detailRows) ? item.detailRows : [];
@@ -83,7 +65,7 @@ function FeaturedProductsSection() {
           'Industrial-grade product built for uptime and reliability.',
         inStock: Boolean(item.inStock ?? item['In stock?']),
         specs: Object.keys(detailSpecs).length ? detailSpecs : fallbackSpecs,
-        image: getCardImage(item)
+        image: pickBestProductImage(item, placeholderImage)
       };
     };
 

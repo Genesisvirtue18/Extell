@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital Footer</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #f3f3f3;
+        padding: 20px 16px;
+        font-family: Arial, sans-serif;
+    }
+
+    .hospital-footer {
+        background: #f8f8f8;
+        border-radius: 24px;
+        padding: 28px 24px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.08);
+        color: #404657;
+        position: relative;
+        overflow: hidden; /* Ensures watermark doesn't spill out */
+    }
+
+    /* Faded Logo Watermark Background */
+    .hospital-footer::before {
+        content: "";
+        position: absolute;
+        bottom: 52px;
+        right: 8px;
+        width: 500px;
+        height: 500px;
+        background-image: url("https://shmsd.in/wp-content/uploads/2023/04/Untitled-design-12-e1680902785789.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: bottom right;
+        opacity: 0.05; /* Slightly stronger but still subtle watermark */
+        pointer-events: none; /* Allows text selection over watermark */
+        z-index: 0;
+    }
+
+    .footer-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 28px 32px;
+        position: relative;
+        z-index: 2; /* Sits cleanly above the watermark layer */
+    }
+
+    .footer-column {
+        flex: 1;
+        min-width: 220px;
+    }
+
+    .logo {
+        width: 200px;
+        margin-bottom: 18px;
+    }
+
+    .about-text {
+        font-size: 15px;
+        line-height: 1.9;
+        color: #4b5563;
+        max-width: 310px;
+    }
+
+    .red-line {
+        width: 220px;
+        height: 2px;
+        background: #ff2d2d;
+        margin: 20px 0;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #404040;
+    }
+
+    .icon-box {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border: 2px solid #ff2d2d;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon-box svg {
+        width: 18px;
+        height: 18px;
+        fill: #ff2d2d;
+    }
+
+    .footer-heading {
+        color: #ff2d2d;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .heading-underline {
+        width: 56px;
+        height: 4px;
+        background: #ff2d2d;
+        border-radius: 20px;
+        margin-bottom: 18px;
+    }
+
+    .links-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 40px;
+    }
+
+    .links-grid a {
+        text-decoration: none;
+        color: #0d2f8f;
+        padding: 12px 0;
+        border-bottom: 1px solid #e5e5e5;
+        font-size: 14px;
+        transition: color 0.2s ease;
+    }
+
+    .links-grid a:hover {
+        color: #ff2d2d;
+    }
+
+    .appointment-text {
+        color: #4b5563;
+        line-height: 1.7;
+        font-size: 15px;
+        max-width: 290px;
+        margin-bottom: 20px;
+    }
+
+    .book-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: white;
+        background: linear-gradient(90deg, #ff2d2d, #ff4545);
+        padding: 14px 30px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(255, 45, 45, 0.2);
+    }
+
+    .book-btn svg {
+        width: 18px;
+        height: 18px;
+        fill: white;
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .social-icons a {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 1px solid #d8d8d8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .social-icons a:hover {
+        border-color: #ff2d2d;
+        background-color: #fff4f4;
+    }
+
+    .social-icons svg {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .facebook { fill: #1877f2; }
+    .instagram { fill: #e4405f; }
+    .youtube { fill: #ff0000; }
+
+    .footer-bottom {
+        border-top: 1px solid #ddd;
+        margin-top: 24px;
+        padding-top: 18px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .copyright {
+        font-size: 14px;
+        line-height: 1.8;
+        color: #555;
+    }
+
+    .bottom-links {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+
+    .bottom-links a {
+        color: #0d2f8f;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .bottom-links a:hover {
+        color: #ff2d2d;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+        .footer-container {
+            gap: 24px;
+        }
+
+        .footer-column {
+            flex: 0 0 100%;
+            min-width: 100%;
+        }
+    }
+
+    @media (max-width: 600px) {
+        body {
+            padding: 12px 10px;
+        }
+
+        .hospital-footer {
+            padding: 20px 16px;
+            border-radius: 18px;
+        }
+
+        .logo {
+            width: 170px;
+            margin-bottom: 14px;
+        }
+
+        .red-line {
+            width: 180px;
+            margin: 16px 0;
+        }
+
+        .links-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .social-icons {
+            margin-top: 16px;
+        }
+
+        .footer-bottom {
+            margin-top: 18px;
+            padding-top: 14px;
+        }
+
+        .bottom-links {
+            gap: 14px 20px;
+        }
+
+        .hospital-footer::before {
+            width: 180px;
+            height: 180px;
+            opacity: 0.03;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<footer class="hospital-footer">
+
+<div class="footer-container">
+
+    <!-- Left Section -->
+    <div class="footer-column">
+        <img class="logo" src="https://shmsd.in/wp-content/uploads/2023/04/Untitled-design-12-e1680902785789.png" alt="Hospital Logo">
+        <p class="about-text">
+            We are committed to providing quality healthcare with advanced technology
+            and compassionate care for a healthier tomorrow.
+        </p>
+
+        <div class="red-line"></div>
+
+        <div class="contact-item">
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1C10.3 21 3 13.7 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.44.57 3.58a1 1 0 01-.25 1.01z"/>
+                </svg>
+            </div>
+            <div>+91 7012109635</div>
+        </div>
+
+        <div class="contact-item">
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5z"/>
+                </svg>
+            </div>
+            <div>info@shmsd.in</div>
+        </div>
+
+        <div class="contact-item">
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z"/>
+                </svg>
+            </div>
+            <div>
+                C-2/41 A, Service Ln,<br>
+                Yamuna Vihar, Delhi
+            </div>
+        </div>
+
+        <div class="social-icons">
+            <a href="#">
+                <svg class="facebook" viewBox="0 0 24 24">
+                    <path d="M22 12a10 10 0 10-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.19 2.23.19v2.45h-1.26c-1.24 0-1.62.77-1.62 1.56V12h2.77l-.44 2.89h-2.33v6.99A10 10 0 0022 12z"/>
+                </svg>
+            </a>
+            <a href="#">
+                <svg class="instagram" viewBox="0 0 24 24">
+                    <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2zm4.25 5a5 5 0 110 10 5 5 0 010-10zm6-.75a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5z"/>
+                </svg>
+            </a>
+            <a href="#">
+                <svg class="youtube" viewBox="0 0 24 24">
+                    <path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.8 31.8 0 000 12a31.8 31.8 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.8 31.8 0 0024 12a31.8 31.8 0 00-.5-5.8zM9.5 15.5v-7l6 3.5-6 3.5z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Useful Links -->
+    <div class="footer-column">
+        <h2 class="footer-heading">Useful Links</h2>
+        <div class="heading-underline"></div>
+
+        <div class="links-grid">
+            <a href="https://shmsd.in/">› Home</a>
+            <a href="https://shmsd.in/contact-us/">› Contact Us</a>
+            <a href="https://shmsd.in/services/">› Specialities</a>
+            <a href="https://shmsd.in/gallery/">› Gallery</a>
+            <a href="https://shmsd.in/facilities/">› Facilities</a>
+            <a href="https://shmsd.in/empanelled-tpa/">› Empanelled TPA</a>
+            <a href="https://shmsd.in/our-doctor/">› Our Doctors</a>
+            <a href="https://healthconnect.shmsd.in/">› Blog</a>
+            <a href="https://shmsd.in/about-us/">› About Us</a>
+        </div>
+    </div>
+
+    <!-- Appointment -->
+    <div class="footer-column">
+        <h2 class="footer-heading">Book Appointment</h2>
+        <div class="heading-underline"></div>
+
+        <p class="appointment-text">
+            Schedule your appointment with our experienced doctors and get the best medical care.
+        </p>
+
+        <a href="#" class="book-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 15H5V9h14zm-7-8h5v5h-5z"/>
+            </svg>
+            Book Now
+        </a>
+    </div>
+
+</div>
+
+<div class="footer-bottom">
+    <div class="copyright">
+        © 2026 Signature Heart & Multispeciality Hospital.<br>
+        All Rights Reserved.
+    </div>
+
+    <div class="bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms & Conditions</a>
+        <a href="#">Sitemap</a>
+    </div>
+</div>
+
+</footer>
+
+</body>
+</html>

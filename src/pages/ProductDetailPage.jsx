@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { ChevronDown, Download, FileText, X, ZoomIn } from 'lucide-react';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
+import { resolveProductSeo, pickBestProductImage, getProductImageList } from '../lib/productSeo';
+import { products as siteProducts } from '../data/siteData';
 
 const placeholderImage = '/assets/placeholder-tech.svg';
 
@@ -17,24 +19,6 @@ const toDetailRows = (product) => {
   return [];
 };
 
-const pickBestProductImage = (item) => {
-  const imageList = Array.isArray(item?.imageList) ? item.imageList : [];
-  const candidates = [item?.heroImage, ...imageList].filter(Boolean);
-  if (!candidates.length) return placeholderImage;
-
-  const scoreImage = (entry) => {
-    const value = String(entry || '').toLowerCase();
-    let score = 0;
-    if (value.includes('/elementor/thumbs/')) score -= 40;
-    if (value.includes('front-hero') || value.includes('hero')) score -= 20;
-    if (value.includes('iso')) score += 18;
-    if (value.includes('side') || value.includes('rear') || value.includes('front')) score += 8;
-    return score;
-  };
-
-  return [...candidates].sort((a, b) => scoreImage(b) - scoreImage(a))[0] || placeholderImage;
-};
-
 const parseCategoryPath = (rawValue) =>
   String(rawValue || '')
     .split('>')
@@ -43,8 +27,7 @@ const parseCategoryPath = (rawValue) =>
 
 const getInitialImage = (product) => {
   if (!product) return placeholderImage;
-  const list = Array.isArray(product.imageList) ? product.imageList : [];
-  return [product.heroImage, ...list].filter(Boolean)[0] || placeholderImage;
+  return pickBestProductImage(product, placeholderImage);
 };
 
 const getProductDatasheetUrl = (product) =>
@@ -57,6 +40,28 @@ const getProductDatasheetUrl = (product) =>
 const RED = '#ed2125';
 
 function buildProductFAQs(product) {
+  const backendFaqs = Array.isArray(product?.faqs)
+    ? product.faqs
+        .map((entry) => {
+          if (typeof entry === 'object' && entry !== null) {
+            const question = String(entry.question || entry.q || entry.title || entry.heading || '').trim();
+            const answer = String(entry.answer || entry.a || entry.detail || entry.text || entry.content || '').trim();
+            return question || answer ? { q: question, a: answer } : null;
+          }
+
+          if (typeof entry === 'string' && entry.trim()) {
+            return { q: entry.trim(), a: '' };
+          }
+
+          return null;
+        })
+        .filter(Boolean)
+    : [];
+
+  if (backendFaqs.length) {
+    return backendFaqs;
+  }
+
   const name = product?.Name || product?.name || 'this product';
   const sku = product?.SKU || product?.sku || product?.id || '';
   const desc = product?.descriptionText || product?.description || product?.short || '';
@@ -190,6 +195,7 @@ function ProductDetailPage({ slug, initialProduct }) {
   const [error, setError] = useState('');
   const [activeImage, setActiveImage] = useState(() => getInitialImage(initialProduct));
   const [zoomedImage, setZoomedImage] = useState('');
+  const [relatedImageErrors, setRelatedImageErrors] = useState({});
   const [quoteForm, setQuoteForm] = useState({
     fullName: '',
     email: '',
@@ -220,12 +226,16 @@ function ProductDetailPage({ slug, initialProduct }) {
         }
         if (!selected) throw new Error('Product not found');
 
-        const relatedItems = (relatedResponse?.items || [])
+        const apiRelatedItems = (relatedResponse?.items || [])
+          .filter((item) => item.id !== selected.id)
+          .slice(0, 4);
+
+        const fallbackRelatedItems = (siteProducts || [])
           .filter((item) => item.id !== selected.id)
           .slice(0, 4);
 
         setProduct(selected);
-        setRelated(relatedItems);
+        setRelated(apiRelatedItems.length ? apiRelatedItems : fallbackRelatedItems);
       } catch (err) {
         if (!mounted) return;
         if (!initialProduct) {
@@ -244,8 +254,7 @@ function ProductDetailPage({ slug, initialProduct }) {
 
   const gallery = useMemo(() => {
     if (!product) return [];
-    const list = product.imageList?.length ? product.imageList : [];
-    return [product.heroImage, ...list].filter(Boolean).slice(0, 6);
+    return getProductImageList(product).slice(0, 6);
   }, [product]);
 
   useEffect(() => {
@@ -277,6 +286,7 @@ function ProductDetailPage({ slug, initialProduct }) {
   const description = product?.descriptionText || product?.description || product?.short || '';
   const category = product?.topCategory || product?.Categories || product?.category || 'Products';
   const datasheet = getProductDatasheetUrl(product);
+  const seo = resolveProductSeo(product || {});
   const categoryPath = parseCategoryPath(product?.Categories || category || '');
   const breadcrumbItems = ['Home', ...categoryPath, name];
   const similarProducts = related.slice(0, 3);
@@ -341,7 +351,7 @@ function ProductDetailPage({ slug, initialProduct }) {
                   onClick={() => openZoom(activeImage)}
                   aria-label={`Open larger view for ${name}`}
                 >
-                  <img src={activeImage} alt={name} />
+                  <img src={activeImage} alt={seo.imageAlt || name} title={seo.imageTitle || name} />
                   <span className="product-detail-zoom-hint">
                     <ZoomIn size={16} />
                     Click to zoom
@@ -359,7 +369,11 @@ function ProductDetailPage({ slug, initialProduct }) {
                     type="button"
                     onClick={() => setActiveImage(src)}
                   >
-                    <img src={src} alt={`${name} view ${index + 1}`} />
+                    <img
+                      src={src}
+                      alt={`${seo.imageAlt || name} view ${index + 1}`}
+                      title={`${seo.imageTitle || name} view ${index + 1}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -527,17 +541,24 @@ function ProductDetailPage({ slug, initialProduct }) {
             </div>
             <div className="similar-products-card">
               <h4>Similar Products</h4>
-              {similarProducts.map((item) => (
-                <article key={item.id} className="similar-product-item">
-                  <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
-                  <div>
-                    <p>{item.Name || item.name}</p>
-                    <Link className="similar-product-link" href={getProductPath(item)}>
-                      View Details
-                    </Link>
-                  </div>
-                </article>
-              ))}
+              {similarProducts.map((item) => {
+                const itemSeo = resolveProductSeo(item);
+                return (
+                  <article key={item.id} className="similar-product-item">
+                    <img
+                      src={pickBestProductImage(item)}
+                      alt={itemSeo.imageAlt || item.Name || item.name}
+                      title={itemSeo.imageTitle || item.Name || item.name}
+                    />
+                    <div>
+                      <p>{item.Name || item.name}</p>
+                      <Link className="similar-product-link" href={getProductPath(item)}>
+                        View Details
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </aside>
         </div>
@@ -547,18 +568,35 @@ function ProductDetailPage({ slug, initialProduct }) {
         <div className="product-detail-related">
           <h3>You might also be interested in</h3>
           <div>
-            {related.map((item) => (
-              <article key={item.id}>
-                <img src={pickBestProductImage(item)} alt={item.Name || item.name} />
-                <p>{item.Name || item.name}</p>
-                <button
-                  className="bg-red-500 text-white rounded text-xs p-1"
-                  onClick={() => router.push(getProductPath(item))}
-                >
-                  View Details
-                </button>
-              </article>
-            ))}
+            {related.length ? related.map((item) => {
+              const itemSeo = resolveProductSeo(item);
+              const imageSrc = relatedImageErrors[item.id]
+                ? placeholderImage
+                : pickBestProductImage(item, placeholderImage);
+              return (
+                <article key={item.id}>
+                  <img
+                    src={imageSrc}
+                    alt={itemSeo.imageAlt || item.Name || item.name}
+                    title={itemSeo.imageTitle || item.Name || item.name}
+                    onError={() =>
+                      setRelatedImageErrors((prev) => ({ ...prev, [item.id]: true }))
+                    }
+                  />
+                  <p>{item.Name || item.name}</p>
+                  <button
+                    className="bg-red-500 text-white rounded text-xs p-1"
+                    onClick={() => router.push(getProductPath(item))}
+                  >
+                    View Details
+                  </button>
+                </article>
+              );
+            }) : (
+              <p style={{ color: 'var(--ui-text-muted)', fontSize: '0.85rem' }}>
+                No related products available right now.
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -586,7 +624,8 @@ function ProductDetailPage({ slug, initialProduct }) {
             <div className="flex w-full flex-1 items-center justify-center overflow-auto p-3">
               <img
                 src={zoomedImage}
-                alt={name}
+                alt={seo.imageAlt || name}
+                title={seo.imageTitle || name}
                 className="max-h-[78vh] w-auto max-w-full select-none object-contain"
               />
             </div>

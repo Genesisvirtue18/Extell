@@ -10,6 +10,7 @@
  */
 
 import { CANONICAL_SITE_URL, canonicalUrl } from './siteUrl';
+import { resolveProductSeo } from './productSeo';
 
 // ─── Stable entity IDs — used across the whole site for entity disambiguation ─
 
@@ -227,6 +228,29 @@ export const buildProductFAQSchema = (product, url) => {
       .split(',')[0]
       .trim() || 'enterprise product';
   const inStock = product?.inStock;
+  const seo = resolveProductSeo(product);
+
+  const backendFaqs = Array.isArray(product?.faqs)
+    ? product.faqs
+        .map((entry) => {
+          if (typeof entry === 'object' && entry !== null) {
+            const question = String(entry.question || entry.q || entry.title || entry.heading || '').trim();
+            const answer = String(entry.answer || entry.a || entry.detail || entry.text || entry.content || '').trim();
+            return question || answer ? { q: question, a: answer } : null;
+          }
+
+          if (typeof entry === 'string' && entry.trim()) {
+            return { q: entry.trim(), a: '' };
+          }
+
+          return null;
+        })
+        .filter(Boolean)
+    : [];
+
+  if (backendFaqs.length) {
+    return buildFAQSchema(backendFaqs);
+  }
 
   return buildFAQSchema([
     {
@@ -255,6 +279,7 @@ export const buildProductFAQSchema = (product, url) => {
     {
       q: `What is ${name} used for?`,
       a:
+        seo.metaDescription ||
         product?.shortDescription ||
         (product?.description ? String(product.description).slice(0, 200) : null) ||
         `${name} is a ${category} product from ExTell Systems, suitable for enterprise power protection and ICT infrastructure deployments.`,
@@ -271,6 +296,7 @@ export const buildProductFAQSchema = (product, url) => {
  * GEO: Provides AI with structured, machine-readable product attributes.
  */
 export const buildProductSchema = (product, url) => {
+  const seo = resolveProductSeo(product);
   const name = product?.Name || product?.name || 'Product';
   const sku = (product?.SKU || product?.sku || product?.id || '').toUpperCase();
   const category = String(
@@ -312,7 +338,12 @@ export const buildProductSchema = (product, url) => {
       : product.images?.length
       ? product.images
       : [productImage],
-    description: product.description || product.descriptionText || product.short || name,
+    description:
+      seo.metaDescription ||
+      product.description ||
+      product.descriptionText ||
+      product.short ||
+      name,
     brand: {
       '@type': 'Brand',
       name: 'ExTell Systems',

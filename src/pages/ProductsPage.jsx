@@ -8,6 +8,7 @@ import { Heart, SlidersHorizontal } from 'lucide-react';
 import ComparisonModal from '../components/ui/ComparisonModal';
 import { getProducts } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
+import { pickBestProductImage } from '../lib/productSeo';
 
 const placeholderImage = '/assets/placeholder-tech.svg';
 const slugifyValue = (value) =>
@@ -215,44 +216,7 @@ function ProductsPage({ initialProducts = [], initialCategories = [], initialPag
   };
 
   const getCardImage = (product) => {
-    const imageList = Array.isArray(product.imageList)
-      ? product.imageList
-      : [];
-
-    const scoreImage = (entry) => {
-      const value = String(entry || '').toLowerCase();
-
-      let score = 0;
-
-      if (value.includes('/elementor/thumbs/')) score -= 40;
-
-      if (
-        value.includes('front-hero') ||
-        value.includes('hero')
-      )
-        score -= 20;
-
-      if (value.includes('iso')) score += 18;
-
-      if (
-        value.includes('side') ||
-        value.includes('rear') ||
-        value.includes('front')
-      )
-        score += 8;
-
-      return score;
-    };
-
-    const sorted = [...imageList].sort(
-      (a, b) => scoreImage(b) - scoreImage(a)
-    );
-
-    return (
-      sorted[0] ||
-      product.heroImage ||
-      placeholderImage
-    );
+    return pickBestProductImage(product, placeholderImage);
   };
 
   const cards = useMemo(

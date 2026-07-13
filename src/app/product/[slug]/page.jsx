@@ -4,6 +4,7 @@ import ProductDetailPageContent from '@/pages/ProductDetailPage';
 import { canonicalUrl } from '@/lib/siteUrl';
 import { getProductBySlug, getProductById, getProducts } from '@/lib/api';
 import { getProductUrlParam } from '@/lib/productUrl';
+import { resolveProductSeo } from '@/lib/productSeo';
 import { products as siteProducts } from '@/data/siteData';
 import {
   buildProductSchema,
@@ -95,46 +96,47 @@ export async function generateMetadata({ params }) {
   const productCategory =
     product?.topCategory || product?.Categories || product?.category || 'Products';
   const url = canonicalUrl(`/product/${getProductUrlParam(product)}`);
-  const productImage =
-    product?.images?.[0] ||
-    product?.imageList?.[0] ||
-    product?.heroImage ||
-    canonicalUrl('/assets/placeholder-tech.svg');
+  const seo = resolveProductSeo(product);
+  const productImage = seo.imageUrl || canonicalUrl('/assets/placeholder-tech.svg');
 
   const titleSku = sku ? ` — ${sku}` : '';
   const descriptionBase =
+    seo.metaDescription ||
     product.shortDescription ||
     (product.description ? String(product.description).slice(0, 120) : null) ||
     `Premium ${productCategory} from ExTell Systems`;
 
-  return {
-    title: `${productName}${titleSku} | ExTell Systems`,
-    description: sku ? `${descriptionBase} Model: ${sku}.` : descriptionBase,
-    keywords: [
-      productName,
-      sku,
-      productCategory,
-      'UPS',
-      'power solutions',
-      'ICT infrastructure',
-      'ExTell Systems',
-    ].filter(Boolean),
-    alternates: { canonical: url },
-    openGraph: {
-      title: `${productName}${titleSku}`,
-      description: sku ? `${descriptionBase} Model: ${sku}.` : descriptionBase,
-      url,
-      siteName: 'ExTell Systems',
-      type: 'website',
-      images: [{ url: productImage, width: 1200, height: 630, alt: productName }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${productName}${titleSku}`,
-      description: sku ? `${descriptionBase} Model: ${sku}.` : descriptionBase,
-      images: [productImage],
-    },
-  };
+ return {
+  title: seo.metaTitle || `${productName}${titleSku} | ExTell Systems`,
+  description: descriptionBase,
+  keywords: seo.keywords,
+  alternates: {
+    canonical: url,
+  },
+
+  openGraph: {
+    title: seo.metaTitle || `${productName}${titleSku}`,
+    description: descriptionBase,
+    url,
+    siteName: "ExTell Systems",
+    type: "website", // Changed from "product" to "website"
+    images: [
+      {
+        url: productImage,
+        width: 1200,
+        height: 630,
+        alt: seo.imageAlt || productName,
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: seo.metaTitle || `${productName}${titleSku}`,
+    description: descriptionBase,
+    images: [productImage],
+  },
+};
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────

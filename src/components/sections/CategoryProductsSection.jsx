@@ -5,30 +5,11 @@ import Link from 'next/link';
 import { ArrowRight, Clock } from 'lucide-react';
 import { getProducts } from '../../lib/api';
 import { categories as siteCategories } from '../../data/siteData';
+import { getProductPath } from '../../lib/productUrl';
+import { pickBestProductImage } from '../../lib/productSeo';
 
 const PLACEHOLDER = '/assets/placeholder-tech.svg';
 const RED = '#ed2125';
-
-function getBestImage(item) {
-  const list = Array.isArray(item?.imageList) ? item.imageList : [];
-  const candidates = [item?.heroImage, ...list].filter(Boolean);
-  if (!candidates.length) return PLACEHOLDER;
-  const score = (src) => {
-    const v = String(src).toLowerCase();
-    let s = 0;
-    if (v.includes('/elementor/thumbs/')) s -= 40;
-    if (v.includes('hero')) s -= 20;
-    if (v.includes('iso')) s += 18;
-    if (v.includes('side') || v.includes('rear') || v.includes('front')) s += 8;
-    return s;
-  };
-  return [...candidates].sort((a, b) => score(b) - score(a))[0] || PLACEHOLDER;
-}
-
-function productPath(p) {
-  const param = p?.slug || p?.id || '';
-  return param ? `/product/${param}` : '/products';
-}
 
 export default function CategoryProductsSection() {
   const [counts, setCounts] = useState({});
@@ -190,11 +171,11 @@ export default function CategoryProductsSection() {
                   const name = product.Name || product.name || 'Product';
                   const sku = product.SKU || product.sku || '';
                   const cat = product.topCategory || activeCat?.name || '';
-                  const imgSrc = broken[product.id] ? PLACEHOLDER : getBestImage(product);
+                  const imgSrc = broken[product.id] ? PLACEHOLDER : pickBestProductImage(product, PLACEHOLDER);
                   return (
                     <Link
                       key={product.id || product._id}
-                      href={productPath(product)}
+                      href={getProductPath(product)}
                       style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                     >
                       <article
