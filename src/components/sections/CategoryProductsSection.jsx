@@ -146,7 +146,7 @@ export default function CategoryProductsSection() {
               Enterprise-grade<br />{activeCat?.name}
             </h2>
             <p style={{ fontSize: '0.83rem', lineHeight: 1.65, color: 'var(--ui-text-muted)', marginBottom: '1.3rem' }}>
-              Sourced from leading manufacturers, tested for critical environments, and backed by ExTell's global support network.
+             Procured from top-tier suppliers, validated for high-performance deployments, and sustained by ExTell's worldwide service ecosystem.
             </p>
             <Link
               href={`/category/${activeSlug || ''}`}
