@@ -97,6 +97,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={montserrat.variable}>
       <head>
+        <meta
+          name="google-site-verification"
+          content="tzkyAKPdqgw2xbtXozmRdJV8ERMVKXmDelEcBMEbOIA"
+        />
         {/* Google Tag Manager - head snippet */}
         <script
           dangerouslySetInnerHTML={{
