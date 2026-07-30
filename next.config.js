@@ -146,6 +146,7 @@ const nextConfig = {
         permanent: true,
       },
 
+
       // If old WordPress URLs also exist
       {
         source: '/product-category/calculator',
@@ -167,6 +168,101 @@ const nextConfig = {
         destination: '/ups-calculator',
         permanent: true,
       },
+      {
+  source: '/wp-content/uploads/2025/08/ExTell_D-Series-SM-FO-Cable_Unitube-1.pdf',
+  destination: '/product/es2dlpua-fcxxx',
+  permanent: true,
+},
+{
+  source: '/wp-content/uploads/2025/11/ExTell-Spectra-Pro-Series-1_3-KVA_Rack-Mount_FY26.pdf',
+  destination: '/product/e002spir31',
+  permanent: true,
+},
+{
+  source: '/wp-content/uploads/2025/08/ESPRBP-72_Battery-Bank.pdf',
+  destination: '/product/esprbp-72vdc',
+  permanent: true,
+},
+{
+  source: '/wp-content/uploads/2025/08/Magna_3Phase_60-to-100kVA_Tower-1.pdf',
+  destination: '/product/e100mpet33',
+  permanent: true,
+},
+{
+  source: '/wp-content/uploads/2025/08/EK6AS180-WH_CAT6A-180-KS-Jack-Shielded.pdf',
+  destination: '/product/ek6as180-xx',
+  permanent: true,
+},
+{
+  source: '/product/u-utp-4pairs-cable-category-6-lszh-sheath',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/E0015GIT31',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/em3d03ul-pc03-aq',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/e7afpo3-sf-bk',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/e020zpm333',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/es2d03ul-pc25-yw',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/em3dlpua-fc024',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/magna-rt-online-ups-33-phase-pf-1-0-10-to-20kva-copy-44',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/e6aupo3-f-bk',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/e6xuvi4-u15-gy',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/u-utp-4pairs-cable-category-6a-pvc-sheath',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/em3d04ul-pc03-aq',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/magna-rt-online-ups-33-phase-pf-1-0-10-to-20kva-copy-54',
+  destination: '/products?page=1',
+  permanent: true,
+},
+{
+  source: '/product/em4d03ul-pc10-aq',
+  destination: '/products?page=1',
+  permanent: true,
+},
 
       // WordPress category archive URLs → our category pages
       {
