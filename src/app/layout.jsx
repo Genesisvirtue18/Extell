@@ -1,13 +1,5 @@
-import { Montserrat } from 'next/font/google';
 import { categories as siteCategories } from '@/data/siteData';
 import NavigationProgress from '@/components/ui/NavigationProgress';
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-montserrat',
-  display: 'swap',
-});
 import { CANONICAL_SITE_URL, canonicalUrl } from '@/lib/siteUrl';
 import { organizationSchema, websiteSchema, ORG_ID, WEBSITE_ID, toJsonLd } from '@/lib/schemas';
 import '@/tailwind.css';
@@ -95,7 +87,7 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en" className={montserrat.variable}>
+    <html lang="en">
       <head>
         <meta
           name="google-site-verification"
@@ -109,7 +101,7 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body className={`${montserrat.variable} font-sans bg-white`}>
+      <body className="font-sans bg-white">
         {/* Google Tag Manager (noscript) - body snippet */}
         <noscript>
           <iframe

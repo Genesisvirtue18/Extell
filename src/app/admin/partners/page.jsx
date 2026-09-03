@@ -1,7 +1,7 @@
-// 'use client';
+'use client';
 
-// import PartnersPage from '@/admin/pages/PartnersPage';
+import PartnersPage from '@/admin/pages/PartnersPage';
 
-// export default function Page() {
-//   return <PartnersPage />;
-// }
+export default function Page() {
+  return <PartnersPage />;
+}

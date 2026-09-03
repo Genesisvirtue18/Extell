@@ -20,7 +20,7 @@ export default {
         'hero-gradient': 'linear-gradient(130deg, #080808 0%, #121212 45%, #22090a 100%)'
       },
       fontFamily: {
-        sans: ['var(--font-montserrat)', 'Montserrat', 'Inter', 'sans-serif']
+        sans: ['Montserrat', 'Inter', 'system-ui', 'sans-serif']
       },
       keyframes: {
         float: {
