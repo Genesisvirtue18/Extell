@@ -13,9 +13,12 @@ const companyLinks = [
   { label: 'Solutions', href: '/solutions' },
   { label: 'Support', href: '/support' },
   { label: 'UPS Calculator', href: '/ups-calculator' },
-  { label: 'Careers', href: '/careers' },
   { label: 'Contact', href: '/contact' },
 ];
+
+const footerCategories = categories.filter(
+  (category) => !['ups-systems', 'data-center-solutions', 'networking-products', 'power-electronics'].includes(category.slug),
+);
 
 const offices = [
   { id: 'us', label: 'US', email: 'sales@extellsystems.com' },
@@ -113,7 +116,7 @@ export default function Footer() {
                 </p>
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                   <Link href="/" style={{ fontSize: '0.85rem', color: MUTED, textDecoration: 'none' }}>Homepage</Link>
-                  {categories.map((cat) => (
+                  {footerCategories.map((cat) => (
                     <Link key={cat.slug} href={`/products?category=${cat.slug}`} style={{ fontSize: '0.85rem', color: MUTED, textDecoration: 'none' }}>
                       {cat.name}
                     </Link>

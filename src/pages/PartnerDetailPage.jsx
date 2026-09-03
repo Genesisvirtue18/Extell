@@ -91,7 +91,7 @@ function PartnerDetailPage({ partnerSlug = '' }) {
         title={partner?.name || 'Partner details'}
         description={partner ? `${partner.name} partner profile, location, products, and contact details.` : error}
         actions={
-          <Link href="/partner" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur">
+          <Link href="/partner" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-red-500 px-5 py-3 text-sm font-semibold text-white backdrop-blur">
             <ArrowLeft size={16} />
             Back to partners
           </Link>
@@ -131,7 +131,8 @@ function PartnerDetailPage({ partnerSlug = '' }) {
 
               <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-sm font-semibold">Assigned products</h3>
+                  <p className="text-sm font-semibold text-slate-400">Assigned products</p>
+                  <p className="text-sm font-semibold text-slate-400">Assigned products</p>
                   <span className="text-xs text-slate-400">{assignedProducts.length} items</span>
                 </div>
                 <div className="mt-4 space-y-3">
