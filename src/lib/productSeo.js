@@ -1,3 +1,6 @@
+import { canonicalUrl } from './siteUrl';
+import { getProductPath } from './productUrl';
+
 const DEFAULT_SITE_NAME = 'ExTell Systems';
 const DEFAULT_CATEGORY = 'Products';
 
@@ -168,3 +171,6 @@ export const resolveProductSeo = (product = {}) => {
     imageUrl: draft.imageUrl,
   };
 };
+
+export const getProductCanonicalUrl = (product) =>
+  canonicalUrl(getProductPath(product));

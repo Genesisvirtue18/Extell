@@ -4,11 +4,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev": "npm run dev:web",
     "dev:web": "next dev",
-    "dev:full": "npm run dev",
-    "dev:api": "nodemon backend/app.js",
-    "start:api": "node backend/app.js",
+    "dev:full": "npm run dev:web",
+    "dev:api": "echo The backend is hosted on Render; no local backend is configured.",
+    "start:api": "echo The backend is hosted on Render; no local backend is configured.",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

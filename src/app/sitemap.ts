@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
-import { getProducts } from '@/lib/api';
+import { getPartners, getProducts } from '@/lib/api';
 import { getProductUrlParam } from '@/lib/productUrl';
 import { CANONICAL_SITE_URL } from '@/lib/siteUrl';
 import { products as siteProducts, categories as siteCategories } from '@/data/siteData';
+import { normalizePartner, slugify, toArray } from '@/lib/partnerDirectory';
 
 // Revalidate every 24 hours so new products added via the CMS appear in the
 // sitemap within a day without needing a full redeploy.
@@ -59,14 +60,30 @@ async function fetchAllProducts(): Promise<any[]> {
   return allProducts;
 }
 
+async function fetchAllPartners(): Promise<any[]> {
+  try {
+    const response = await getPartners({ limit: 500 });
+    return toArray(response).map((partner: any, index: number) => normalizePartner(partner, index));
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let products: any[] = [];
+  let partners: any[] = [];
 
   try {
     products = await fetchAllProducts();
   } catch {
     // API unavailable — fall back to static product list
     products = [];
+  }
+
+  try {
+    partners = await fetchAllPartners();
+  } catch {
+    partners = [];
   }
 
   const productSource = products.length ? products : siteProducts;
@@ -199,5 +216,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
     .filter(Boolean) as MetadataRoute.Sitemap;
 
-  return [...staticUrls, ...categoryUrls, ...productUrls];
+  const partnerUrls: MetadataRoute.Sitemap = partners
+    .map((partner: any) => {
+      const param = slugify(partner.slug || partner.name);
+      if (!param) return null;
+      return {
+        url: url(`/partner/${param}`),
+        lastModified: asLastModified(partner.updatedAt || partner.createdAt),
+        changeFrequency: 'monthly' as const,
+        priority: 0.55,
+      };
+    })
+    .filter(Boolean) as MetadataRoute.Sitemap;
+
+  return [...staticUrls, ...categoryUrls, ...productUrls, ...partnerUrls];
 }

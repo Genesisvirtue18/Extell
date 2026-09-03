@@ -10,13 +10,15 @@ import {
   ShieldCheck,
   LogOut,
   Users,
-  Settings
+  Settings,
+  Handshake
 } from 'lucide-react';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
 const navItems = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/admin/products', label: 'Products', icon: Package },
+  // { to: '/admin/partners', label: 'Partners', icon: Handshake },
   { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/quotes', label: 'Quotes', icon: FileText },
   { to: '/admin/tickets', label: 'Tickets', icon: LifeBuoy },

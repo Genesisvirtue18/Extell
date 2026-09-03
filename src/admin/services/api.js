@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://extell-backend.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -59,6 +59,46 @@ export const updateAdminProduct = async (id, payload) => {
 
 export const deleteAdminProduct = async (id) => {
   const { data } = await api.delete(`/api/admin/products/${id}`);
+  return data;
+};
+
+export const fetchPartners = async (params = {}) => {
+  const { data } = await api.get('/api/admin/partners', { params });
+  return data;
+};
+
+export const createPartner = async (payload) => {
+  const { data } = await api.post('/api/admin/partners', payload);
+  return data;
+};
+
+export const updatePartner = async (id, payload) => {
+  const { data } = await api.put(`/api/admin/partners/${id}`, payload);
+  return data;
+};
+
+export const deletePartner = async (id) => {
+  const { data } = await api.delete(`/api/admin/partners/${id}`);
+  return data;
+};
+
+export const fetchPartnerLeads = async (params = {}) => {
+  const { data } = await api.get('/api/admin/partner-leads', { params });
+  return data;
+};
+
+export const fetchPartnerQuotes = async (params = {}) => {
+  const { data } = await api.get('/api/admin/partner-quotes', { params });
+  return data;
+};
+
+export const createPartnerQuote = async (payload) => {
+  const { data } = await api.post('/api/admin/partner-quotes', payload);
+  return data;
+};
+
+export const generatePartnerQuote = async (payload) => {
+  const { data } = await api.post('/api/admin/partner-quotes/generate', payload);
   return data;
 };
 

@@ -19,6 +19,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'extell-backend.onrender.com',
+      },
+      {
+        protocol: 'https',
         hostname: '**',
       },
     ],
@@ -30,7 +34,7 @@ const nextConfig = {
       beforeFiles: [
         {
           source: '/api/:path*',
-          destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/:path*`,
+          destination: `${process.env.NEXT_PUBLIC_API_URL || 'https://extell-backend.onrender.com'}/api/:path*`,
         },
       ],
     };
@@ -306,7 +310,7 @@ const nextConfig = {
 
     try {
       const apiBase =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        process.env.NEXT_PUBLIC_API_URL || 'https://extell-backend.onrender.com';
 
       const res = await fetch(`${apiBase}/api/products?limit=500`, {
         signal: AbortSignal.timeout(8000),

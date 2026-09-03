@@ -4,7 +4,7 @@ import ProductDetailPageContent from '@/pages/ProductDetailPage';
 import { canonicalUrl } from '@/lib/siteUrl';
 import { getProductBySlug, getProductById, getProducts } from '@/lib/api';
 import { getProductUrlParam } from '@/lib/productUrl';
-import { resolveProductSeo } from '@/lib/productSeo';
+import { getProductCanonicalUrl, resolveProductSeo } from '@/lib/productSeo';
 import { products as siteProducts } from '@/data/siteData';
 import {
   buildProductSchema,
@@ -95,7 +95,7 @@ export async function generateMetadata({ params }) {
   const sku = (product?.SKU || product?.sku || product?.id || '').toUpperCase();
   const productCategory =
     product?.topCategory || product?.Categories || product?.category || 'Products';
-  const url = canonicalUrl(`/product/${getProductUrlParam(product)}`);
+  const url = getProductCanonicalUrl(product);
   const seo = resolveProductSeo(product);
   const productImage = seo.imageUrl || canonicalUrl('/assets/placeholder-tech.svg');
 
@@ -148,7 +148,7 @@ export default async function Page({ params }) {
 
   const name = product?.Name || product?.name || 'Product';
   const sku = (product?.SKU || product?.sku || product?.id || '').toUpperCase();
-  const url = canonicalUrl(`/product/${getProductUrlParam(product)}`);
+  const url = getProductCanonicalUrl(product);
 
   const categoryPath = String(
     product?.Categories || product?.topCategory || product?.category || ''

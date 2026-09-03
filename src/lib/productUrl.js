@@ -10,14 +10,18 @@ export const slugifyProductName = (name) =>
 
 // Returns the canonical SKU/ID used for public product URLs and metadata.
 export const getProductId = (product) => {
-  const raw = product?.SKU || product?.sku || product?.id || product?._id || '';
+  const raw =
+    product?.SKU || product?.sku || product?.id || product?.ID || product?._id || '';
   return String(raw).toLowerCase().trim().replace(/\s+/g, '-');
 };
 
+// Public product URLs use the product code instead of the display name.
+export const getProductSlug = (product) => getProductId(product);
+
 // Returns the URL path parameter. We keep product URLs ID-based on purpose.
 export const getProductUrlParam = (product) => {
-  const productId = getProductId(product);
-  if (productId) return productId;
+  const productSlug = getProductSlug(product);
+  if (productSlug) return productSlug;
 
   return slugifyProductName(getProductName(product));
 };
@@ -28,9 +32,6 @@ export const getProductPath = (product) => {
   return `/product/${encodeURIComponent(param)}`;
 };
 
-// For legacy backward-compatibility only.
-export const getProductSlug = (product) => slugifyProductName(getProductName(product));
-
 export const findProductById = (items, param) =>
   (items || []).find((p) => {
     const pid = getProductId(p);
@@ -38,8 +39,19 @@ export const findProductById = (items, param) =>
   });
 
 export const findProductBySlug = (items, slug) =>
-  (items || []).find(
-    (item) =>
-      (item?.slug || '').toLowerCase() === slug ||
-      slugifyProductName(getProductName(item)) === slug
-  );
+  (items || []).find((item) => {
+    const normalizedSlug = String(slug || '').toLowerCase().trim();
+    return [
+      item?.SKU,
+      item?.sku,
+      item?.id,
+      item?.ID,
+      item?._id,
+      item?.slug,
+      getProductSlug(item),
+      slugifyProductName(getProductName(item)),
+    ]
+      .filter(Boolean)
+      .map((value) => String(value).toLowerCase().trim())
+      .includes(normalizedSlug);
+  });

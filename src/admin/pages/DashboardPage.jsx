@@ -10,14 +10,20 @@ import { formatDate, formatMonthYear } from '../utils/date';
 const DashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const today = useMemo(() => new Date(), []);
 
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
+        setLoadError('');
         const response = await fetchDashboard();
-        setStats(response);
+        const payload = response?.data ?? response?.stats ?? response;
+        setStats(payload || null);
+      } catch (error) {
+        setStats(null);
+        setLoadError(error?.response?.data?.message || error?.message || 'Unable to load dashboard metrics.');
       } finally {
         setLoading(false);
       }
@@ -43,6 +49,10 @@ const DashboardPage = () => {
       {loading ? (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
           Loading dashboard metrics...
+        </div>
+      ) : loadError ? (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700 shadow-sm">
+          {loadError}
         </div>
       ) : (
         <>

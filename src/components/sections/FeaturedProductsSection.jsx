@@ -6,16 +6,10 @@ import { Heart } from 'lucide-react';
 import SectionHeader from '../ui/SectionHeader';
 import ComparisonModal from '../ui/ComparisonModal';
 import { getProducts } from '../../lib/api';
-import { getProductUrlParam } from '../../lib/productUrl';
+import { getProductPath, getProductUrlParam } from '../../lib/productUrl';
 import { pickBestProductImage } from '../../lib/productSeo';
 
 const placeholderImage = '/assets/placeholder-tech.svg';
-
-function getProductPath(product) {
-  const param = getProductUrlParam(product);
-
-  return param ? `/product/${param}` : '/products';
-}
 
 function FeaturedProductsSection() {
   const [compareList, setCompareList] = useState([]);

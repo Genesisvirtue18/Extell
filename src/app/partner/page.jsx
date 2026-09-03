@@ -3,26 +3,23 @@ import PartnerPage from '@/pages/PartnerPage';
 import { canonicalUrl } from '@/lib/siteUrl';
 
 export const metadata = {
-  title: 'Partner Program | ExTell Systems',
-  description:
-    'Learn about the ExTell Systems partner program and collaboration opportunities for resellers, integrators, and distributors.',
+  title: 'Partners | ExTell Systems',
+  description: 'Browse ExTell Systems partners, their locations, contact details, and assigned products.',
   alternates: {
     canonical: canonicalUrl('/partner'),
   },
   openGraph: {
-    title: 'Partner Program | ExTell Systems',
-    description:
-      'Become an ExTell Systems partner — reseller, integrator, or distributor of enterprise UPS and ICT infrastructure solutions.',
+    title: 'Partners | ExTell Systems',
+    description: 'Browse ExTell Systems partners, their locations, contact details, and assigned products.',
     url: canonicalUrl('/partner'),
     siteName: 'ExTell Systems',
     type: 'website',
-    images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: 'ExTell Systems Partner Program' }],
+    images: [{ url: '/assets/homebg.jpg', width: 1200, height: 630, alt: 'ExTell Systems Partners' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Partner Program | ExTell Systems',
-    description:
-      'Become an ExTell Systems partner — reseller, integrator, or distributor of enterprise infrastructure solutions.',
+    title: 'Partners | ExTell Systems',
+    description: 'Browse ExTell Systems partners, their locations, contact details, and assigned products.',
     images: ['/assets/homebg.jpg'],
   },
 };
