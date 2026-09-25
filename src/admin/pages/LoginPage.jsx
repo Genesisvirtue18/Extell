@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '../hooks/useAdminAuth';
@@ -22,6 +22,82 @@ const LoginPage = () => {
   const [resetError, setResetError] = useState('');
   const [resetMessage, setResetMessage] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [otp, setOtp] = useState(['', '', '', '']);
+  const [otpSent, setOtpSent] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [forgotMessage, setForgotMessage] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const otpRefs = useRef([]);
+
+  const sendForgotPasswordOtp = async (event) => {
+    event.preventDefault();
+    try {
+      setForgotLoading(true);
+      setForgotError('');
+      setForgotMessage('');
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://extell-backend.onrender.com';
+      const response = await fetch(`${apiBaseUrl}/api/admin/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail.trim() })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || 'Unable to send a verification code.');
+      setOtpSent(true);
+      setForgotMessage(data.message || 'If an account exists for this email, a verification code has been sent.');
+      otpRefs.current[0]?.focus();
+    } catch (err) {
+      setForgotError(err.message || 'Unable to send a verification code.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const submitForgotPasswordReset = async (event) => {
+    event.preventDefault();
+    setForgotError('');
+    setForgotMessage('');
+    if (otp.join('').length !== 4) {
+      setForgotError('Enter the complete 4-digit code.');
+      return;
+    }
+    if (newPassword.length < 8) {
+      setForgotError('New password must be at least 8 characters long.');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setForgotError('New password and confirmation do not match.');
+      return;
+    }
+
+    try {
+      setForgotLoading(true);
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://extell-backend.onrender.com';
+      const response = await fetch(`${apiBaseUrl}/api/admin/reset-password/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail.trim(), otp: otp.join(''), newPassword })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || 'Password reset failed.');
+      setForgotMessage(data.message || 'Password updated successfully. You can now sign in.');
+      setOtp(['', '', '', '']);
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setOtpSent(false);
+    } catch (err) {
+      setForgotError(err.message || 'Password reset failed.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+  const updateOtpDigit = (index, value) => {
+    const digit = value.replace(/\D/g, '').slice(-1);
+    setOtp((current) => current.map((item, itemIndex) => itemIndex === index ? digit : item));
+    if (digit && index < otpRefs.current.length - 1) otpRefs.current[index + 1]?.focus();
+  };
 
   const onSubmit = async (values) => {
     try {
@@ -124,24 +200,12 @@ const LoginPage = () => {
                     placeholder="oooooooo"
                     {...register('password', { required: true })}
                   />
-                  <button type="button" onClick={() => setShowLoginPassword((visible) => !visible)} aria-label={showLoginPassword ? 'Hide password' : 'Show password'} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
-                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" />
-                      <circle cx="12" cy="12" r="3" />
-                      {showLoginPassword ? <path strokeLinecap="round" d="m4 4 16 16" /> : null}
-                    </svg>
-                  </button>
                 </div>
-                {errors.password ? <p className="mt-1 text-xs text-red-300">Password is required.</p> : null}
               </label>
-              <button
-                type="button"
-                onClick={() => { setShowResetForm(true); setResetError(''); setResetMessage(''); }}
-                className="text-sm text-blue-400 hover:text-blue-300"
-              >
-                Reset password
-              </button>
-              {error ? <p className="text-sm text-red-300">{error}</p> : null}
+                  <div className="flex items-center justify-between text-sm">
+                <button type="button" onClick={() => { setShowResetForm(true); setResetError(''); setResetMessage(''); }} className="text-blue-400 hover:text-blue-300">Reset password</button>
+                <button type="button" onClick={() => { setShowForgotPassword(true); setForgotEmail(''); setOtp(['', '', '', '']); setOtpSent(false); setForgotError(''); setForgotMessage(''); }} className="text-emerald-300 hover:text-emerald-200">Forgot password?</button>
+              </div>              {error ? <p className="text-sm text-red-300">{error}</p> : null}
               <button
                 type="submit"
                 disabled={loading}
@@ -154,6 +218,61 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
+
+      {showForgotPassword ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="forgot-password-title">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-gray-900 p-6 shadow-2xl">
+            <div className="mb-5 flex items-center justify-between">
+              <h2 id="forgot-password-title" className="text-xl font-semibold">Forgot password</h2>
+              <button type="button" onClick={() => setShowForgotPassword(false)} className="text-gray-400 hover:text-white" aria-label="Close forgot password form">✕</button>
+            </div>
+            <form className="space-y-5" onSubmit={sendForgotPasswordOtp}>
+              <label className="block text-sm">
+                <span className="text-gray-300">Admin email</span>
+                <input type="email" required autoComplete="email" value={forgotEmail} onChange={(event) => setForgotEmail(event.target.value)} placeholder="admin@extellsystems.com" className="mt-2 w-full rounded-lg border border-white/10 bg-white/10 px-4 py-3 text-sm outline-none focus:border-emerald-400" />
+              </label>
+              <button type="submit" disabled={forgotLoading} className="w-full rounded-lg bg-emerald-500 px-4 py-3 text-sm font-semibold text-gray-900 transition hover:bg-emerald-400 disabled:opacity-70">
+                {forgotLoading ? 'Sending code...' : 'Send OTP'}
+              </button>
+            </form>
+            {otpSent ? (
+              <form className="mt-5 space-y-4" onSubmit={submitForgotPasswordReset}>
+                <div>
+                  <p className="mb-3 text-sm text-gray-300">Enter the 4-digit code sent to your email.</p>
+                  <div className="flex justify-center gap-3" aria-label="Four digit verification code">
+                    {otp.map((digit, index) => (
+                      <input key={index} ref={(element) => { otpRefs.current[index] = element; }} type="text" inputMode="numeric" autoComplete={index === 0 ? 'one-time-code' : 'off'} aria-label={`OTP digit ${index + 1}`} maxLength={1} value={digit} onChange={(event) => updateOtpDigit(index, event.target.value)} onKeyDown={(event) => { if (event.key === 'Backspace' && !digit && index > 0) otpRefs.current[index - 1]?.focus(); }} className="h-14 w-12 rounded-lg border border-white/10 bg-white/10 text-center text-xl font-semibold outline-none focus:border-emerald-400" />
+                    ))}
+                  </div>
+                </div>
+                <label className="block text-sm">
+                  <span className="text-gray-300">Create new password</span>
+                  <div className="relative mt-2">
+                    <input type={showNewPassword ? 'text' : 'password'} required minLength={8} autoComplete="new-password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-3 pr-12 text-sm outline-none focus:border-emerald-400" />
+                    <button type="button" onClick={() => setShowNewPassword((visible) => !visible)} aria-label={showNewPassword ? 'Hide new password' : 'Show new password'} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" /><circle cx="12" cy="12" r="3" />{showNewPassword ? <path strokeLinecap="round" d="m4 4 16 16" /> : null}</svg>
+                    </button>
+                  </div>
+                </label>
+                <label className="block text-sm">
+                  <span className="text-gray-300">Confirm new password</span>
+                  <div className="relative mt-2">
+                    <input type={showConfirmPassword ? 'text' : 'password'} required minLength={8} autoComplete="new-password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-3 pr-12 text-sm outline-none focus:border-emerald-400" />
+                    <button type="button" onClick={() => setShowConfirmPassword((visible) => !visible)} aria-label={showConfirmPassword ? 'Hide confirmed password' : 'Show confirmed password'} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" /><circle cx="12" cy="12" r="3" />{showConfirmPassword ? <path strokeLinecap="round" d="m4 4 16 16" /> : null}</svg>
+                    </button>
+                  </div>
+                </label>
+                <button type="submit" disabled={forgotLoading} className="w-full rounded-lg bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-400 disabled:opacity-70">
+                  {forgotLoading ? 'Updating password...' : 'Create new password'}
+                </button>
+              </form>
+            ) : null}
+            {forgotError ? <p className="mt-4 text-sm text-red-300">{forgotError}</p> : null}
+            {forgotMessage ? <p className="mt-4 text-sm text-green-300">{forgotMessage}</p> : null}
+          </div>
+        </div>
+      ) : null}
 
       {showResetForm ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="reset-password-title">
