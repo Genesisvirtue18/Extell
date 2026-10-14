@@ -9,6 +9,8 @@ const offices = [
     region: 'United States',
     flag: '🇺🇸',
     role: 'Strategic Account Support',
+    phone: '+1 404 3264101',
+    phoneLink: 'tel:+14043264101',
     email: 'sales@extellsystems.com',
   },
   {
@@ -25,8 +27,8 @@ const offices = [
     region: 'Bahrain',
     flag: '🇧🇭',
     role: 'GCC Region Sales',
-    phone: '+973 3883 5435',
-    phoneLink: 'tel:+97338835435',
+    phone: '+973 779 36 545',
+    phoneLink: 'tel:+97377936545',
     email: 'sales.imea@extellsystems.com',
   },
 ];

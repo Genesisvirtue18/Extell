@@ -21,9 +21,9 @@ const footerCategories = categories.filter(
 );
 
 const offices = [
-  { id: 'us', label: 'US', email: 'sales@extellsystems.com' },
+  { id: 'us', label: 'US', phone: '+1 404 3264101', phoneLink: 'tel:+14043264101', email: 'sales@extellsystems.com' },
   { id: 'uae', label: 'UAE', phone: '+971 6 779 4299', phoneLink: 'tel:+97167794299', email: 'sales.imea@extellsystems.com' },
-  { id: 'bh', label: 'Bahrain', phone: '+973 3883 5435', phoneLink: 'tel:+97338835435', email: 'sales.imea@extellsystems.com' },
+  { id: 'bh', label: 'Bahrain', phone: '+973 779 36 545', phoneLink: 'tel:+97377936545', email: 'sales.imea@extellsystems.com' },
 ];
 
 const BG = '#08080a';

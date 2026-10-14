@@ -580,7 +580,7 @@ export const localBusinessSchemas = [
     image: canonicalUrl('/assets/homebg.jpg'),
     description:
       'ExTell Systems Bahrain — enterprise UPS systems, fiber cables, and ICT infrastructure solutions for Bahrain and GCC markets.',
-    telephone: '+973-3883-5435',
+    telephone: '+973-779-36-545',
     email: 'sales.imea@extellsystems.com',
     address: {
       '@type': 'PostalAddress',
@@ -616,6 +616,7 @@ export const localBusinessSchemas = [
     image: canonicalUrl('/assets/homebg.jpg'),
     description:
       'ExTell Systems US — enterprise UPS systems, fiber cables, and ICT infrastructure solutions for North American customers.',
+    telephone: '+1-404-3264101',
     email: 'sales@extellsystems.com',
     address: {
       '@type': 'PostalAddress',
