@@ -10,9 +10,9 @@ import {
 } from '@/lib/schemas';
 
 export const metadata = {
-  title: 'Contact Sales & Engineering | ExTell Systems',
+  title: { absolute: 'Contact ExTell Systems | Sales & Support' },
   description:
-    'Contact ExTell Systems for UPS systems, fiber cables, structured cabling, and ICT infrastructure inquiries. Offices in India, UAE, Bahrain, and the United States.',
+    'Contact ExTell Systems for UPS, fiber cable, structured cabling, and ICT inquiries. Reach our teams in India, UAE, Bahrain, or the United States.',
   keywords: [
     'contact ExTell Systems',
     'UPS sales India',

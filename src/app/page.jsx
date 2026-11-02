@@ -11,7 +11,8 @@ import { buildFAQSchema, buildSpeakableSchema, ORG_ID, WEBSITE_ID, toJsonLd } fr
 export const metadata = {
   title: 'ExTell Systems | UPS, Power Backup & ICT Infrastructure',
   description:
-    'ExTell Systems provides UPS systems, fiber cables, data center solutions, and ICT infrastructure for enterprise customers across 20+ countries. Get a quote today.',
+    'ExTell Systems supplies UPS systems, fiber cables, data center solutions, and ICT infrastructure to enterprise customers in 20+ countries. Request a quote.',
+  keywords: ['CAT6 Cable', 'CAT6A Cable', 'Single Mode Fiber Cable', 'Smart PDU', 'Industrial UPS', 'Modular UPS', 'UPS for Data Center', '42U Server Rack'],
   alternates: {
     canonical: canonicalUrl('/'),
   },

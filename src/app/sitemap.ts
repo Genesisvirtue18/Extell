@@ -143,12 +143,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.65,
     },
-      {
-      url: url('/ups-calculator/selector'),
-      lastModified: CONTENT_REFRESH,
-      changeFrequency: 'monthly',
-      priority: 0.65,
-    },
     {
       url: url('/certifications'),
       lastModified: SITE_LAUNCH,

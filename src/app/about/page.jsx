@@ -10,9 +10,9 @@ import {
 } from '@/lib/schemas';
 
 export const metadata = {
-  title: 'About ExTell Systems | UPS & ICT Infrastructure Company',
+  title: { absolute: 'About ExTell Systems | UPS & ICT' },
   description:
-    'ExTell Systems is an enterprise technology company providing UPS systems, fiber optic cables, structured cabling, and ICT infrastructure to 20+ countries. Learn about our story, mission, and capabilities.',
+    'Learn about ExTell Systems, an enterprise technology company supplying UPS systems, fiber cables, structured cabling, and ICT infrastructure to 20+ countries.',
   alternates: {
     canonical: canonicalUrl('/about'),
   },

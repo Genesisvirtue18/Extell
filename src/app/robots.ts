@@ -31,8 +31,6 @@ export default function robots(): MetadataRoute.Robots {
           '/products?page=',
           '/search',
           '/search/',
-          // Calculator sub-routes (noindex already, but block saves crawl budget)
-          '/ups-calculator/',
         ],
       },
     ],

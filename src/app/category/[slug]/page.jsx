@@ -10,6 +10,12 @@ import {
   buildCategoryFAQSchema,
   WEBSITE_ID,
 } from '@/lib/schemas';
+import { SEO_KEYWORD_GROUPS } from '@/lib/seoKeywords';
+
+const limitText = (value, maxLength) => {
+  const text = String(value || '').trim();
+  return text.length <= maxLength ? text : `${text.slice(0, maxLength - 1).trimEnd()}…`;
+};
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -22,10 +28,13 @@ export async function generateMetadata({ params }) {
   const url = canonicalUrl(`/category/${slug}`);
 
   return {
-    title: `${category.name} — Enterprise Products | ExTell Systems`,
-    description: `Browse ExTell Systems ${category.name} — enterprise-grade power electronics and ICT infrastructure products for data centers, telecom, and industrial environments.`,
+    title: { absolute: limitText(`${category.name} Products | ExTell Systems`, 60) },
+    description: limitText(`Explore ${category.name} products from ExTell Systems for data center, telecom, and industrial applications. Browse specifications and request a quote.`, 160),
     keywords: [
       category.name,
+      ...(slug.includes('fiber') || slug.includes('network')
+        ? SEO_KEYWORD_GROUPS.structuredCabling
+        : SEO_KEYWORD_GROUPS.ups),
       'enterprise',
       'ICT infrastructure',
       'power electronics',

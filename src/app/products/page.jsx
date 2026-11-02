@@ -13,13 +13,22 @@ import {
   productCatalogFAQSchema,
   WEBSITE_ID,
 } from '@/lib/schemas';
+import { ALL_SEO_KEYWORDS } from '@/lib/seoKeywords';
 
-export const metadata = {
-  title: 'UPS Systems, Fiber & ICT Products | ExTell Systems',
+export async function generateMetadata({ searchParams }) {
+  const params = await searchParams;
+  const category = String(params?.category || '').trim();
+  const canonicalPath = category
+    ? `/products?category=${encodeURIComponent(category)}`
+    : '/products';
+
+  return {
+  title: { absolute: 'UPS, Fiber & ICT Products | ExTell Systems' },
   description:
-    'Browse UPS systems, fiber optic cables, structured cabling, data center PDUs, and ICT infrastructure products from ExTell Systems. Enterprise-grade hardware shipped to 20+ countries.',
+    'Browse UPS systems, fiber cables, structured cabling, data center PDUs, and ICT products from ExTell Systems. Enterprise equipment for 20+ countries.',
+  keywords: ALL_SEO_KEYWORDS,
   alternates: {
-    canonical: canonicalUrl('/products'),
+    canonical: canonicalUrl(canonicalPath),
   },
   openGraph: {
     title: 'UPS Systems, Fiber & ICT Products | ExTell Systems',
@@ -37,7 +46,8 @@ export const metadata = {
       'Browse enterprise UPS systems, fiber cables, structured cabling, and ICT infrastructure from ExTell Systems.',
     images: ['/assets/homebg.jpg'],
   },
-};
+  };
+}
 
 const url = canonicalUrl('/products');
 

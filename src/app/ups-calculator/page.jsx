@@ -10,9 +10,9 @@ import {
 } from '@/lib/schemas';
 
 export const metadata = {
-  title: 'UPS Runtime Calculator — Estimate Battery Backup | ExTell Systems',
+  title: { absolute: 'UPS Runtime Calculator | ExTell Systems' },
   description:
-    'Use the ExTell Systems UPS runtime calculator to estimate how long your UPS will power connected equipment during a power outage. Enter load in watts and battery size to calculate runtime.',
+    'Estimate UPS backup runtime from your connected load and battery capacity with the ExTell Systems calculator. Compare configurations for your equipment.',
   keywords: [
     'UPS runtime calculator',
     'battery backup calculator',

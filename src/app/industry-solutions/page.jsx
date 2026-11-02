@@ -11,9 +11,9 @@ import {
 } from '@/lib/schemas';
 
 export const metadata = {
-  title: 'Industry Solutions — Telecom, Banking, Government & Data Centers | ExTell Systems',
+  title: { absolute: 'Industry Solutions | ExTell Systems' },
   description:
-    'Explore industry-specific UPS and ICT infrastructure solutions from ExTell Systems — designed for telecom operators, data centers, banking and finance, government, manufacturing, oil and gas, and utilities.',
+    'Explore UPS and ICT infrastructure for telecom, data centers, banking, government, manufacturing, oil and gas, and utilities from ExTell Systems.',
   alternates: {
     canonical: canonicalUrl('/industry-solutions'),
   },

@@ -17,6 +17,11 @@ function normaliseParam(raw) {
   return String(raw || '').toLowerCase().trim();
 }
 
+const limitText = (value, maxLength) => {
+  const text = String(value || '').trim();
+  return text.length <= maxLength ? text : `${text.slice(0, maxLength - 1).trimEnd()}…`;
+};
+
 async function resolveProduct(param) {
   const p = normaliseParam(param);
   let product = null;
@@ -100,23 +105,31 @@ export async function generateMetadata({ params }) {
   const productImage = seo.imageUrl || canonicalUrl('/assets/placeholder-tech.svg');
 
   const titleSku = sku ? ` — ${sku}` : '';
-  const descriptionBase =
+  const descriptionSource =
     seo.metaDescription ||
     product.shortDescription ||
     (product.description ? String(product.description).slice(0, 120) : null) ||
     `Premium ${productCategory} from ExTell Systems`;
+  const title = limitText(seo.metaTitle || `${productName}${titleSku} | ExTell Systems`, 60);
+  const shortDescription = `${productName}${sku ? ` (${sku})` : ''} is a ${productCategory} product from ExTell Systems. Review specifications and contact our team for availability, application guidance, and a quote.`;
+  const description = limitText(
+    String(descriptionSource).trim().length >= 150
+      ? descriptionSource
+      : `${shortDescription} Find the right configuration for your project.`,
+    160
+  );
 
  return {
-  title: seo.metaTitle || `${productName}${titleSku} | ExTell Systems`,
-  description: descriptionBase,
+  title: { absolute: title },
+  description,
   keywords: seo.keywords,
   alternates: {
     canonical: url,
   },
 
   openGraph: {
-    title: seo.metaTitle || `${productName}${titleSku}`,
-    description: descriptionBase,
+    title,
+    description,
     url,
     siteName: "ExTell Systems",
     type: "website", // Changed from "product" to "website"
@@ -132,8 +145,8 @@ export async function generateMetadata({ params }) {
 
   twitter: {
     card: "summary_large_image",
-    title: seo.metaTitle || `${productName}${titleSku}`,
-    description: descriptionBase,
+    title,
+    description,
     images: [productImage],
   },
 };

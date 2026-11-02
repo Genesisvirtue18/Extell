@@ -149,7 +149,7 @@ export default function CategoryProductsSection() {
              Procured from top-tier suppliers, validated for high-performance deployments, and sustained by ExTell's worldwide service ecosystem.
             </p>
             <Link
-              href={`/category/${activeSlug || ''}`}
+              href={activeSlug ? `/category/${activeSlug}` : '/products'}
               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.83rem', fontWeight: 700, color: RED, textDecoration: 'none' }}
             >
               Explore all <ArrowRight size={13} />

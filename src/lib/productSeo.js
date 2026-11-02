@@ -1,5 +1,6 @@
 import { canonicalUrl } from './siteUrl';
 import { getProductPath } from './productUrl';
+import { getProductSeoKeywords } from './seoKeywords';
 
 const DEFAULT_SITE_NAME = 'ExTell Systems';
 const DEFAULT_CATEGORY = 'Products';
@@ -123,7 +124,7 @@ export const buildProductSeoDraft = (product = {}) => {
       product?.seoTitle,
       `${imageLabel} | ${DEFAULT_SITE_NAME}`
     ),
-    70
+    60
   );
 
   const keywords = Array.from(
@@ -131,6 +132,7 @@ export const buildProductSeoDraft = (product = {}) => {
       [
         ...splitSeoKeywords(product?.metaKeywords),
         ...splitSeoKeywords(product?.seoKeywords),
+        ...getProductSeoKeywords(product),
         name,
         sku,
         category,

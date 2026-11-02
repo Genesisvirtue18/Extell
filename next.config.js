@@ -28,6 +28,23 @@ const nextConfig = {
     ],
   },
 
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-src 'self' https://www.googletagmanager.com https://www.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https:",
+          },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
+    ];
+  },
+
   // Proxy API requests to Express backend
   rewrites: async () => {
     return {
@@ -42,6 +59,14 @@ const nextConfig = {
 
   redirects: async () => {
     const staticRedirects = [
+      // Resolve obsolete product URLs reported by the audit. Keep them as 301s
+      // so existing links and search results land on the live product catalog.
+      { source: '/product/eb1u-uk10-uk-bk', destination: '/products', permanent: true },
+      { source: '/product/d-fs600-bk', destination: '/products', permanent: true },
+      { source: '/product/eb1u-uk06-uk-bk', destination: '/products', permanent: true },
+      { source: '/product/eb1u-uk08-uk-bk', destination: '/products', permanent: true },
+      { source: '/product/enxmp06-c13-32s', destination: '/products', permanent: true },
+      { source: '/category', destination: '/products', permanent: true },
       // Old WordPress shop/product URLs → current equivalents
       { source: '/shop', destination: '/products', permanent: true },
       { source: '/shop/:path*', destination: '/products', permanent: true },

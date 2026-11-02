@@ -10,9 +10,9 @@ import {
 } from '@/lib/schemas';
 
 export const metadata = {
-  title: 'Support Center — Warranty, Downloads & FAQs | ExTell Systems',
+  title: { absolute: 'ExTell Systems Support | Warranty & Downloads' },
   description:
-    'Get product support, FAQs, warranty registration, software downloads, and UPS calculator tools from ExTell Systems. 24/7 technical support for enterprise infrastructure.',
+    'Find product support, FAQs, warranty registration, downloads, and UPS tools from ExTell Systems. Get help with enterprise power and ICT equipment.',
   alternates: {
     canonical: canonicalUrl('/support'),
   },

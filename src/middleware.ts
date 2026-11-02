@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Must match the primary domain Vercel is configured to serve (www-prefixed).
-const CANONICAL_ORIGIN = 'https://www.extellsystems.com';
+// Keep parameterised-page canonicals aligned with the site's canonical URL.
+const CANONICAL_ORIGIN = 'https://extellsystems.com';
 const ROOT_DOMAIN = 'extellsystems.com';
 const APP_HOSTNAMES = new Set(['extellsystems.com', 'www.extellsystems.com']);
 
@@ -31,7 +31,9 @@ export function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
   if (isParameterised) {
-    const canonical = `${CANONICAL_ORIGIN}${pathname}`;
+    const category = searchParams.get('category');
+    const categoryQuery = category ? `?category=${encodeURIComponent(category)}` : '';
+    const canonical = `${CANONICAL_ORIGIN}${pathname}${categoryQuery}`;
     response.headers.set('Link', `<${canonical}>; rel="canonical"`);
   }
 
