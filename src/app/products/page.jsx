@@ -15,20 +15,14 @@ import {
 } from '@/lib/schemas';
 import { ALL_SEO_KEYWORDS } from '@/lib/seoKeywords';
 
-export async function generateMetadata({ searchParams }) {
-  const params = await searchParams;
-  const category = String(params?.category || '').trim();
-  const canonicalPath = category
-    ? `/products?category=${encodeURIComponent(category)}`
-    : '/products';
-
+export async function generateMetadata() {
   return {
   title: { absolute: 'UPS, Fiber & ICT Products | ExTell Systems' },
   description:
     'Browse UPS systems, fiber cables, structured cabling, data center PDUs, and ICT products from ExTell Systems. Enterprise equipment for 20+ countries.',
   keywords: ALL_SEO_KEYWORDS,
   alternates: {
-    canonical: canonicalUrl(canonicalPath),
+    canonical: canonicalUrl('/products'),
   },
   openGraph: {
     title: 'UPS Systems, Fiber & ICT Products | ExTell Systems',
