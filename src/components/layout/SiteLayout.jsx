@@ -4,7 +4,6 @@ import { Outlet, useLocation } from 'next/link';
 import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import FloatingCTA from './FloatingCTA';
 import AppLoader from '../ui/AppLoader';
 import CursorGlow from '../ui/CursorGlow';
 
@@ -52,7 +51,6 @@ function SiteLayout() {
           <Outlet context={{ theme }} />
         </main>
         <Footer theme={theme} />
-        <FloatingCTA />
       </div>
     </div>
   );

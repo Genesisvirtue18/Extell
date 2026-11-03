@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Package,
@@ -11,16 +12,18 @@ import {
   LogOut,
   Users,
   Settings,
-  Handshake
+  Handshake,
+  MessageSquareText
 } from 'lucide-react';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
 const navItems = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/admin/products', label: 'Products', icon: Package },
-  // { to: '/admin/partners', label: 'Partners', icon: Handshake },
+  { to: '/admin/partners', label: 'Partners', icon: Handshake },
   { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/quotes', label: 'Quotes', icon: FileText },
+  { to: '/admin/chatbot-leads', label: 'Chatbot Leads', icon: MessageSquareText },
   { to: '/admin/tickets', label: 'Tickets', icon: LifeBuoy },
   { to: '/admin/warranties', label: 'Warranties', icon: ShieldCheck },
   { to: '/admin/ups-dashboard', label: 'UPS Dashboard', icon: Calculator },
@@ -29,6 +32,7 @@ const navItems = [
 
 const AdminLayout = ({ children }) => {
   const { admin, logout } = useAdminAuth();
+  const pathname = usePathname();
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -41,11 +45,12 @@ const AdminLayout = ({ children }) => {
           <nav className="mt-8 flex-1 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
+              const isActive = pathname === item.to || pathname.startsWith(`${item.to}/`);
               return (
                 <Link
                   key={item.to}
                   href={item.to}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition text-slate-600 hover:bg-red-100"
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${isActive ? 'bg-red-50 text-red-700' : 'text-slate-600 hover:bg-red-100'}`}
                 >
                   <Icon size={18} />
                   {item.label}
@@ -78,11 +83,12 @@ const AdminLayout = ({ children }) => {
             <div className="flex gap-2 overflow-x-auto">
               {navItems.map((item) => {
                 const Icon = item.icon;
+                const isActive = pathname === item.to || pathname.startsWith(`${item.to}/`);
                 return (
                   <Link
                     key={item.to}
                     href={item.to}
-                    className="flex items-center gap-2 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold transition text-slate-600 bg-white"
+                    className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition ${isActive ? 'border-red-200 bg-red-50 text-red-700' : 'border-slate-200 bg-white text-slate-600'}`}
                   >
                     <Icon size={14} />
                     {item.label}

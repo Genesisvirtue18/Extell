@@ -46,28 +46,37 @@ const toArray = (response) => {
     response,
     response?.items,
     response?.partners,
+    response?.quotes,
+    response?.quote,
     response?.products,
     response?.results,
     response?.data,
     response?.data?.items,
     response?.data?.partners,
+    response?.data?.quotes,
+    response?.data?.quote,
+    response?.data?.quotations,
     response?.data?.products,
     response?.data?.results
   ];
 
   for (const candidate of candidates) {
-    if (Array.isArray(candidate)) return candidate;
+    if (Array.isArray(candidate)) return candidate.filter(Boolean);
   }
 
   return [];
 };
 
-const normalizeProduct = (item) => ({
-  id: item._id || item.id || item.sku || item.SKU || item.slug || item.name,
-  name: item.Name || item.name || item.title || 'Product',
-  sku: item.SKU || item.sku || item.id || '',
-  price: Number(item.salePrice ?? item.price ?? item.basePrice ?? item.mrp ?? 0) || 0
-});
+const normalizeProduct = (item = {}) => {
+  const record = item || {};
+  const id = record._id || record.id || record.sku || record.SKU || record.slug || record.name;
+  return {
+    id: id == null ? '' : String(id),
+    name: record.Name || record.name || record.title || 'Product',
+    sku: record.SKU || record.sku || record.id || '',
+    price: Number(record.salePrice ?? record.price ?? record.basePrice ?? record.mrp ?? 0) || 0
+  };
+};
 
 const toPositiveInteger = (value, fallback = 1) => {
   const parsed = Number(value);
@@ -103,7 +112,8 @@ const extractPartnerProductIds = (partner) => {
           ''
         );
       })
-      .filter(Boolean);
+      .filter((value) => value != null && value !== '')
+      .map(String);
   });
 };
 
@@ -192,9 +202,13 @@ const PartnersPage = () => {
   const [items, setItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [catalogError, setCatalogError] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
-  const [selectedPartnerId, setSelectedPartnerId] = useState('');
   const [saveError, setSaveError] = useState('');
   const [productSearch, setProductSearch] = useState('');
   const [quoteLoading, setQuoteLoading] = useState(false);
@@ -211,43 +225,47 @@ const PartnersPage = () => {
     setValue
   } = useForm({ defaultValues });
 
-  const watchedMarkup = Number(watch('partnerMarkupPercent') || 0);
   const watchedWebsite = watch('website');
   const watchedName = watch('name');
   const watchedSlug = watch('slug');
 
   const loadData = async () => {
     setLoading(true);
-    try {
-      const [partnersResponse, productsResponse] = await Promise.all([
-        fetchPartners(),
-        fetchAdminProducts({ limit: 200 })
-      ]);
+    setLoadError('');
+    setCatalogError('');
+    const [partnersResult, productsResult] = await Promise.allSettled([
+      fetchPartners({ page: 1, limit: 500 }),
+      fetchAdminProducts({ limit: 200 })
+    ]);
 
-      setItems(toArray(partnersResponse));
-      setProducts(toArray(productsResponse).map(normalizeProduct));
-    } finally {
-      setLoading(false);
+    if (partnersResult.status === 'fulfilled') {
+      setItems(toArray(partnersResult.value));
+    } else {
+      setItems([]);
+      setLoadError(
+        partnersResult.reason?.response?.data?.message ||
+          partnersResult.reason?.message ||
+          'Unable to load partners.'
+      );
     }
+
+    if (productsResult.status === 'fulfilled') {
+      setProducts(toArray(productsResult.value).map(normalizeProduct).filter((product) => product.id));
+    } else {
+      setProducts([]);
+      setCatalogError(
+        productsResult.reason?.response?.data?.message ||
+          productsResult.reason?.message ||
+          'The product catalog could not be loaded.'
+      );
+    }
+
+    setLoading(false);
   };
 
   useEffect(() => {
     loadData();
   }, []);
-
-  useEffect(() => {
-    if (!selectedPartnerId && items.length) {
-      setSelectedPartnerId(items[0]._id || items[0].id || '');
-    }
-  }, [items, selectedPartnerId]);
-
-  const activePartner = useMemo(
-    () =>
-      (Array.isArray(items)
-        ? items.find((item) => String(item._id || item.id) === String(selectedPartnerId))
-        : null) || items[0] || null,
-    [items, selectedPartnerId]
-  );
 
   const portalHost = useMemo(() => {
     if (watchedWebsite?.trim()) return watchedWebsite.trim();
@@ -333,22 +351,36 @@ const PartnersPage = () => {
     };
 
     try {
+      setSaving(true);
+      setActionError('');
       if (activeItem?._id || activeItem?.id) {
         await updatePartner(activeItem._id || activeItem.id, payload);
       } else {
         await createPartner(payload);
       }
       closeModal();
-      loadData();
+      await loadData();
     } catch (error) {
       setSaveError(error?.response?.data?.message || error?.message || 'Unable to save partner.');
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDelete = async (item) => {
     if (!window.confirm(`Delete partner "${item.name || item.partnerName || 'this partner'}"?`)) return;
-    await deletePartner(item._id || item.id);
-    loadData();
+    const partnerId = item._id || item.id;
+    if (!partnerId) return;
+    setDeletingId(String(partnerId));
+    setActionError('');
+    try {
+      await deletePartner(partnerId);
+      await loadData();
+    } catch (error) {
+      setActionError(error?.response?.data?.message || error?.message || 'Unable to delete partner.');
+    } finally {
+      setDeletingId('');
+    }
   };
 
   const partnerStats = useMemo(() => {
@@ -365,6 +397,7 @@ const PartnersPage = () => {
 
     const partnerName = partner?.name || partner?.partnerName || 'Partner';
     const customerName = partner?.contactName || partner?.name || partner?.partnerName || partner?.email || 'Partner';
+    const partnerMarkupPercent = Math.max(0, Number(partner?.partnerMarkupPercent ?? 15) || 0);
     const partnerProductIds = extractPartnerProductIds(partner);
     const partnerQuantities = extractPartnerProductQuantities(partner);
     const quoteProducts = partnerProductIds
@@ -377,6 +410,10 @@ const PartnersPage = () => {
       sku: product.sku,
       quantity: toPositiveInteger(partnerQuantities[product.id], 1),
       price: Number(product.price || 0)
+    }));
+    const draftLineItems = quoteLineItems.map((line) => ({
+      ...line,
+      price: Math.round(line.price * (1 + partnerMarkupPercent / 100) * 100) / 100
     }));
 
     setQuoteLoading(true);
@@ -396,6 +433,7 @@ const PartnersPage = () => {
           fullName: customerName,
           companyName: partnerName,
           email: partner?.email || '',
+          partnerMarkupPercent,
           productIds: partnerProductIds,
           assignedProductIds: partnerProductIds,
           products: quoteProducts,
@@ -420,6 +458,7 @@ const PartnersPage = () => {
         partnerId,
         partner: partnerId,
         id: partnerId,
+        partnerMarkupPercent,
         limit: 25
       });
 
@@ -430,8 +469,6 @@ const PartnersPage = () => {
         setQuoteModalOpen(true);
         return;
       }
-
-      const draftLineItems = quoteLineItems;
 
       setQuoteItems([
         {
@@ -461,7 +498,7 @@ const PartnersPage = () => {
 
   const productSuggestions = useMemo(() => {
     const query = productSearch.trim().toLowerCase();
-    const selectedIds = new Set(assignedProductIds);
+    const selectedIds = new Set(assignedProductIds.map(String));
 
     return products
       .filter((product) => {
@@ -535,6 +572,18 @@ const PartnersPage = () => {
         <StatCard label="Generated Sites" value={partnerStats.generatedSites} helper="partnername.extellsystems.com" />
       </div>
 
+      {actionError ? (
+        <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {actionError}
+        </p>
+      ) : null}
+
+      {catalogError ? (
+        <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Partner records are available, but the product catalog could not be loaded. Product assignment and quote totals may be incomplete. {catalogError}
+        </p>
+      ) : null}
+
       <div className="grid gap-6">
         <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
@@ -553,6 +602,13 @@ const PartnersPage = () => {
 
           {loading ? (
             <p className="mt-4 text-sm text-gray-500">Loading partners...</p>
+          ) : loadError ? (
+            <div role="alert" className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              <span>{loadError}</span>
+              <button type="button" onClick={loadData} className="rounded-lg border border-rose-300 px-3 py-1.5 font-semibold hover:bg-rose-100">
+                Retry
+              </button>
+            </div>
           ) : (
             <div className="mt-4 overflow-x-auto">
               <table className="min-w-full text-sm">
@@ -568,9 +624,10 @@ const PartnersPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((item) => {
-                    const assigned = Array.isArray(item.productIds) ? item.productIds.length : 0;
+                  {items.length ? items.map((item) => {
+                    const assigned = extractPartnerProductIds(item).length;
                     const website = item.website || `${slugify(item.name || item.partnerName)}.extellsystems.com`;
+                    const websiteHref = /^https?:\/\//i.test(website) ? website : `https://${website}`;
                     return (
                       <tr key={item._id || item.id} className="border-b last:border-0">
                         <td className="py-4">
@@ -582,7 +639,7 @@ const PartnersPage = () => {
                           <div className="text-xs text-gray-400">{item.email || '--'}</div>
                         </td>
                         <td className="py-4 text-gray-600">
-                          <a href={item.website || `https://${website}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:underline">
+                          <a href={websiteHref} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:underline">
                             {item.website || website}
                             <ExternalLink size={12} />
                           </a>
@@ -608,16 +665,21 @@ const PartnersPage = () => {
                             </button>
                             <button
                               onClick={() => handleDelete(item)}
-                              className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                              disabled={deletingId === String(item._id || item.id)}
+                              className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-wait disabled:opacity-50"
                             >
                               <Trash2 size={14} />
-                              Delete
+                              {deletingId === String(item._id || item.id) ? 'Deleting…' : 'Delete'}
                             </button>
                           </div>
                         </td>
                       </tr>
                     );
-                  })}
+                  }) : (
+                    <tr>
+                      <td colSpan={7} className="py-8 text-center text-sm text-gray-500">No partners found. Add a partner to get started.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -637,18 +699,19 @@ const PartnersPage = () => {
                 Cancel
               </button>
               <button
-                type="button"
-                onClick={handleSubmit(onSubmit)}
-                className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-700"
+                type="submit"
+                form="partner-form"
+                disabled={saving}
+                className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-700 disabled:cursor-wait disabled:opacity-60"
               >
                 <Send size={14} />
-                {activeItem ? 'Update Partner' : 'Add Partner'}
+                {saving ? 'Saving…' : activeItem ? 'Update Partner' : 'Add Partner'}
               </button>
             </div>
           </div>
         }
       >
-        <form className="grid gap-4 md:grid-cols-2">
+        <form id="partner-form" onSubmit={handleSubmit(onSubmit)} className="grid gap-4 md:grid-cols-2">
           <label className="text-sm text-gray-600">
             Partner name
             <input className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2" {...register('name', { required: true })} />
@@ -672,6 +735,7 @@ const PartnersPage = () => {
           <label className="text-sm text-gray-600">
             Generated site slug
             <input className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2" placeholder="partnername" {...register('slug')} />
+            <span className="mt-1 block text-xs text-gray-400">Partner site: {portalHost}</span>
           </label>
           <label className="text-sm text-gray-600 md:col-span-2">
             Address
@@ -860,6 +924,7 @@ const PartnersPage = () => {
                     {latestQuote?.createdAt ? formatDate(latestQuote.createdAt) : latestQuote ? 'Draft' : 'No quote yet'}
                   </p>
                   <p className="mt-1 text-xs text-gray-500">Assigned products: {quotePartnerProducts.length || 0}</p>
+                  <p className="mt-1 text-xs text-gray-500">Partner markup: {Math.max(0, Number(quotePartner.partnerMarkupPercent ?? 15) || 0)}%</p>
                 </div>
               </div>
 

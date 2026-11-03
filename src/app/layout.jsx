@@ -1,7 +1,7 @@
 import { categories as siteCategories } from '@/data/siteData';
 import NavigationProgress from '@/components/ui/NavigationProgress';
-import Script from 'next/script';
 import { headers } from 'next/headers';
+import GoogleTagManager from '@/components/analytics/GoogleTagManager';
 import { CANONICAL_SITE_URL, canonicalUrl } from '@/lib/siteUrl';
 import { organizationSchema, websiteSchema, ORG_ID, WEBSITE_ID, toJsonLd } from '@/lib/schemas';
 import '@/tailwind.css';
@@ -49,10 +49,6 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const requestHeaders = await headers();
   const nonce = requestHeaders.get('x-nonce') || undefined;
-  const configuredGaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-  const gaMeasurementId = /^G-[A-Z0-9]+$/.test(configuredGaMeasurementId || '')
-    ? configuredGaMeasurementId
-    : null;
   // Full @graph for the whole site — loaded on every page.
   // Individual pages add their own page-specific schemas on top of this.
   const globalGraph = {
@@ -95,32 +91,12 @@ export default async function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta
           name="google-site-verification"
           content="tzkyAKPdqgw2xbtXozmRdJV8ERMVKXmDelEcBMEbOIA"
         />
-        <Script id="gtm-init" nonce={nonce} strategy="beforeInteractive">
-          {`window.dataLayer = window.dataLayer || []; window.dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});`}
-        </Script>
-        <Script
-          src="https://www.googletagmanager.com/gtm.js?id=GTM-K7XBFBZ"
-          nonce={nonce}
-          strategy="beforeInteractive"
-        />
-        {gaMeasurementId && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-              nonce={nonce}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" nonce={nonce} strategy="afterInteractive">
-              {`window.dataLayer = window.dataLayer || []; function gtag(){window.dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaMeasurementId}');`}
-            </Script>
-          </>
-        )}
       </head>
 
       <body className="font-sans bg-white">
@@ -134,6 +110,7 @@ export default async function RootLayout({ children }) {
           />
         </noscript>
         <NavigationProgress />
+        <GoogleTagManager nonce={nonce} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(globalGraph) }}

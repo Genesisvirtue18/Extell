@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { ArrowLeft, Building2, CheckCircle2, Globe2, Mail, MapPin, Package, Phone, Users2 } from 'lucide-react';
 import PageHero from '../components/ui/PageHero';
 import { loadPartnerDirectory, resolvePartnerProducts, slugify } from '../lib/partnerDirectory';
-import { fetchAdminProducts, fetchPartners } from '../admin/services/api';
+import { getPartners, getProducts } from '../lib/api';
+import { pickBestProductImage } from '../lib/productSeo';
+
+const PRODUCT_PLACEHOLDER = '/assets/placeholder-tech.svg';
 
 const toCurrency = (value) =>
   new Intl.NumberFormat('en-IN', {
@@ -89,8 +92,8 @@ function PartnerPage({ partnerSlug = '' }) {
 
       try {
         const directory = await loadPartnerDirectory({
-          partnersLoader: fetchPartners,
-          productsLoader: fetchAdminProducts,
+          partnersLoader: getPartners,
+          productsLoader: getProducts,
           page,
           limit: pageSize
         });
@@ -147,6 +150,7 @@ function PartnerPage({ partnerSlug = '' }) {
       <PageHero
         title={heroTitle}
         description={heroDescription}
+        heroImage="/assets/homebg.jpg"
         actions={
           selectedPartner ? (
             <>
@@ -199,32 +203,32 @@ function PartnerPage({ partnerSlug = '' }) {
                 <div className="rounded-3xl  bg-[#0f1115] p-6 text-white shadow-2xl">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ff9f9f]">Partner profile</p>
-                      <h3 className="mt-2 text-3xl font-bold">{selectedPartner.name}</h3>
+                      <p className="text-xs font-semibold tracking-wide text-[#ff9f9f]">Partner profile</p>
+                      <h3 className="mt-2 text-3xl font-bold capitalize">{selectedPartner.name}</h3>
                       <p className="mt-2 max-w-2xl text-sm text-slate-300">
                         {selectedPartner.location || 'Location on request'}.
                       </p>
                     </div>
-                    <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200">
+                    <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold capitalize tracking-wide text-slate-200">
                       {selectedPartner.status}
                     </div>
                   </div>
 
                   <div className="mt-6 grid gap-4 sm:grid-cols-2">
                     <div className="rounded-2xl bg-white/5 p-4">
-                      <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Contact person</p>
+                      <p className="text-xs font-medium tracking-wide text-slate-400">Contact person</p>
                       <p className="mt-2 text-sm font-medium">{selectedPartner.contactName || 'Not listed'}</p>
                     </div>
                     <div className="rounded-2xl bg-white/5 p-4">
-                      <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Email</p>
+                      <p className="text-xs font-medium tracking-wide text-slate-400">Email</p>
                       <p className="mt-2 text-sm font-medium">{selectedPartner.email || 'Not listed'}</p>
                     </div>
                     <div className="rounded-2xl bg-white/5 p-4">
-                      <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Phone</p>
+                      <p className="text-xs font-medium tracking-wide text-slate-400">Phone</p>
                       <p className="mt-2 text-sm font-medium">{selectedPartner.phone || 'Not listed'}</p>
                     </div>
                     <div className="rounded-2xl bg-white/5 p-4">
-                      <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Website</p>
+                      <p className="text-xs font-medium tracking-wide text-slate-400">Website</p>
                       <p className="mt-2 text-sm font-medium">
                         {selectedPartner.website || `${selectedPartner.slug}.extellsystems.com`}
                       </p>
@@ -242,11 +246,19 @@ function PartnerPage({ partnerSlug = '' }) {
                         featuredProducts.map((product) => (
                           <div
                             key={product.id}
-                            className="flex items-center justify-between gap-3 rounded-2xl bg-black/20 px-4 py-3"
+                            className="flex items-center gap-3 rounded-2xl bg-black/20 p-3"
                           >
-                            <div>
+                            <img
+                              src={pickBestProductImage(product, PRODUCT_PLACEHOLDER)}
+                              alt={product.name}
+                              loading="lazy"
+                              onError={(event) => { event.currentTarget.src = PRODUCT_PLACEHOLDER; }}
+                              className="h-16 w-16 shrink-0 rounded-xl bg-white object-contain p-1"
+                            />
+                            <div className="min-w-0 flex-1">
                               <p className="font-medium text-white">{product.name}</p>
-                              <p className="text-xs text-slate-300">{product.sku || product.short || 'Assigned product'}</p>
+                              <p className="mt-1 text-xs text-slate-300">{product.sku || 'Product details'}</p>
+                              {product.category ? <p className="mt-1 line-clamp-1 text-xs text-slate-400">{product.category}</p> : null}
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-semibold text-white">x{product.quantity || 1}</p>
@@ -270,7 +282,7 @@ function PartnerPage({ partnerSlug = '' }) {
                         <Building2 size={18} />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#ed2125]">Location</p>
+                        <p className="text-xs font-semibold tracking-wide text-[#ed2125]">Location</p>
                         <h4 className="mt-1 text-xl font-bold text-[#111]">{selectedPartner.location || 'Location on request'}</h4>
                       </div>
                     </div>
@@ -279,28 +291,28 @@ function PartnerPage({ partnerSlug = '' }) {
                       <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4">
                         <MapPin size={18} className="mt-0.5 text-slate-500" />
                         <div>
-                          <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Address</p>
+                          <p className="text-xs font-medium tracking-wide text-slate-500">Address</p>
                           <p className="mt-1 text-sm text-slate-700">{selectedPartner.address || 'Not listed'}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4">
                         <Mail size={18} className="mt-0.5 text-slate-500" />
                         <div>
-                          <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Email</p>
+                          <p className="text-xs font-medium tracking-wide text-slate-500">Email</p>
                           <p className="mt-1 text-sm text-slate-700">{selectedPartner.email || 'Not listed'}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4">
                         <Phone size={18} className="mt-0.5 text-slate-500" />
                         <div>
-                          <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Phone</p>
+                          <p className="text-xs font-medium tracking-wide text-slate-500">Phone</p>
                           <p className="mt-1 text-sm text-slate-700">{selectedPartner.phone || 'Not listed'}</p>
                         </div>
                       </div>
                     </div>
 
                     <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Public portal</p>
+                      <p className="text-xs font-medium tracking-wide text-slate-500">Public portal</p>
                       <p className="mt-2 text-sm text-slate-700">
                         {selectedPartner.website || `${selectedPartner.slug}.extellsystems.com`}
                       </p>
@@ -310,7 +322,7 @@ function PartnerPage({ partnerSlug = '' }) {
                   <div className="rounded-3xl border border-[#e6e6e6] bg-white p-6 shadow-sm">
                     <div className="flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#ed2125]">Quick view</p>
+                        <p className="text-xs font-semibold tracking-wide text-[#ed2125]">Quick view</p>
                         <h4 className="mt-2 text-xl font-bold text-[#111]">Partner details</h4>
                       </div>
                       <CheckCircle2 className="text-slate-400" size={18} />
@@ -318,11 +330,11 @@ function PartnerPage({ partnerSlug = '' }) {
 
                     <div className="mt-5 grid gap-3">
                       <div className="rounded-2xl bg-slate-50 p-4">
-                        <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Products</p>
+                        <p className="text-xs font-medium tracking-wide text-slate-500">Products</p>
                         <p className="mt-2 text-sm text-slate-700">{featuredProducts.length} assigned products</p>
                       </div>
                       <div className="rounded-2xl bg-slate-50 p-4">
-                        <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Login email</p>
+                        <p className="text-xs font-medium tracking-wide text-slate-500">Login email</p>
                         <p className="mt-2 text-sm text-slate-700">{selectedPartner.loginEmail || 'Not listed'}</p>
                       </div>
                     </div>
@@ -334,7 +346,7 @@ function PartnerPage({ partnerSlug = '' }) {
             <div className="mt-10 rounded-3xl border border-[#e6e6e6] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#ed2125]">Partner roster</p>
+                  <p className="text-xs font-semibold tracking-wide text-[#ed2125]">Partner roster</p>
                   <h3 className="mt-2 text-2xl font-bold text-[#111]">
                     {selectedPartner ? 'More partners' : 'All partners'}
                   </h3>
@@ -360,10 +372,10 @@ function PartnerPage({ partnerSlug = '' }) {
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <p className={`text-xs font-semibold uppercase tracking-[0.3em] ${isActive ? 'text-[#ff9f9f]' : 'text-[#ed2125]'}`}>
+                            <p className={`text-xs font-semibold capitalize tracking-wide ${isActive ? 'text-[#ff9f9f]' : 'text-[#ed2125]'}`}>
                               {partner.status}
                             </p>
-                            <h4 className="mt-2 text-xl font-bold">{partner.name}</h4>
+                            <h4 className="mt-2 text-xl font-bold capitalize">{partner.name}</h4>
                           </div>
                           <span
                             className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -389,11 +401,28 @@ function PartnerPage({ partnerSlug = '' }) {
                           </div>
                         </div>
 
+                        {partnerProducts.length ? (
+                          <div className="mt-5 grid grid-cols-3 gap-2">
+                            {partnerProducts.slice(0, 3).map((product) => (
+                              <div key={product.id} className={`overflow-hidden rounded-xl border ${isActive ? 'border-white/10 bg-white/5' : 'border-slate-100 bg-slate-50'}`}>
+                                <img
+                                  src={pickBestProductImage(product, PRODUCT_PLACEHOLDER)}
+                                  alt={product.name}
+                                  loading="lazy"
+                                  onError={(event) => { event.currentTarget.src = PRODUCT_PLACEHOLDER; }}
+                                  className="h-24 w-full bg-white object-contain p-2"
+                                />
+                                <p className={`line-clamp-2 px-2 py-2 text-xs font-medium ${isActive ? 'text-slate-100' : 'text-slate-700'}`}>{product.name}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
+
                         <div className="mt-4 flex flex-wrap gap-2">
                           {partnerProducts.slice(0, 3).map((product) => (
                             <span
                               key={product.id}
-                              className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${
+                              className={`rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide ${
                                 isActive ? 'bg-white/10 text-white' : 'bg-slate-100 text-slate-600'
                               }`}
                             >
@@ -402,7 +431,7 @@ function PartnerPage({ partnerSlug = '' }) {
                           ))}
                           {!partnerProducts.length ? (
                             <span
-                              className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${
+                              className={`rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide ${
                                 isActive ? 'bg-white/10 text-white' : 'bg-slate-100 text-slate-600'
                               }`}
                             >

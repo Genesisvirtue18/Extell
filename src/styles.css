@@ -2243,6 +2243,37 @@ button {
   font-weight: 700
 }
 
+.product-detail-copy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem;
+  margin-top: .7rem
+}
+
+.product-detail-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  padding: .5rem .85rem;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer
+}
+
+.product-detail-copy-button:hover {
+  background: rgba(255, 255, 255, .15)
+}
+
+.product-detail-copy-status {
+  color: #fda4af;
+  font-size: .75rem
+}
+
 .product-detail-copy-wrap {
   margin: .55rem 0 0
 }
@@ -5133,6 +5164,20 @@ body[data-theme="light"] .product-detail-summary h1 {
 
 body[data-theme="light"] .product-detail-summary h2 {
   color: #d90429;
+}
+
+body[data-theme="light"] .product-detail-copy-button {
+  border-color: var(--ui-border-subtle);
+  background: #fff;
+  color: #334155
+}
+
+body[data-theme="light"] .product-detail-copy-button:hover {
+  background: #f8fafc
+}
+
+body[data-theme="light"] .product-detail-copy-status {
+  color: #b91c1c
 }
 
 body[data-theme="light"] .product-detail-copy,

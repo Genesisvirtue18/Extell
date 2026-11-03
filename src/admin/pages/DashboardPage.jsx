@@ -4,13 +4,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } from 'recharts';
 import PageHeader from '../components/PageHeader';
 import StatCard from '../components/StatCard';
-import { fetchDashboard } from '../services/api';
+import { fetchDashboard, fetchChatbotLeads } from '../services/api';
 import { formatDate, formatMonthYear } from '../utils/date';
 
 const DashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [chatbotQueries, setChatbotQueries] = useState([]);
+  const [chatbotQueryError, setChatbotQueryError] = useState('');
+  const [chatbotQueryLoading, setChatbotQueryLoading] = useState(false);
   const today = useMemo(() => new Date(), []);
 
   useEffect(() => {
@@ -29,6 +32,35 @@ const DashboardPage = () => {
       }
     };
     load();
+  }, []);
+
+  const loadChatbotQueries = async () => {
+    setChatbotQueryLoading(true);
+    setChatbotQueryError('');
+    try {
+      const response = await fetchChatbotLeads({ page: 1, limit: 200 });
+      const findRows = (value, depth = 0) => {
+        if (Array.isArray(value)) return value;
+        if (!value || typeof value !== 'object' || depth > 4) return null;
+        for (const key of ['leads', 'chatbotLeads', 'items', 'results', 'records', 'docs', 'queries', 'data']) {
+          const rows = findRows(value[key], depth + 1);
+          if (rows) return rows;
+        }
+        return null;
+      };
+      if (response?.success === false) throw new Error(response?.message || 'Chatbot leads request failed.');
+      setChatbotQueries(findRows(response) || []);
+    } catch (error) {
+      setChatbotQueryError(error?.response?.data?.message || error?.message || 'Unable to load chatbot queries.');
+    } finally {
+      setChatbotQueryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadChatbotQueries();
+    const refreshTimer = window.setInterval(loadChatbotQueries, 30000);
+    return () => window.clearInterval(refreshTimer);
   }, []);
 
   const categoryData = useMemo(() => stats?.categoryStats || [], [stats]);
@@ -147,6 +179,53 @@ const DashboardPage = () => {
                       <td className="py-3 text-slate-500">{formatDate(ticket.createdAt)}</td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Chatbot presales questions */}
+          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-800">Chatbot Queries</h3>
+                <p className="mt-1 text-xs text-slate-500">Visitor details and product questions captured by the sales assistant.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-400">{chatbotQueries.length} records</span>
+                <button type="button" onClick={loadChatbotQueries} disabled={chatbotQueryLoading} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+                  {chatbotQueryLoading ? 'Refreshing…' : 'Refresh'}
+                </button>
+              </div>
+            </div>
+            {chatbotQueryError ? <p className="mb-3 text-sm text-rose-600">{chatbotQueryError}</p> : null}
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase tracking-wide text-slate-400">
+                    <th className="pb-3 pr-4">Name</th>
+                    <th className="pb-3 pr-4">Email</th>
+                    <th className="pb-3 pr-4">Question</th>
+                    <th className="pb-3 pr-4">Answer</th>
+                    <th className="pb-3">Received</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chatbotQueries.map((query) => (
+                    <tr key={query._id} className="border-b last:border-0">
+                      <td className="py-3 pr-4 text-slate-700">{query.name || query.fullName || '-'}</td>
+                      <td className="py-3 pr-4 text-slate-700">{query.email || '-'}</td>
+                      <td className="max-w-xl py-3 pr-4 text-slate-600">
+                        <span className="line-clamp-2">{query.question || '-'}</span>
+                      </td>
+                      <td className="max-w-xl py-3 pr-4 text-slate-600"><span className="line-clamp-2">{query.answer || '-'}</span></td>
+                      <td className="whitespace-nowrap py-3 text-slate-500">{formatDate(query.createdAt)}</td>
+                    </tr>
+                  ))}
+                  {!chatbotQueries.length && !chatbotQueryError && !chatbotQueryLoading ? (
+                    <tr><td colSpan={5} className="py-6 text-center text-sm text-slate-400">No chatbot questions recorded yet.</td></tr>
+                  ) : null}
+                  {!chatbotQueries.length && chatbotQueryLoading ? <tr><td colSpan={5} className="py-6 text-center text-sm text-slate-400">Loading chatbot questions…</td></tr> : null}
                 </tbody>
               </table>
             </div>

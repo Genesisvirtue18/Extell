@@ -197,6 +197,11 @@ export const fetchQuoteRequests = async (params = {}) => {
   return data;
 };
 
+export const fetchChatbotLeads = async (params = {}) => {
+  const { data } = await api.get('/api/admin/chatbot/leads', { params });
+  return data;
+};
+
 export const updateQuoteStatus = async (id, status) => {
   const { data } = await api.put(`/api/admin/quotes/${id}/status`, { status });
   return data;

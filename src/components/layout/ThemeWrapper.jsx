@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import FloatingCTA from '@/components/layout/FloatingCTA';
 import CursorGlow from '@/components/ui/CursorGlow';
+import SalesChatbot from '@/components/chat/SalesChatbot';
 
 export default function ThemeWrapper({ children }) {
   const [theme, setTheme] = useState('light');
@@ -37,7 +37,7 @@ export default function ThemeWrapper({ children }) {
           {children}
         </main>
         <Footer theme={theme} />
-        <FloatingCTA />
+        <SalesChatbot />
       </div>
     </div>
   );

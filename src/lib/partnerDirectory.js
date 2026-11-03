@@ -54,8 +54,17 @@ export const normalizeProduct = (item) => ({
   id: item?._id || item?.id || item?.sku || item?.SKU || item?.slug || item?.name,
   name: item?.Name || item?.name || item?.title || 'Product',
   sku: item?.SKU || item?.sku || item?.id || '',
-  short: item?.short || item?.description || '',
-  price: Number(item?.salePrice ?? item?.price ?? item?.basePrice ?? item?.mrp ?? 0) || 0
+  short: item?.short || item?.descriptionText || item?.description || item?.shortDescription || '',
+  category: item?.Categories || item?.category || '',
+  image: item?.heroImage || item?.image || item?.Images?.[0] || item?.imageList?.[0] || '',
+  heroImage: item?.heroImage || '',
+  Images: item?.Images || item?.images || [],
+  imageList: item?.imageList || [],
+  features: Array.isArray(item?.features) ? item.features : [],
+  specs: item?.specs || {},
+  datasheet: item?.datasheet || item?.infoPdfUrl || item?.downloadUrl || '',
+  price: Number(item?.salePrice ?? item?.price ?? item?.basePrice ?? item?.mrp ?? 0) || 0,
+  raw: item
 });
 
 const toPositiveInteger = (value, fallback = 1) => {
@@ -133,32 +142,63 @@ const extractPartnerProductQuantities = (partner) => {
 export const normalizePartner = (item, index = 0) => {
   const name = item?.name || item?.partnerName || `Partner ${index + 1}`;
   const slug = item?.slug || slugify(name) || `partner-${index + 1}`;
+  const contact = item?.contactInfo || item?.contactDetails || item?.primaryContact || item?.contact || {};
   const city = item?.city || item?.place || '';
   const country = item?.country || '';
   const address = item?.address || item?.location || '';
-  const location = [city, country].filter(Boolean).join(', ') || address || 'Location on request';
+  const state = item?.state || '';
+  const location = [city, state, country].filter(Boolean).join(', ') || address || 'Location on request';
   const productIds = Array.from(new Set(extractPartnerProductIds(item).map((value) => String(value))));
   const productQuantities = extractPartnerProductQuantities(item);
+  const embeddedProducts = Array.isArray(item?.products)
+    ? item.products.filter((product) => product && typeof product === 'object').map(normalizeProduct)
+    : [];
 
   return {
     id: item?._id || item?.id || slug,
     slug,
-    name,
+    name: item?.companyName || name,
+    companyName: item?.companyName || name,
     createdAt: item?.createdAt || null,
     updatedAt: item?.updatedAt || null,
-    contactName: item?.contactName || item?.contact || '',
-    email: item?.email || '',
-    phone: item?.phone || '',
+    contactName:
+      item?.contactName ||
+      item?.contactPerson ||
+      (typeof contact === 'string' ? contact : '') ||
+      contact?.name ||
+      contact?.fullName ||
+      '',
+    email:
+      item?.email ||
+      item?.contactEmail ||
+      item?.loginEmail ||
+      contact?.email ||
+      contact?.emailAddress ||
+      item?.contact?.email ||
+      '',
+    phone:
+      item?.phone ||
+      item?.phoneNumber ||
+      item?.mobile ||
+      item?.mobileNumber ||
+      item?.contactPhone ||
+      contact?.phone ||
+      contact?.phoneNumber ||
+      contact?.mobile ||
+      item?.contact?.phone ||
+      '',
     website: item?.website || '',
     address,
     city,
+    state,
     country,
     location,
     status: item?.status || 'active',
     partnerMarkupPercent: Number(item?.partnerMarkupPercent ?? 15) || 15,
-    loginEmail: item?.loginEmail || item?.email || '',
+    loginEmail: item?.loginEmail || item?.email || item?.contactEmail || contact?.email || '',
     portalNote: item?.portalNote || '',
     productIds,
+    embeddedProducts,
     productQuantities,
     raw: item
   };
@@ -166,12 +206,18 @@ export const normalizePartner = (item, index = 0) => {
 
 export const resolvePartnerProducts = (partner, products = []) => {
   const productMap = new Map(products.map((product) => [String(product.id), product]));
-  return (partner?.productIds || [])
+  const embeddedMap = new Map((partner?.embeddedProducts || []).map((product) => [String(product.id), product]));
+  const ids = partner?.productIds?.length
+    ? partner.productIds
+    : Array.from(embeddedMap.keys());
+  return ids
     .map((productId) => {
       const resolved = productMap.get(String(productId));
-      if (resolved) {
+      const embedded = embeddedMap.get(String(productId));
+      if (resolved || embedded) {
         return {
-          ...resolved,
+          ...(resolved || {}),
+          ...(embedded || {}),
           quantity: partner?.productQuantities?.[String(productId)] || 1
         };
       }

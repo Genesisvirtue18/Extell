@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronDown, Download, FileText, X, ZoomIn } from 'lucide-react';
+import { Check, ChevronDown, Copy, Download, FileText, X, ZoomIn } from 'lucide-react';
 import { getProductById, getProductBySlug, getProducts, submitQuoteRequest } from '../lib/api';
 import { getProductPath } from '../lib/productUrl';
 import { resolveProductSeo, pickBestProductImage, getProductImageList } from '../lib/productSeo';
@@ -205,6 +205,7 @@ function ProductDetailPage({ slug, initialProduct }) {
   const [quoteStatus, setQuoteStatus] = useState({ type: '', message: '' });
   const [quoteSubmitting, setQuoteSubmitting] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
+  const [copyStatus, setCopyStatus] = useState('idle');
 
   useEffect(() => {
     let mounted = true;
@@ -319,6 +320,41 @@ function ProductDetailPage({ slug, initialProduct }) {
     }
   };
 
+  const handleCopyProductDetails = async () => {
+    const copySku = product?.SKU || product?.sku || '';
+    const partNumber = product?.partNumber || product?.part_number || product?.PartNumber || product?.partNo || product?.PartNo || '';
+    const copyText = [
+      copySku ? `SKU: ${copySku}` : '',
+      partNumber ? `Part number: ${partNumber}` : ''
+    ].filter(Boolean).join('\n\n');
+
+    if (!copyText) {
+      setCopyStatus('error');
+      window.setTimeout(() => setCopyStatus('idle'), 2500);
+      return;
+    }
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(copyText);
+      } else {
+        const temporaryInput = document.createElement('textarea');
+        temporaryInput.value = copyText;
+        temporaryInput.style.position = 'fixed';
+        temporaryInput.style.opacity = '0';
+        document.body.appendChild(temporaryInput);
+        temporaryInput.select();
+        const copied = document.execCommand('copy');
+        temporaryInput.remove();
+        if (!copied) throw new Error('Copy command was rejected');
+      }
+      setCopyStatus('copied');
+    } catch {
+      setCopyStatus('error');
+    }
+    window.setTimeout(() => setCopyStatus('idle'), 2500);
+  };
+
   const openZoom = (src) => {
     if (!src) return;
     setZoomedImage(src);
@@ -388,6 +424,15 @@ function ProductDetailPage({ slug, initialProduct }) {
             <p className="product-detail-kicker">{category}</p>
             <h1>{name}</h1>
             <h2>Model: {sku}</h2>
+            <div className="product-detail-copy-actions">
+              <button type="button" onClick={handleCopyProductDetails} className="product-detail-copy-button">
+                {copyStatus === 'copied' ? <Check size={16} /> : <Copy size={16} />}
+                {copyStatus === 'copied' ? 'Copied' : 'Copy part number'}
+              </button>
+              <span className="product-detail-copy-status" aria-live="polite">
+                {copyStatus === 'error' ? 'Could not copy. Please try again.' : ''}
+              </span>
+            </div>
             <div className="product-detail-copy-wrap">
               <p
                 className="product-detail-copy"
