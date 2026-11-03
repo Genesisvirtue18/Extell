@@ -142,10 +142,10 @@ export default function SalesChatbot() {
   return (
     <>
       {open ? <button type="button" aria-label="Close chat" onClick={() => setOpen(false)} className="fixed inset-0 z-[119] cursor-default bg-black/10" /> : null}
-      <div className="fixed bottom-24 right-5 z-[120] font-sans">
+      <div className="fixed bottom-4 right-4 z-[120] font-sans">
       {open ? (
-        <section aria-label="ExTell presales assistant" className="flex h-[min(680px,calc(100vh-6rem))] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
-          <header className="flex items-center justify-between bg-slate-950 px-5 py-4 text-white">
+        <section aria-label="ExTell presales assistant" className="flex h-[min(680px,calc(100dvh-2rem))] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+          <header className="flex shrink-0 items-center justify-between bg-slate-950 px-5 py-4 text-white">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-600"><Bot size={22} /></span>
               <div>
@@ -157,7 +157,7 @@ export default function SalesChatbot() {
           </header>
 
           {!lead ? (
-            <form onSubmit={handleLeadSubmit} className="flex flex-1 flex-col justify-center gap-4 p-6">
+            <form onSubmit={handleLeadSubmit} className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-6">
               <div>
                 <p className="text-xs font-semibold tracking-wide text-red-600">Before we begin</p>
                 <h3 className="mt-2 text-2xl font-semibold text-slate-950">How should we address you?</h3>
