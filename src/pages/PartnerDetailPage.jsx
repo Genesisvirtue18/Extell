@@ -15,6 +15,27 @@ const getPartnerItems = (response) => {
 const getPartnerLocation = (partner) =>
   [partner?.city, partner?.state, partner?.country].filter(Boolean).join(', ');
 
+const PartnerMark = () => (
+  <svg viewBox="0 0 64 64" aria-hidden="true" className="h-14 w-14">
+    <path d="M9 4 31 26l-8 8L1 12zM55 4 33 26l8 8 22-22zM9 60l22-22-8-8L1 52zM55 60 33 38l8-8 22 22z" fill="currentColor" />
+    <path d="m20 24 4-4 8 8 8-8 4 4-8 8 8 8-4 4-8-8-8 8-4-4 8-8z" fill="currentColor" />
+  </svg>
+);
+
+const PartnerSkyline = () => (
+  <svg viewBox="0 0 900 250" preserveAspectRatio="xMidYMax meet" aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-52 w-full text-[#dfe1ef] opacity-70">
+    <defs>
+      <linearGradient id="partner-skyline-fade" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stopColor="currentColor" stopOpacity="0.12" />
+        <stop offset="1" stopColor="currentColor" stopOpacity="0.78" />
+      </linearGradient>
+    </defs>
+    <path fill="url(#partner-skyline-fade)" d="M0 204h62v-25h8v-31h6v31h9v25h39v-45h7v-36h6v36h8v45h46v-27h9v-57h6v-24q7-18 14 0v24h6v57h8v27h51v-35h9v-58h5v-22q6-17 12 0v22h6v58h9v35h45v-21h10v-50h7v-20q8-21 16 0v20h6v50h10v21h45v-39h11v-52h6v-26q8-24 16 0v26h6v52h11v39h35v-31h9v-71h6v-28q8-25 16 0v28h6v71h9v31h33v-40h9v-89h6v-28q8-25 16 0v28h6v89h9v40h40v-28h10v-50h7v-19q7-19 14 0v19h7v50h10v28h34v-54h10v-43h8v-18q7-19 14 0v18h8v43h10v54h32v-27h12v-47h8v-22q8-20 16 0v22h8v47h12v27h59v46H0z" />
+    <path fill="currentColor" opacity=".45" d="M397 201a69 69 0 0 1 138 0zm55-4h28v-24l14 24h-56l14-24zm-35-10h12v-41h-12zm-5-41h22l-11-14zm88 41h12v-41h-12zm-5-41h22l-11-14z" />
+    <path d="M0 224c132-28 212-18 320-2 148 22 282-18 398-18 68 0 119 13 182 20v26H0z" fill="white" opacity=".78" />
+  </svg>
+);
+
 function PartnerDetailPage({ partnerSlug = '' }) {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,32 +103,31 @@ function PartnerDetailPage({ partnerSlug = '' }) {
           </div>
         ) : (
           <div className="grid items-stretch gap-5 lg:grid-cols-[1.05fr_0.95fr]">
-            <article className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-900/5">
-              <div className="relative flex min-h-28 items-start justify-between overflow-hidden bg-gradient-to-br from-[#ed102b] via-[#9d1028] to-[#11131a] px-6 py-6 text-white md:px-9">
-                <div className="absolute -bottom-20 left-1/3 h-40 w-72 rounded-full bg-white/10 blur-2xl" />
-                <span className="relative rounded-full bg-black/25 px-4 py-2 text-sm font-semibold">Partner Profile</span>
-                <span className="relative inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-black/20 px-4 py-2 text-sm font-semibold capitalize">
-                  <span className={`h-2.5 w-2.5 rounded-full ${partner.status === 'active' ? 'bg-emerald-400' : 'bg-slate-300'}`} />
+            <article className="relative min-h-[610px] overflow-hidden rounded-[2rem] border border-[#e5e7eb] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.12)]">
+              <div className="absolute inset-x-0 top-0 h-[190px] overflow-hidden bg-gradient-to-br from-[#e10624] via-[#a00b28] to-[#0b0b0b]">
+                <div className="absolute -right-12 -top-32 h-72 w-72 rounded-full border-[38px] border-white/[0.035]" />
+                <div className="absolute right-20 -top-36 h-80 w-80 rounded-full border-[34px] border-black/[0.12]" />
+                <svg viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-x-0 bottom-[-1px] h-24 w-full">
+                  <path fill="white" d="M0 72C126 5 173 26 305 63c114 32 153 74 283 57 116-15 204-71 412-83v163H0z" />
+                </svg>
+              </div>
+              <div className="relative z-10 flex items-center justify-between gap-3 px-6 pt-7 md:px-9">
+                <span className="rounded-full bg-[#650b1b]/90 px-4 py-2 text-sm font-semibold text-white">Partner Profile</span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500 bg-[#101a18]/90 px-4 py-2 text-sm font-semibold capitalize text-white">
+                  <span className={`h-3 w-3 rounded-full ${partner.status === 'active' ? 'bg-emerald-400' : 'bg-slate-300'}`} />
                   {partner.status || 'Listed'}
                 </span>
               </div>
-              <div className="relative -mt-5 rounded-t-[2rem] bg-white px-6 pb-7 pt-8 md:px-9 md:pb-9">
-                <div className="flex items-center gap-4 border-b border-slate-200 pb-7 md:gap-5">
-                  <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-red-50 text-[#ed2125] ring-8 ring-white md:h-20 md:w-20"><Building2 size={32} /></span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#ed2125]">Company</p>
-                    <h2 className="mt-1 break-words text-2xl font-bold leading-tight text-slate-950 md:text-3xl">{companyName}</h2>
-                    {partner.name && partner.name !== companyName ? <p className="mt-1 text-lg text-slate-500">{partner.name}</p> : null}
-                  </div>
+              <div className="relative z-10 px-6 pb-8 pt-14 md:px-9 md:pt-16">
+                <div className="flex min-h-[132px] items-center gap-5 border-b border-[#e5e7eb] pb-7">
+                  <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#ffe6e9] text-[#ed1024] md:h-28 md:w-28"><PartnerMark /></span>
+                  <div className="min-w-0"><h2 className="break-words text-2xl font-bold leading-tight text-[#0f172a] md:text-3xl">{companyName}</h2>{partner.name && partner.name !== companyName ? <p className="mt-2 text-lg font-medium text-[#6b7280] md:text-2xl">{partner.name}</p> : null}</div>
                 </div>
-                <div className="divide-y divide-slate-200">
-                  {partner.contactName ? (
-                    <div className="flex items-start gap-4 py-6"><UserRound size={21} className="mt-1 shrink-0 text-slate-800" /><div><p className="text-sm text-slate-500">Contact Person</p><p className="mt-1 text-lg font-medium text-slate-900">{partner.contactName}</p></div></div>
-                  ) : null}
-                  {location || partner.address ? (
-                    <div className="flex items-start gap-4 py-6"><MapPin size={21} className="mt-1 shrink-0 text-slate-800" /><div><p className="text-sm text-slate-500">Location</p><p className="mt-1 text-lg font-medium text-slate-900">{location || partner.address}</p></div></div>
-                  ) : null}
+                <div className="relative z-10 divide-y divide-[#e5e7eb] pb-24">
+                  {partner.contactName ? <div className="flex items-start gap-5 py-7"><UserRound size={27} fill="currentColor" className="mt-1 shrink-0 text-[#0f172a]" /><div><p className="text-base text-[#6b7280] md:text-lg">Contact Person</p><p className="mt-1 text-lg font-medium text-[#0f172a] md:text-2xl">{partner.contactName}</p></div></div> : null}
+                  {location || partner.address ? <div className="flex items-start gap-5 py-7"><MapPin size={27} fill="currentColor" className="mt-1 shrink-0 text-[#0f172a]" /><div><p className="text-base text-[#6b7280] md:text-lg">Location</p><p className="mt-1 text-lg font-medium text-[#0f172a] md:text-2xl">{location || partner.address}</p></div></div> : null}
                 </div>
+                <PartnerSkyline />
               </div>
             </article>
 
