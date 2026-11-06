@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Building2, Globe2, Mail, MapPin, Phone, UserRound, Users2 } from 'lucide-react';
+import { ArrowLeft, Building2, Mail, MapPin, Phone, UserRound, Users2 } from 'lucide-react';
 import PageHero from '../components/ui/PageHero';
 import { getPartners } from '../lib/api';
 import { slugify } from '../lib/partnerDirectory';
@@ -136,8 +136,7 @@ function PartnerPage({ partnerSlug = '' }) {
                       {selectedPartner.address || getLocation(selectedPartner) ? <div className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><MapPin size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Address</p><p className="mt-1 text-sm font-medium text-slate-900">{[...new Set([getAddress(selectedPartner), getLocation(selectedPartner)].filter(Boolean))].join(', ')}</p></div></div> : null}
                       {selectedPartner.email ? <a href={`mailto:${selectedPartner.email}`} className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-red-50"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Mail size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Email</p><p className="mt-1 break-all text-sm font-medium text-blue-700 underline decoration-blue-200 underline-offset-2">{selectedPartner.email}</p></div></a> : null}
                       {selectedPartner.phone ? <a href={`tel:${selectedPartner.phone}`} className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-red-50"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Phone size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Phone</p><p className="mt-1 text-sm font-medium text-blue-700">{selectedPartner.phone}</p></div></a> : null}
-                      {selectedPartner.website ? <a href={/^https?:\/\//i.test(selectedPartner.website) ? selectedPartner.website : `https://${selectedPartner.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-red-50"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Globe2 size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Website</p><p className="mt-1 break-all text-sm font-medium text-blue-700 underline decoration-blue-200 underline-offset-2">{selectedPartner.website}</p></div></a> : null}
-                      {!selectedPartner.address && !getLocation(selectedPartner) && !selectedPartner.email && !selectedPartner.phone && !selectedPartner.website ? <p className="rounded-2xl bg-slate-50 p-5 text-sm text-slate-500">Contact details are not available.</p> : null}
+                      {!selectedPartner.address && !getLocation(selectedPartner) && !selectedPartner.email && !selectedPartner.phone ? <p className="rounded-2xl bg-slate-50 p-5 text-sm text-slate-500">Contact details are not available.</p> : null}
                     </div>
                   </section>
                 </div>
@@ -174,7 +173,6 @@ function PartnerPage({ partnerSlug = '' }) {
                             {location || partner.address ? <p className="flex items-start gap-2"><MapPin size={16} className="mt-0.5 shrink-0 text-[#ed2125]" /><span>{[...new Set([getAddress(partner), location].filter(Boolean))].join(', ')}</span></p> : null}
                             {partner.email ? <a href={`mailto:${partner.email}`} className="flex items-start gap-2 break-all hover:text-[#ed2125]"><Mail size={16} className="mt-0.5 shrink-0 text-[#ed2125]" /><span>{partner.email}</span></a> : null}
                             {partner.phone ? <a href={`tel:${partner.phone}`} className="flex items-start gap-2 hover:text-[#ed2125]"><Phone size={16} className="mt-0.5 shrink-0 text-[#ed2125]" /><span>{partner.phone}</span></a> : null}
-                            {partner.website ? <a href={/^https?:\/\//i.test(partner.website) ? partner.website : `https://${partner.website}`} target="_blank" rel="noopener noreferrer" className="flex items-start gap-2 break-all hover:text-[#ed2125]"><Globe2 size={16} className="mt-0.5 shrink-0 text-[#ed2125]" /><span className="line-clamp-1">{partner.website}</span></a> : null}
                           </div>
                         </div>
                         <div className="px-5 pb-5">

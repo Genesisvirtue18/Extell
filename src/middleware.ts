@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Keep parameterised-page canonicals aligned with the site's canonical URL.
 const CANONICAL_ORIGIN = 'https://extellsystems.com';
-const ROOT_DOMAIN = 'extellsystems.com';
-const APP_HOSTNAMES = new Set(['extellsystems.com', 'www.extellsystems.com']);
 
 // Pages that take query params for filtering/pagination - canonical = clean path
 const PARAMETERISED_PATHS = ['/products', '/category'];
@@ -39,19 +37,8 @@ function applySecurityHeaders(response: NextResponse, cspHeader: string) {
 }
 
 export function middleware(request: NextRequest) {
-  const { pathname, searchParams, hostname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
   const { cspHeader, requestHeaders } = createSecurityHeaders(request);
-  const isPartnerSubdomain =
-    hostname.endsWith(`.${ROOT_DOMAIN}`) && !APP_HOSTNAMES.has(hostname);
-
-  // Route generated partner subdomains like trial-partner.extellsystems.com
-  // to the partner portal page for that slug.
-  if (isPartnerSubdomain && pathname === '/') {
-    const url = request.nextUrl.clone();
-    url.pathname = `/partner/${hostname.replace(`.${ROOT_DOMAIN}`, '')}`;
-    const response = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
-    return applySecurityHeaders(response, cspHeader);
-  }
 
   // Inject Link: <canonical> HTTP header for parameterised listing pages.
   // Resolves "Duplicate without user-selected canonical" for URLs like:

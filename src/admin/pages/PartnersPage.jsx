@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Building2, ExternalLink, Plus, Trash2, Pencil, Send, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Pencil, Send, Sparkles } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import Modal from '../components/Modal';
 import StatCard from '../components/StatCard';
@@ -22,12 +22,10 @@ const defaultValues = {
   contactName: '',
   email: '',
   phone: '',
-  website: '',
   address: '',
   city: '',
   country: '',
   slug: '',
-  assignedProductIds: [],
   status: 'active',
   partnerMarkupPercent: 15,
   loginEmail: '',
@@ -210,7 +208,6 @@ const PartnersPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [saveError, setSaveError] = useState('');
-  const [productSearch, setProductSearch] = useState('');
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState('');
   const [quotePartner, setQuotePartner] = useState(null);
@@ -220,14 +217,8 @@ const PartnersPage = () => {
   const {
     register,
     handleSubmit,
-    reset,
-    watch,
-    setValue
+    reset
   } = useForm({ defaultValues });
-
-  const watchedWebsite = watch('website');
-  const watchedName = watch('name');
-  const watchedSlug = watch('slug');
 
   const loadData = async () => {
     setLoading(true);
@@ -267,26 +258,14 @@ const PartnersPage = () => {
     loadData();
   }, []);
 
-  const portalHost = useMemo(() => {
-    if (watchedWebsite?.trim()) return watchedWebsite.trim();
-    const slug = slugify(watchedName || watchedSlug);
-    return slug ? `${slug}.extellsystems.com` : 'partner.extellsystems.com';
-  }, [watchedName, watchedWebsite, watchedSlug]);
-
-  const assignedProductIds = watch('assignedProductIds') || [];
-  const assignedProductQuantities = watch('assignedProductQuantities') || {};
-
   const openCreateModal = () => {
     setActiveItem(null);
     setSaveError('');
-    setProductSearch('');
     reset({
       ...defaultValues,
       partnerMarkupPercent: 15,
       loginEmail: '',
-      slug: '',
-      assignedProductIds: [],
-      assignedProductQuantities: {}
+      slug: ''
     });
     setModalOpen(true);
   };
@@ -294,16 +273,11 @@ const PartnersPage = () => {
   const openEditModal = (item) => {
     setActiveItem(item);
     setSaveError('');
-    setProductSearch('');
-    const existingProductIds = extractPartnerProductIds(item);
-    const existingQuantities = extractPartnerProductQuantities(item);
-    const mergedProductIds = Array.from(new Set([...existingProductIds, ...Object.keys(existingQuantities)]));
     reset({
       name: item.name || item.partnerName || '',
       contactName: item.contactName || '',
       email: item.email || '',
       phone: item.phone || '',
-      website: item.website || '',
       address: item.address || '',
       city: item.city || '',
       country: item.country || '',
@@ -311,12 +285,7 @@ const PartnersPage = () => {
       status: item.status || 'active',
       partnerMarkupPercent: item.partnerMarkupPercent ?? 15,
       loginEmail: item.loginEmail || item.email || '',
-      portalNote: item.portalNote || '',
-      assignedProductIds: mergedProductIds,
-      assignedProductQuantities: mergedProductIds.reduce((acc, productId) => {
-        acc[productId] = toPositiveInteger(existingQuantities[productId], 1);
-        return acc;
-      }, {})
+      portalNote: item.portalNote || ''
     });
     setModalOpen(true);
   };
@@ -325,29 +294,14 @@ const PartnersPage = () => {
     setModalOpen(false);
     setActiveItem(null);
     setSaveError('');
-    setProductSearch('');
   };
 
   const onSubmit = async (values) => {
-    const selectedIds = Array.isArray(values.assignedProductIds) ? values.assignedProductIds : [];
-    const selectedQuantities = selectedIds.reduce((acc, productId) => {
-      acc[productId] = toPositiveInteger(values.assignedProductQuantities?.[productId], 1);
-      return acc;
-    }, {});
-
     const payload = {
       ...values,
-      slug: values.slug || slugify(values.name),
-      website: values.website?.trim() || '',
-      partnerMarkupPercent: Number(values.partnerMarkupPercent || 0),
-      productIds: selectedIds,
-      assignedProductIds: selectedIds,
-      productQuantities: selectedQuantities,
-      assignedProductQuantities: selectedQuantities,
-      productDetails: selectedIds.map((productId) => ({
-        productId,
-        quantity: selectedQuantities[productId] || 1
-      }))
+      slug: activeItem?.slug || values.slug || slugify(values.name),
+      website: '',
+      partnerMarkupPercent: Number(values.partnerMarkupPercent || 0)
     };
 
     try {
@@ -386,9 +340,7 @@ const PartnersPage = () => {
   const partnerStats = useMemo(() => {
     const totalPartners = items.length;
     const activePartners = items.filter((item) => (item.status || 'active') === 'active').length;
-    const customWebsites = items.filter((item) => Boolean(item.website)).length;
-    const generatedSites = totalPartners - customWebsites;
-    return { totalPartners, activePartners, customWebsites, generatedSites };
+    return { totalPartners, activePartners };
   }, [items]);
 
   const openPartnerQuote = async (partner) => {
@@ -496,51 +448,6 @@ const PartnersPage = () => {
   }, [products, quotePartner]);
   const quotePartnerQuantities = useMemo(() => extractPartnerProductQuantities(quotePartner), [quotePartner]);
 
-  const productSuggestions = useMemo(() => {
-    const query = productSearch.trim().toLowerCase();
-    const selectedIds = new Set(assignedProductIds.map(String));
-
-    return products
-      .filter((product) => {
-        if (!query) return true;
-        return [product.name, product.sku]
-          .filter(Boolean)
-          .some((value) => String(value).toLowerCase().includes(query));
-      })
-      .sort((a, b) => {
-        const aSelected = selectedIds.has(a.id);
-        const bSelected = selectedIds.has(b.id);
-        if (aSelected === bSelected) return a.name.localeCompare(b.name);
-        return aSelected ? 1 : -1;
-      })
-      .slice(0, 8);
-  }, [assignedProductIds, productSearch, products]);
-
-  const updateAssignedQuantity = (productId, quantity) => {
-    const normalizedQuantity = toPositiveInteger(quantity, 1);
-    const nextQuantities = {
-      ...(assignedProductQuantities || {}),
-      [productId]: normalizedQuantity
-    };
-    setValue('assignedProductQuantities', nextQuantities, { shouldDirty: true });
-  };
-
-  const toggleAssignedProduct = (product, checked) => {
-    const nextIds = checked
-      ? assignedProductIds.filter((id) => id !== product.id)
-      : [...assignedProductIds, product.id];
-    const nextQuantities = { ...(assignedProductQuantities || {}) };
-
-    if (checked) {
-      delete nextQuantities[product.id];
-    } else if (!nextQuantities[product.id]) {
-      nextQuantities[product.id] = 1;
-    }
-
-    setValue('assignedProductIds', nextIds, { shouldDirty: true });
-    setValue('assignedProductQuantities', nextQuantities, { shouldDirty: true });
-  };
-
   const handlePrintQuote = () => {
     window.print();
   };
@@ -553,7 +460,7 @@ const PartnersPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Partners"
-        subtitle="Create reseller accounts, assign product catalogs, and calculate what each partner will pay us."
+        subtitle="Manage partner accounts, contacts, and quote generation."
         actions={
           <button
             onClick={openCreateModal}
@@ -565,11 +472,9 @@ const PartnersPage = () => {
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <StatCard label="Total Partners" value={partnerStats.totalPartners} helper="Reseller accounts" />
         <StatCard label="Active Partners" value={partnerStats.activePartners} helper="Can log in now" />
-        <StatCard label="Custom Websites" value={partnerStats.customWebsites} helper="Bring their own domain" />
-        <StatCard label="Generated Sites" value={partnerStats.generatedSites} helper="partnername.extellsystems.com" />
       </div>
 
       {actionError ? (
@@ -580,7 +485,7 @@ const PartnersPage = () => {
 
       {catalogError ? (
         <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Partner records are available, but the product catalog could not be loaded. Product assignment and quote totals may be incomplete. {catalogError}
+          Partner records are available, but the product catalog could not be loaded. Quote totals may be incomplete. {catalogError}
         </p>
       ) : null}
 
@@ -589,7 +494,7 @@ const PartnersPage = () => {
           <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">Partner registry</h2>
-              <p className="text-sm text-gray-500">This is the admin list that controls logins, website mode, and product access.</p>
+              <p className="text-sm text-gray-500">Admin list of partner accounts and contact details.</p>
             </div>
             <button
               onClick={openCreateModal}
@@ -616,8 +521,6 @@ const PartnersPage = () => {
                   <tr className="border-b text-left text-xs uppercase tracking-wide text-gray-400">
                     <th className="pb-3">Partner</th>
                     <th className="pb-3">Contact</th>
-                    <th className="pb-3">Website</th>
-                    <th className="pb-3">Products</th>
                     <th className="pb-3">Markup</th>
                     <th className="pb-3">Created</th>
                     <th className="pb-3 text-right">Actions</th>
@@ -625,9 +528,6 @@ const PartnersPage = () => {
                 </thead>
                 <tbody>
                   {items.length ? items.map((item) => {
-                    const assigned = extractPartnerProductIds(item).length;
-                    const website = item.website || `${slugify(item.name || item.partnerName)}.extellsystems.com`;
-                    const websiteHref = /^https?:\/\//i.test(website) ? website : `https://${website}`;
                     return (
                       <tr key={item._id || item.id} className="border-b last:border-0">
                         <td className="py-4">
@@ -638,13 +538,6 @@ const PartnersPage = () => {
                           <div>{item.contactName || '--'}</div>
                           <div className="text-xs text-gray-400">{item.email || '--'}</div>
                         </td>
-                        <td className="py-4 text-gray-600">
-                          <a href={websiteHref} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:underline">
-                            {item.website || website}
-                            <ExternalLink size={12} />
-                          </a>
-                        </td>
-                        <td className="py-4 text-gray-600">{assigned || '--'}</td>
                         <td className="py-4 text-gray-600">{item.partnerMarkupPercent ?? 15}%</td>
                         <td className="py-4 text-gray-500">{formatDate(item.createdAt)}</td>
                         <td className="py-4">
@@ -677,7 +570,7 @@ const PartnersPage = () => {
                     );
                   }) : (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-sm text-gray-500">No partners found. Add a partner to get started.</td>
+                      <td colSpan={5} className="py-8 text-center text-sm text-gray-500">No partners found. Add a partner to get started.</td>
                     </tr>
                   )}
                 </tbody>
@@ -729,13 +622,8 @@ const PartnersPage = () => {
             <input className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2" {...register('phone')} />
           </label>
           <label className="text-sm text-gray-600">
-            Website
-            <input className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2" placeholder="Optional custom website" {...register('website')} />
-          </label>
-          <label className="text-sm text-gray-600">
-            Generated site slug
+            Partner profile slug
             <input className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2" placeholder="partnername" {...register('slug')} />
-            <span className="mt-1 block text-xs text-gray-400">Partner site: {portalHost}</span>
           </label>
           <label className="text-sm text-gray-600 md:col-span-2">
             Address
@@ -771,113 +659,6 @@ const PartnersPage = () => {
           </label>
         </form>
 
-        <div className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-4">
-          <div className="flex items-center justify-between gap-3">
-            <h4 className="text-sm font-semibold text-gray-900">Assign products</h4>
-            <p className="text-xs text-gray-500">{assignedProductIds.length} selected</p>
-          </div>
-
-          <label className="mt-3 block text-sm text-gray-600">
-            Search products
-            <input
-              value={productSearch}
-              onChange={(event) => setProductSearch(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-900"
-              placeholder="Search by product name or SKU"
-            />
-          </label>
-
-          {assignedProductIds.length ? (
-            <div className="mt-3 space-y-2">
-              {assignedProductIds.map((productId) => {
-                const product = products.find((entry) => String(entry.id) === String(productId));
-                if (!product) return null;
-                const quantity = toPositiveInteger(assignedProductQuantities?.[product.id], 1);
-                return (
-                  <div
-                    key={product.id}
-                    className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">{product.name}</p>
-                      <p className="text-xs text-gray-500">{product.sku || 'No SKU'}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <label className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-600">
-                        Qty
-                        <input
-                          type="number"
-                          min="1"
-                          value={quantity}
-                          onChange={(event) => updateAssignedQuantity(product.id, event.target.value)}
-                          className="w-16 bg-transparent text-center text-sm font-semibold text-gray-900 outline-none"
-                        />
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => toggleAssignedProduct(product, true)}
-                        className="rounded-full border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
-
-          <div className="mt-3 space-y-2">
-            {productSuggestions.length ? (
-              productSuggestions.map((product) => {
-                const checked = assignedProductIds.includes(product.id);
-                return (
-                  <div
-                    key={product.id}
-                    className={`flex w-full items-center justify-between gap-3 rounded-2xl border p-4 text-left text-sm transition ${
-                      checked ? 'border-gray-900 bg-white' : 'border-gray-200 bg-white hover:border-gray-400'
-                    }`}
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900">{product.name}</p>
-                      <p className="text-xs text-gray-500">
-                        {product.sku || 'No SKU'}
-                        {product.price ? ` - ${toCurrency(product.price)}` : ''}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {checked ? (
-                        <label className="flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                          Qty
-                          <input
-                            type="number"
-                            min="1"
-                            value={toPositiveInteger(assignedProductQuantities?.[product.id], 1)}
-                            onChange={(event) => updateAssignedQuantity(product.id, event.target.value)}
-                            className="w-14 bg-transparent text-center text-xs font-semibold text-gray-900 outline-none"
-                          />
-                        </label>
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={() => toggleAssignedProduct(product, checked)}
-                        className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${
-                          checked ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
-                        }`}
-                      >
-                        {checked ? 'Remove' : 'Add'}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-5 text-sm text-gray-500">
-                No products match your search.
-              </p>
-            )}
-          </div>
-        </div>
       </Modal>
 
       <Modal

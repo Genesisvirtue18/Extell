@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Building2, Globe2, Mail, MapPin, Phone, UserRound } from 'lucide-react';
+import { ArrowLeft, Building2, Mail, MapPin, Phone, UserRound } from 'lucide-react';
 import PageHero from '../components/ui/PageHero';
 import { getPartners } from '../lib/api';
 import { slugify } from '../lib/partnerDirectory';
@@ -69,9 +69,6 @@ function PartnerDetailPage({ partnerSlug = '' }) {
   const companyName = partner?.companyName || partner?.name || 'Partner details';
   const location = getPartnerLocation(partner);
   const address = [...new Set([getPartnerAddress(partner), location].filter(Boolean))].join(', ');
-  const websiteHref = partner?.website
-    ? (/^https?:\/\//i.test(partner.website) ? partner.website : `https://${partner.website}`)
-    : '';
 
   if (loading) {
     return (
@@ -142,8 +139,7 @@ function PartnerDetailPage({ partnerSlug = '' }) {
                 {address ? <div className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3.5 md:p-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><MapPin size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Address</p><p className="mt-1 text-sm font-medium text-slate-900">{address}</p></div></div> : null}
                 {partner.email ? <a href={`mailto:${partner.email}`} className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3.5 transition hover:bg-red-50 md:p-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Mail size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Email</p><p className="mt-1 break-all text-sm font-medium text-blue-700 underline decoration-blue-200 underline-offset-2">{partner.email}</p></div></a> : null}
                 {partner.phone ? <a href={`tel:${partner.phone}`} className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3.5 transition hover:bg-red-50 md:p-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Phone size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Phone</p><p className="mt-1 text-sm font-medium text-blue-700">{partner.phone}</p></div></a> : null}
-                {websiteHref ? <a href={websiteHref} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3.5 transition hover:bg-red-50 md:p-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Globe2 size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Website</p><p className="mt-1 break-all text-sm font-medium text-blue-700 underline decoration-blue-200 underline-offset-2">{partner.website}</p></div></a> : null}
-                {!address && !partner.email && !partner.phone && !partner.website ? <p className="rounded-2xl bg-slate-50 p-5 text-sm text-slate-500">Contact details are not available.</p> : null}
+                {!address && !partner.email && !partner.phone ? <p className="rounded-2xl bg-slate-50 p-5 text-sm text-slate-500">Contact details are not available.</p> : null}
               </div>
             </section>
           </div>
