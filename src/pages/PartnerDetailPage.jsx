@@ -12,8 +12,17 @@ const getPartnerItems = (response) => {
   return candidates.find(Array.isArray) || [];
 };
 
-const getPartnerLocation = (partner) =>
-  [partner?.city, partner?.state, partner?.country].filter(Boolean).join(', ');
+const getPartnerLocation = (partner) => {
+  const country = String(partner?.country || '').trim();
+  if (/\b(?:UAE|United Arab Emirates)\b/i.test(country)) return 'UAE';
+  return [partner?.city, partner?.state, country].filter(Boolean).join(', ');
+};
+
+const getPartnerAddress = (partner) => {
+  const address = String(partner?.address || '').trim();
+  if (/^(?:UAE|United Arab Emirates)\s*[-,]\s*Sharjah$|^Sharjah\s*[-,]\s*(?:UAE|United Arab Emirates)$/i.test(address)) return 'UAE';
+  return address;
+};
 
 const PartnerSkyline = () => (
   <svg viewBox="0 0 900 250" preserveAspectRatio="xMidYMax meet" aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-52 w-full text-[#c8cad8] opacity-80">
@@ -59,7 +68,7 @@ function PartnerDetailPage({ partnerSlug = '' }) {
 
   const companyName = partner?.companyName || partner?.name || 'Partner details';
   const location = getPartnerLocation(partner);
-  const address = [...new Set([partner?.address, location].filter(Boolean))].join(', ');
+  const address = [...new Set([getPartnerAddress(partner), location].filter(Boolean))].join(', ');
   const websiteHref = partner?.website
     ? (/^https?:\/\//i.test(partner.website) ? partner.website : `https://${partner.website}`)
     : '';

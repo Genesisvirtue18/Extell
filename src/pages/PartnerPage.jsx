@@ -12,8 +12,17 @@ const getPartnerItems = (response) => {
   return candidates.find(Array.isArray) || [];
 };
 
-const getLocation = (partner) =>
-  [partner.city, partner.state, partner.country].filter(Boolean).join(', ') || partner.address || '';
+const getLocation = (partner) => {
+  const country = String(partner?.country || '').trim();
+  if (/\b(?:UAE|United Arab Emirates)\b/i.test(country)) return 'UAE';
+  return [partner?.city, partner?.state, country].filter(Boolean).join(', ') || partner?.address || '';
+};
+
+const getAddress = (partner) => {
+  const address = String(partner?.address || '').trim();
+  if (/^(?:UAE|United Arab Emirates)\s*[-,]\s*Sharjah$|^Sharjah\s*[-,]\s*(?:UAE|United Arab Emirates)$/i.test(address)) return 'UAE';
+  return address;
+};
 
 const PartnerPageSkeleton = () => (
   <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3" aria-label="Loading partners" role="status">
@@ -124,7 +133,7 @@ function PartnerPage({ partnerSlug = '' }) {
                       <div><h2 className="text-xl font-bold text-slate-950">Contact Details</h2><p className="mt-1 text-sm text-slate-500">Reach out to this partner</p></div>
                     </div>
                     <div className="space-y-2">
-                      {selectedPartner.address || getLocation(selectedPartner) ? <div className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><MapPin size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Address</p><p className="mt-1 text-sm font-medium text-slate-900">{[...new Set([selectedPartner.address, getLocation(selectedPartner)].filter(Boolean))].join(', ')}</p></div></div> : null}
+                      {selectedPartner.address || getLocation(selectedPartner) ? <div className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><MapPin size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Address</p><p className="mt-1 text-sm font-medium text-slate-900">{[...new Set([getAddress(selectedPartner), getLocation(selectedPartner)].filter(Boolean))].join(', ')}</p></div></div> : null}
                       {selectedPartner.email ? <a href={`mailto:${selectedPartner.email}`} className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-red-50"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Mail size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Email</p><p className="mt-1 break-all text-sm font-medium text-blue-700 underline decoration-blue-200 underline-offset-2">{selectedPartner.email}</p></div></a> : null}
                       {selectedPartner.phone ? <a href={`tel:${selectedPartner.phone}`} className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-red-50"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Phone size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Phone</p><p className="mt-1 text-sm font-medium text-blue-700">{selectedPartner.phone}</p></div></a> : null}
                       {selectedPartner.website ? <a href={/^https?:\/\//i.test(selectedPartner.website) ? selectedPartner.website : `https://${selectedPartner.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-red-50"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100/70 text-[#ed2125]"><Globe2 size={20} /></span><div className="min-w-0"><p className="text-xs font-medium text-slate-500">Website</p><p className="mt-1 break-all text-sm font-medium text-blue-700 underline decoration-blue-200 underline-offset-2">{selectedPartner.website}</p></div></a> : null}
@@ -138,7 +147,7 @@ function PartnerPage({ partnerSlug = '' }) {
             {!selectedPartner ? <div className="mt-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
               <div className="flex items-center gap-3 border-b border-slate-100 pb-5">
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-[#ed2125]"><Users2 size={20} /></span>
-                <div><p className="text-xs font-semibold uppercase tracking-wide text-[#ed2125]">Partner network</p><h2 className="mt-1 text-2xl font-bold text-slate-950">{selectedPartner ? 'More partners' : 'Company directory'}</h2></div>
+                <div><h2 className=" text-2xl font-bold text-slate-950">{selectedPartner ? 'More partners' : 'Company directory'}</h2></div>
               </div>
               {partnerCards.length ? (
                 <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -146,21 +155,33 @@ function PartnerPage({ partnerSlug = '' }) {
                     const location = getLocation(partner);
                     const active = partner.slug === selectedPartner?.slug;
                     return (
-                      <article key={partner.id} className={`flex h-full flex-col rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:shadow-md ${active ? 'border-red-200 bg-red-50/40' : 'border-slate-200 bg-white'}`}>
-                        <div className="flex items-start gap-3">
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><Building2 size={19} /></span>
-                          <div className="min-w-0"><p className="text-xs font-medium text-slate-500">Company</p><h3 className="mt-1 break-words text-lg font-bold text-slate-950">{partner.companyName || partner.displayName}</h3></div>
+                      <article key={partner.id} className="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
+                        <div className="relative flex min-h-[112px] items-end overflow-hidden bg-gradient-to-br from-[#ed102b] via-[#a00b28] to-[#101014] px-5 pb-5 pt-6 text-white">
+                          <div className="absolute -right-10 -top-24 h-56 w-56 rounded-full border-[30px] border-white/[0.06]" />
+                          <div className="absolute -right-2 -top-28 h-64 w-64 rounded-full border-[28px] border-black/[0.12]" />
+                          <div className="relative min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">Company</p>
+                            <h3 className="mt-1 break-words text-lg font-bold leading-tight md:text-xl">{partner.companyName || partner.displayName}</h3>
+                          </div>
+                          {partner.status ? <span className="relative ml-auto shrink-0 rounded-full border border-white/30 bg-black/20 px-3 py-1.5 text-[11px] font-semibold capitalize">{partner.status}</span> : null}
                         </div>
-                        <div className="mt-5 space-y-3 text-sm text-slate-600">
-                          {partner.contactName ? <p><span className="font-medium text-slate-800">Contact:</span> {partner.contactName}</p> : null}
-                          {location || partner.address ? <p className="flex items-start gap-2"><MapPin size={15} className="mt-0.5 shrink-0" />{[...new Set([partner.address, location].filter(Boolean))].join(', ')}</p> : null}
-                          {partner.email ? <a href={`mailto:${partner.email}`} className="flex items-center gap-2 break-all hover:text-[#ed2125]"><Mail size={15} className="shrink-0" />{partner.email}</a> : null}
-                          {partner.phone ? <a href={`tel:${partner.phone}`} className="flex items-center gap-2 hover:text-[#ed2125]"><Phone size={15} className="shrink-0" />{partner.phone}</a> : null}
-                          {partner.website ? <a href={/^https?:\/\//i.test(partner.website) ? partner.website : `https://${partner.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 break-all hover:text-[#ed2125]"><Globe2 size={15} className="shrink-0" />{partner.website}</a> : null}
+                        <div className="flex flex-1 items-start gap-4 px-5 pb-5 pt-5">
+                          <span className="flex h-[68px] w-[68px] shrink-0 items-center justify-center rounded-full bg-[#ffe6e9] ring-4 ring-white">
+                            <img src="/favicon.png" alt="" className="h-10 w-10 object-contain" />
+                          </span>
+                          <div className="min-w-0 flex-1 space-y-3 pt-1 text-sm text-slate-700">
+                            {partner.contactName ? <div><p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">Contact Person</p><p className="mt-0.5 break-words font-semibold text-slate-800">{partner.contactName}</p></div> : null}
+                            {location || partner.address ? <p className="flex items-start gap-2"><MapPin size={16} className="mt-0.5 shrink-0 text-[#ed2125]" /><span>{[...new Set([getAddress(partner), location].filter(Boolean))].join(', ')}</span></p> : null}
+                            {partner.email ? <a href={`mailto:${partner.email}`} className="flex items-start gap-2 break-all hover:text-[#ed2125]"><Mail size={16} className="mt-0.5 shrink-0 text-[#ed2125]" /><span>{partner.email}</span></a> : null}
+                            {partner.phone ? <a href={`tel:${partner.phone}`} className="flex items-start gap-2 hover:text-[#ed2125]"><Phone size={16} className="mt-0.5 shrink-0 text-[#ed2125]" /><span>{partner.phone}</span></a> : null}
+                            {partner.website ? <a href={/^https?:\/\//i.test(partner.website) ? partner.website : `https://${partner.website}`} target="_blank" rel="noopener noreferrer" className="flex items-start gap-2 break-all hover:text-[#ed2125]"><Globe2 size={16} className="mt-0.5 shrink-0 text-[#ed2125]" /><span className="line-clamp-1">{partner.website}</span></a> : null}
+                          </div>
                         </div>
-                        <Link href={`/partner/${partner.slug}`} aria-label={`View ${partner.companyName || partner.displayName}`} className="mt-auto flex min-h-12 w-full items-center justify-center rounded-xl bg-[#ed2125] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#c9171b] focus:outline-none focus:ring-2 focus:ring-[#ed2125] focus:ring-offset-2">
-                          View company
-                        </Link>
+                        <div className="px-5 pb-5">
+                          <Link href={`/partner/${partner.slug}`} aria-label={`View ${partner.companyName || partner.displayName}`} className="flex min-h-11 w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ed102b] to-[#a00b28] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-red-900/20 transition hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#ed2125] focus:ring-offset-2">
+                            View company
+                          </Link>
+                        </div>
                       </article>
                     );
                   })}
