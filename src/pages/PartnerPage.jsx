@@ -146,19 +146,21 @@ function PartnerPage({ partnerSlug = '' }) {
                     const location = getLocation(partner);
                     const active = partner.slug === selectedPartner?.slug;
                     return (
-                      <article key={partner.id} className={`rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:shadow-md ${active ? 'border-red-200 bg-red-50/40' : 'border-slate-200 bg-white'}`}>
+                      <article key={partner.id} className={`flex h-full flex-col rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:shadow-md ${active ? 'border-red-200 bg-red-50/40' : 'border-slate-200 bg-white'}`}>
                         <div className="flex items-start gap-3">
                           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><Building2 size={19} /></span>
                           <div className="min-w-0"><p className="text-xs font-medium text-slate-500">Company</p><h3 className="mt-1 break-words text-lg font-bold text-slate-950">{partner.companyName || partner.displayName}</h3></div>
                         </div>
                         <div className="mt-5 space-y-3 text-sm text-slate-600">
                           {partner.contactName ? <p><span className="font-medium text-slate-800">Contact:</span> {partner.contactName}</p> : null}
-                          {location || partner.address ? <p className="flex items-start gap-2"><MapPin size={15} className="mt-0.5 shrink-0" />{[partner.address, location].filter(Boolean).join(', ')}</p> : null}
+                          {location || partner.address ? <p className="flex items-start gap-2"><MapPin size={15} className="mt-0.5 shrink-0" />{[...new Set([partner.address, location].filter(Boolean))].join(', ')}</p> : null}
                           {partner.email ? <a href={`mailto:${partner.email}`} className="flex items-center gap-2 break-all hover:text-[#ed2125]"><Mail size={15} className="shrink-0" />{partner.email}</a> : null}
                           {partner.phone ? <a href={`tel:${partner.phone}`} className="flex items-center gap-2 hover:text-[#ed2125]"><Phone size={15} className="shrink-0" />{partner.phone}</a> : null}
                           {partner.website ? <a href={/^https?:\/\//i.test(partner.website) ? partner.website : `https://${partner.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 break-all hover:text-[#ed2125]"><Globe2 size={15} className="shrink-0" />{partner.website}</a> : null}
                         </div>
-                        <Link href={`/partner/${partner.slug}`} className="mt-6 inline-flex items-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#ed2125]">View company</Link>
+                        <Link href={`/partner/${partner.slug}`} aria-label={`View ${partner.companyName || partner.displayName}`} className="mt-auto flex min-h-12 w-full items-center justify-center rounded-xl bg-[#ed2125] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#c9171b] focus:outline-none focus:ring-2 focus:ring-[#ed2125] focus:ring-offset-2">
+                          View company
+                        </Link>
                       </article>
                     );
                   })}
