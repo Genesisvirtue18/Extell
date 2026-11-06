@@ -4,13 +4,13 @@ import { canonicalUrl } from '@/lib/siteUrl';
 
 export const metadata = {
   title: 'Partners | ExTell Systems',
-  description: 'Browse ExTell Systems partners, their locations, contact details, and assigned products.',
+  description: 'Browse ExTell Systems partner companies and find their contact details and locations.',
   alternates: {
     canonical: canonicalUrl('/partner'),
   },
   openGraph: {
     title: 'Partners | ExTell Systems',
-    description: 'Browse ExTell Systems partners, their locations, contact details, and assigned products.',
+    description: 'Browse ExTell Systems partner companies and find their contact details and locations.',
     url: canonicalUrl('/partner'),
     siteName: 'ExTell Systems',
     type: 'website',
@@ -19,7 +19,7 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Partners | ExTell Systems',
-    description: 'Browse ExTell Systems partners, their locations, contact details, and assigned products.',
+    description: 'Browse ExTell Systems partner companies and find their contact details and locations.',
     images: ['/assets/homebg.jpg'],
   },
 };

@@ -2,502 +2,149 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Building2, CheckCircle2, Globe2, Mail, MapPin, Package, Phone, Users2 } from 'lucide-react';
+import { ArrowLeft, Building2, Globe2, Mail, MapPin, Phone, Users2 } from 'lucide-react';
 import PageHero from '../components/ui/PageHero';
-import { loadPartnerDirectory, resolvePartnerProducts, slugify } from '../lib/partnerDirectory';
-import { getPartners, getProducts } from '../lib/api';
-import { pickBestProductImage } from '../lib/productSeo';
+import { getPartners } from '../lib/api';
+import { slugify } from '../lib/partnerDirectory';
 
-const PRODUCT_PLACEHOLDER = '/assets/placeholder-tech.svg';
+const getPartnerItems = (response) => {
+  const candidates = [response?.data?.items, response?.items, response?.data, response];
+  return candidates.find(Array.isArray) || [];
+};
 
-const toCurrency = (value) =>
-  new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0
-  }).format(Number(value || 0));
-
-const SkeletonBlock = ({ className = '' }) => (
-  <div className={`animate-pulse rounded bg-slate-200 ${className}`} aria-hidden="true" />
-);
+const getLocation = (partner) =>
+  [partner.city, partner.state, partner.country].filter(Boolean).join(', ') || partner.address || '';
 
 const PartnerPageSkeleton = () => (
-  <div className="mt-10 space-y-6" aria-label="Loading partners" role="status">
-    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-      {Array.from({ length: 4 }).map((_, index) => (
-        <div key={`stat-skeleton-${index}`} className="rounded-2xl border border-[#e6e6e6] bg-white p-5 shadow-sm">
-          <SkeletonBlock className="h-10 w-10 rounded-xl" />
-          <div className="mt-5 flex items-end justify-between gap-4">
-            <div className="flex-1 space-y-3">
-              <SkeletonBlock className="h-5 w-32" />
-              <SkeletonBlock className="h-4 w-24" />
-            </div>
-            <SkeletonBlock className="h-8 w-10" />
-          </div>
-        </div>
-      ))}
-    </div>
-
-    <div className="rounded-3xl border border-[#e6e6e6] bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
-        <div className="space-y-3">
-          <SkeletonBlock className="h-3 w-28" />
-          <SkeletonBlock className="h-7 w-48" />
-        </div>
-        <SkeletonBlock className="h-10 w-28 rounded-full" />
+  <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3" aria-label="Loading partners" role="status">
+    {Array.from({ length: 3 }).map((_, index) => (
+      <div key={index} className="animate-pulse rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="h-12 w-12 rounded-2xl bg-slate-200" />
+        <div className="mt-5 h-6 w-2/3 rounded bg-slate-200" />
+        <div className="mt-3 h-4 w-1/2 rounded bg-slate-100" />
+        <div className="mt-8 h-4 w-full rounded bg-slate-100" />
       </div>
-
-      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={`partner-skeleton-${index}`} className="rounded-3xl border border-slate-200 p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 space-y-3">
-                <SkeletonBlock className="h-3 w-16" />
-                <SkeletonBlock className="h-6 w-36" />
-              </div>
-              <SkeletonBlock className="h-6 w-20 rounded-full" />
-            </div>
-            <div className="mt-5 space-y-3">
-              <SkeletonBlock className="h-4 w-40" />
-              <SkeletonBlock className="h-4 w-48" />
-              <SkeletonBlock className="h-4 w-44" />
-            </div>
-            <div className="mt-5 flex items-center justify-between gap-3">
-              <SkeletonBlock className="h-4 w-20" />
-              <SkeletonBlock className="h-9 w-28 rounded-full" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    ))}
     <span className="sr-only">Loading partners...</span>
   </div>
 );
 
 function PartnerPage({ partnerSlug = '' }) {
-  const pageSize = 10;
   const [partners, setPartners] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let mounted = true;
-
-    const load = async () => {
-      setLoading(true);
-      setError('');
-
-      try {
-        const directory = await loadPartnerDirectory({
-          partnersLoader: getPartners,
-          productsLoader: getProducts,
-          page,
-          limit: pageSize
+    getPartners()
+      .then((response) => {
+        if (!mounted) return;
+        const items = getPartnerItems(response).map((partner, index) => {
+          const name = partner.companyName || partner.name || `Partner ${index + 1}`;
+          return { ...partner, displayName: name, slug: partner.slug || slugify(name), id: partner._id || partner.slug || name };
         });
-        if (!mounted) return;
-        setPartners(directory.partners);
-        setProducts(directory.products);
-        setPagination(directory.pagination);
-      } catch (loadError) {
-        if (!mounted) return;
-        setError(loadError?.message || 'Unable to load partner directory.');
-        setPartners([]);
-        setProducts([]);
-      } finally {
+        setPartners(items);
+      })
+      .catch((loadError) => {
+        if (mounted) setError(loadError?.message || 'Unable to load partner directory.');
+      })
+      .finally(() => {
         if (mounted) setLoading(false);
-      }
-    };
+      });
+    return () => { mounted = false; };
+  }, []);
 
-    load();
-
-    return () => {
-      mounted = false;
-    };
-  }, [page]);
-
-  const selectedPartner = useMemo(() => {
-    const targetSlug = slugify(partnerSlug);
-    if (!targetSlug) return null;
-    return partners.find((partner) => partner.slug === targetSlug || slugify(partner.name) === targetSlug) || null;
-  }, [partnerSlug, partners]);
-
-  const partnerCards = useMemo(() => [...partners].sort((a, b) => a.name.localeCompare(b.name)), [partners]);
-
-  const featuredPartner = selectedPartner || partnerCards[0] || null;
-  const featuredProducts = useMemo(
-    () => (featuredPartner ? resolvePartnerProducts(featuredPartner, products) : []),
-    [featuredPartner, products]
+  const partnerCards = useMemo(
+    () => [...partners].sort((a, b) => a.displayName.localeCompare(b.displayName)),
+    [partners]
   );
-
-  const stats = useMemo(() => {
-    const totalPartners = partnerCards.length;
-    const activePartners = partnerCards.filter((partner) => partner.status === 'active').length;
-    const customDomains = partnerCards.filter((partner) => Boolean(partner.website)).length;
-    const assignedProducts = partnerCards.reduce((sum, partner) => sum + (partner.productIds?.length || 0), 0);
-    return { totalPartners, activePartners, customDomains, assignedProducts };
-  }, [partnerCards]);
-
-  const heroTitle = selectedPartner ? selectedPartner.name : 'Partner Network';
-  const heroDescription = selectedPartner
-    ? `${selectedPartner.name} is listed in the ExTell partner directory with its location, contact details, and assigned products.`
-    : 'Browse every partner added in the admin and open a detail page to see location, products, and contact information.';
+  const selectedPartner = useMemo(() => {
+    const target = slugify(partnerSlug);
+    return target ? partnerCards.find((partner) => partner.slug === target || slugify(partner.displayName) === target) || null : null;
+  }, [partnerSlug, partnerCards]);
+  const title = selectedPartner?.displayName || 'Our Partners';
+  const description = selectedPartner
+    ? `Contact and company information for ${selectedPartner.displayName}.`
+    : 'Meet the companies in the ExTell Systems partner network and find their contact information.';
 
   return (
     <>
       <PageHero
-        title={heroTitle}
-        description={heroDescription}
+        title={title}
+        description={description}
         heroImage="/assets/homebg.jpg"
-        actions={
-          selectedPartner ? (
-            <>
-              <Link
-                href="/partner"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur"
-              >
-                <ArrowLeft size={16} />
-                Back to partners
-              </Link>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-full bg-[#ed2125] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#ed2125]/20"
-              >
-                Contact us
-              </Link>
-            </>
-          ) : (
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 rounded-full bg-[#ed2125] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#ed2125]/20"
-            >
-              Request partner access
-            </Link>
-          )
-        }
+        actions={selectedPartner ? (
+          <Link href="/partner" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur">
+            <ArrowLeft size={16} /> Back to partners
+          </Link>
+        ) : null}
       />
 
       <section className="mx-auto max-w-7xl px-6 py-14">
-       
-
-        {loading ? (
-          <PartnerPageSkeleton />
-        ) : (
+        {loading ? <PartnerPageSkeleton /> : (
           <>
-            {error ? (
-              <div className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                {error}
-              </div>
-            ) : null}
-
-            {partnerSlug && !selectedPartner ? (
-              <div className="mt-10 rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                No partner matched the slug <span className="font-semibold">{partnerSlug}</span>. Showing the full directory below.
+            {error ? <div className="mt-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">{error}</div> : null}
+            {partnerSlug && !selectedPartner && !error ? (
+              <div className="mt-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                No partner matched “{partnerSlug}”. Showing the full directory.
               </div>
             ) : null}
 
             {selectedPartner ? (
-              <div className="mt-10 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-                <div className="rounded-3xl  bg-[#0f1115] p-6 text-white shadow-2xl">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-semibold tracking-wide text-[#ff9f9f]">Partner profile</p>
-                      <h3 className="mt-2 text-3xl font-bold capitalize">{selectedPartner.name}</h3>
-                      <p className="mt-2 max-w-2xl text-sm text-slate-300">
-                        {selectedPartner.location || 'Location on request'}.
-                      </p>
-                    </div>
-                    <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold capitalize tracking-wide text-slate-200">
-                      {selectedPartner.status}
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl bg-white/5 p-4">
-                      <p className="text-xs font-medium tracking-wide text-slate-400">Contact person</p>
-                      <p className="mt-2 text-sm font-medium">{selectedPartner.contactName || 'Not listed'}</p>
-                    </div>
-                    <div className="rounded-2xl bg-white/5 p-4">
-                      <p className="text-xs font-medium tracking-wide text-slate-400">Email</p>
-                      <p className="mt-2 text-sm font-medium">{selectedPartner.email || 'Not listed'}</p>
-                    </div>
-                    <div className="rounded-2xl bg-white/5 p-4">
-                      <p className="text-xs font-medium tracking-wide text-slate-400">Phone</p>
-                      <p className="mt-2 text-sm font-medium">{selectedPartner.phone || 'Not listed'}</p>
-                    </div>
-                    <div className="rounded-2xl bg-white/5 p-4">
-                      <p className="text-xs font-medium tracking-wide text-slate-400">Website</p>
-                      <p className="mt-2 text-sm font-medium">
-                        {selectedPartner.website || `${selectedPartner.slug}.extellsystems.com`}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <h4 className="text-sm font-semibold">Partner products</h4>
-                      <span className="text-xs text-slate-400">{featuredProducts.length} items assigned</span>
-                    </div>
-
-                    <div className="mt-4 space-y-3">
-                      {featuredProducts.length ? (
-                        featuredProducts.map((product) => (
-                          <div
-                            key={product.id}
-                            className="flex items-center gap-3 rounded-2xl bg-black/20 p-3"
-                          >
-                            <img
-                              src={pickBestProductImage(product, PRODUCT_PLACEHOLDER)}
-                              alt={product.name}
-                              loading="lazy"
-                              onError={(event) => { event.currentTarget.src = PRODUCT_PLACEHOLDER; }}
-                              className="h-16 w-16 shrink-0 rounded-xl bg-white object-contain p-1"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <p className="font-medium text-white">{product.name}</p>
-                              <p className="mt-1 text-xs text-slate-300">{product.sku || 'Product details'}</p>
-                              {product.category ? <p className="mt-1 line-clamp-1 text-xs text-slate-400">{product.category}</p> : null}
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm font-semibold text-white">x{product.quantity || 1}</p>
-                              {product.price ? <p className="text-xs text-slate-300">{toCurrency(product.price)}</p> : null}
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-5 text-sm text-slate-300">
-                          No assigned products were found for this partner yet.
-                        </p>
-                      )}
-                    </div>
+              <article className="mt-2 rounded-3xl border border-slate-200 bg-white p-7 shadow-sm md:p-10">
+                <div className="flex items-start gap-4">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-[#ed2125]"><Building2 size={25} /></span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[#ed2125]">Company</p>
+                    <h2 className="mt-1 break-words text-2xl font-bold text-slate-950 md:text-3xl">{selectedPartner.companyName || selectedPartner.displayName}</h2>
+                    {selectedPartner.contactName ? <p className="mt-2 text-slate-600">Contact: {selectedPartner.contactName}</p> : null}
                   </div>
                 </div>
-
-                <div className="space-y-6">
-                  <div className="rounded-3xl  bg-white p-6 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff1f1] text-[#ed2125]">
-                        <Building2 size={18} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold tracking-wide text-[#ed2125]">Location</p>
-                        <h4 className="mt-1 text-xl font-bold text-[#111]">{selectedPartner.location || 'Location on request'}</h4>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 grid gap-3">
-                      <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4">
-                        <MapPin size={18} className="mt-0.5 text-slate-500" />
-                        <div>
-                          <p className="text-xs font-medium tracking-wide text-slate-500">Address</p>
-                          <p className="mt-1 text-sm text-slate-700">{selectedPartner.address || 'Not listed'}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4">
-                        <Mail size={18} className="mt-0.5 text-slate-500" />
-                        <div>
-                          <p className="text-xs font-medium tracking-wide text-slate-500">Email</p>
-                          <p className="mt-1 text-sm text-slate-700">{selectedPartner.email || 'Not listed'}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4">
-                        <Phone size={18} className="mt-0.5 text-slate-500" />
-                        <div>
-                          <p className="text-xs font-medium tracking-wide text-slate-500">Phone</p>
-                          <p className="mt-1 text-sm text-slate-700">{selectedPartner.phone || 'Not listed'}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-xs font-medium tracking-wide text-slate-500">Public portal</p>
-                      <p className="mt-2 text-sm text-slate-700">
-                        {selectedPartner.website || `${selectedPartner.slug}.extellsystems.com`}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-3xl border border-[#e6e6e6] bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-semibold tracking-wide text-[#ed2125]">Quick view</p>
-                        <h4 className="mt-2 text-xl font-bold text-[#111]">Partner details</h4>
-                      </div>
-                      <CheckCircle2 className="text-slate-400" size={18} />
-                    </div>
-
-                    <div className="mt-5 grid gap-3">
-                      <div className="rounded-2xl bg-slate-50 p-4">
-                        <p className="text-xs font-medium tracking-wide text-slate-500">Products</p>
-                        <p className="mt-2 text-sm text-slate-700">{featuredProducts.length} assigned products</p>
-                      </div>
-                      <div className="rounded-2xl bg-slate-50 p-4">
-                        <p className="text-xs font-medium tracking-wide text-slate-500">Login email</p>
-                        <p className="mt-2 text-sm text-slate-700">{selectedPartner.loginEmail || 'Not listed'}</p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {getLocation(selectedPartner) || selectedPartner.address ? (
+                    <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4"><MapPin size={18} className="mt-0.5 shrink-0 text-slate-500" /><div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Address</p><p className="mt-1 text-sm text-slate-800">{[selectedPartner.address, getLocation(selectedPartner)].filter(Boolean).join(', ')}</p></div></div>
+                  ) : null}
+                  {selectedPartner.email ? <a href={`mailto:${selectedPartner.email}`} className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 hover:bg-red-50"><Mail size={18} className="mt-0.5 shrink-0 text-slate-500" /><div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Email</p><p className="mt-1 break-all text-sm text-slate-800">{selectedPartner.email}</p></div></a> : null}
+                  {selectedPartner.phone ? <a href={`tel:${selectedPartner.phone}`} className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 hover:bg-red-50"><Phone size={18} className="mt-0.5 shrink-0 text-slate-500" /><div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Phone</p><p className="mt-1 text-sm text-slate-800">{selectedPartner.phone}</p></div></a> : null}
+                  {selectedPartner.website ? <a href={/^https?:\/\//i.test(selectedPartner.website) ? selectedPartner.website : `https://${selectedPartner.website}`} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 hover:bg-red-50"><Globe2 size={18} className="mt-0.5 shrink-0 text-slate-500" /><div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Website</p><p className="mt-1 break-all text-sm text-slate-800">{selectedPartner.website}</p></div></a> : null}
                 </div>
-              </div>
+              </article>
             ) : null}
 
-            <div className="mt-10 rounded-3xl border border-[#e6e6e6] bg-white p-6 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                <div>
-                  <p className="text-xs font-semibold tracking-wide text-[#ed2125]">Partner roster</p>
-                  <h3 className="mt-2 text-2xl font-bold text-[#111]">
-                    {selectedPartner ? 'More partners' : 'All partners'}
-                  </h3>
-                </div>
-                {selectedPartner ? (
-                  <Link href="/partner" className="text-sm font-semibold text-[#ed2125] hover:underline">
-                    View full directory
-                  </Link>
-                ) : null}
+            <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-5">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-[#ed2125]"><Users2 size={20} /></span>
+                <div><p className="text-xs font-semibold uppercase tracking-wide text-[#ed2125]">Partner network</p><h2 className="mt-1 text-2xl font-bold text-slate-950">{selectedPartner ? 'More partners' : 'Company directory'}</h2></div>
               </div>
-
               {partnerCards.length ? (
                 <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {partnerCards.map((partner) => {
-                    const isActive = partner.slug === selectedPartner?.slug;
-                    const partnerProducts = resolvePartnerProducts(partner, products);
+                    const location = getLocation(partner);
+                    const active = partner.slug === selectedPartner?.slug;
                     return (
-                      <article
-                        key={partner.id}
-                        className={`rounded-3xl border p-5 shadow-sm transition hover:-translate-y-0.5 ${
-                          isActive ? 'border-[#111] bg-[#111] text-white' : 'border-slate-200 bg-white'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className={`text-xs font-semibold capitalize tracking-wide ${isActive ? 'text-[#ff9f9f]' : 'text-[#ed2125]'}`}>
-                              {partner.status}
-                            </p>
-                            <h4 className="mt-2 text-xl font-bold capitalize">{partner.name}</h4>
-                          </div>
-                          <span
-                            className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                              isActive ? 'bg-white/10 text-white' : 'bg-slate-100 text-slate-600'
-                            }`}
-                          >
-                            {partnerProducts.length} products
-                          </span>
+                      <article key={partner.id} className={`rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:shadow-md ${active ? 'border-red-200 bg-red-50/40' : 'border-slate-200 bg-white'}`}>
+                        <div className="flex items-start gap-3">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><Building2 size={19} /></span>
+                          <div className="min-w-0"><p className="text-xs font-medium text-slate-500">Company</p><h3 className="mt-1 break-words text-lg font-bold text-slate-950">{partner.companyName || partner.displayName}</h3></div>
                         </div>
-
-                        <div className="mt-4 space-y-3 text-sm">
-                          <div className={`flex items-center gap-2 ${isActive ? 'text-slate-200' : 'text-slate-600'}`}>
-                            <MapPin size={14} />
-                            <span>{partner.location || 'Location on request'}</span>
-                          </div>
-                          <div className={`flex items-center gap-2 ${isActive ? 'text-slate-200' : 'text-slate-600'}`}>
-                            <Mail size={14} />
-                            <span>{partner.email || 'Not listed'}</span>
-                          </div>
-                          <div className={`flex items-center gap-2 ${isActive ? 'text-slate-200' : 'text-slate-600'}`}>
-                            <Globe2 size={14} />
-                            <span>{partner.website || `${partner.slug}.extellsystems.com`}</span>
-                          </div>
+                        <div className="mt-5 space-y-3 text-sm text-slate-600">
+                          {partner.contactName ? <p><span className="font-medium text-slate-800">Contact:</span> {partner.contactName}</p> : null}
+                          {location || partner.address ? <p className="flex items-start gap-2"><MapPin size={15} className="mt-0.5 shrink-0" />{[partner.address, location].filter(Boolean).join(', ')}</p> : null}
+                          {partner.email ? <a href={`mailto:${partner.email}`} className="flex items-center gap-2 break-all hover:text-[#ed2125]"><Mail size={15} className="shrink-0" />{partner.email}</a> : null}
+                          {partner.phone ? <a href={`tel:${partner.phone}`} className="flex items-center gap-2 hover:text-[#ed2125]"><Phone size={15} className="shrink-0" />{partner.phone}</a> : null}
+                          {partner.website ? <a href={/^https?:\/\//i.test(partner.website) ? partner.website : `https://${partner.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 break-all hover:text-[#ed2125]"><Globe2 size={15} className="shrink-0" />{partner.website}</a> : null}
                         </div>
-
-                        {partnerProducts.length ? (
-                          <div className="mt-5 grid grid-cols-3 gap-2">
-                            {partnerProducts.slice(0, 3).map((product) => (
-                              <div key={product.id} className={`overflow-hidden rounded-xl border ${isActive ? 'border-white/10 bg-white/5' : 'border-slate-100 bg-slate-50'}`}>
-                                <img
-                                  src={pickBestProductImage(product, PRODUCT_PLACEHOLDER)}
-                                  alt={product.name}
-                                  loading="lazy"
-                                  onError={(event) => { event.currentTarget.src = PRODUCT_PLACEHOLDER; }}
-                                  className="h-24 w-full bg-white object-contain p-2"
-                                />
-                                <p className={`line-clamp-2 px-2 py-2 text-xs font-medium ${isActive ? 'text-slate-100' : 'text-slate-700'}`}>{product.name}</p>
-                              </div>
-                            ))}
-                          </div>
-                        ) : null}
-
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {partnerProducts.slice(0, 3).map((product) => (
-                            <span
-                              key={product.id}
-                              className={`rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide ${
-                                isActive ? 'bg-white/10 text-white' : 'bg-slate-100 text-slate-600'
-                              }`}
-                            >
-                              {product.name}
-                            </span>
-                          ))}
-                          {!partnerProducts.length ? (
-                            <span
-                              className={`rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide ${
-                                isActive ? 'bg-white/10 text-white' : 'bg-slate-100 text-slate-600'
-                              }`}
-                            >
-                              No products
-                            </span>
-                          ) : null}
-                        </div>
-
-                        <div className="mt-5 flex items-center justify-between gap-3">
-                          <Link
-                            href={`/partner/${partner.slug}`}
-                            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                              isActive ? 'bg-white text-[#111]' : 'bg-[#111] text-white hover:bg-[#ed2125]'
-                            }`}
-                          >
-                            View details
-                          </Link>
-                        </div>
+                        <Link href={`/partner/${partner.slug}`} className="mt-6 inline-flex items-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#ed2125]">View company</Link>
                       </article>
                     );
                   })}
                 </div>
               ) : (
-                <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-                  No partners have been added yet.
-                </div>
+                <p className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">No active partners are available at the moment.</p>
               )}
-
-              {!partnerSlug && pagination.totalPages > 1 ? (
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-5">
-                  <p className="text-sm text-slate-500">
-                    Page {pagination.page} of {pagination.totalPages}
-                    {pagination.total ? ` • ${pagination.total} partners` : ''}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPage((current) => Math.max(1, current - 1))}
-                      disabled={page === 1 || loading}
-                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      Previous
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPage((current) => Math.min(pagination.totalPages, current + 1))}
-                      disabled={page >= pagination.totalPages || loading}
-                      className="rounded-full bg-[#111] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#ed2125] disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              ) : null}
             </div>
           </>
         )}
-
-        {selectedPartner ? (
-          <div className="mt-8">
-            <Link href="/partner" className="inline-flex items-center gap-2 text-sm font-semibold text-[#ed2125] hover:underline">
-              <ArrowLeft size={16} />
-              Back to all partners
-            </Link>
-          </div>
-        ) : null}
       </section>
     </>
   );
