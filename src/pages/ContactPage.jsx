@@ -15,7 +15,7 @@ const offices = [
   },
   {
     id: 'uae',
-    region: 'UAE — Sharjah',
+    region: 'UAE',
     flag: '🇦🇪',
     role: 'Regional Operations & Distribution',
     phone: '+971 6 779 4299',
