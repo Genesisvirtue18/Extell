@@ -311,6 +311,13 @@ function ProductDetailPage({ slug, initialProduct }) {
       const productName = product?.Name || product?.name || '';
       const productSku = product?.SKU || product?.sku || product?.id || '';
       await submitQuoteRequest({ ...quoteForm, productName, productSku });
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'generate_lead',
+        lead_type: 'product_quote',
+        product_name: productName,
+        product_sku: productSku,
+      });
       setQuoteStatus({ type: 'success', message: 'Quote request received. Our team will respond shortly.' });
       setQuoteForm({ fullName: '', email: '', companyName: '', requirements: '' });
     } catch (err) {

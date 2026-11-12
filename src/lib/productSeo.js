@@ -37,13 +37,25 @@ const splitImageValues = (value) => {
     .filter(Boolean);
 };
 
+const isKnownBrokenProductImage = (value) => {
+  try {
+    const url = new URL(String(value || ''), 'https://extellsystems.com');
+    return url.pathname.endsWith('/20250712_114724-scaled.jpg') &&
+      url.hostname === 'red-crane-569906.hostingersite.com';
+  } catch {
+    return false;
+  }
+};
+
+const usableImages = (values) => values.filter((value) => value && !isKnownBrokenProductImage(value));
+
 export const getProductImageList = (product) =>
-  [
+  usableImages([
     ...(Array.isArray(product?.imageList) ? product.imageList : splitImageValues(product?.imageList)),
     ...(Array.isArray(product?.Images) ? product.Images : splitImageValues(product?.Images)),
     ...(Array.isArray(product?.images) ? product.images : splitImageValues(product?.images)),
     ...(Array.isArray(product?.gallery) ? product.gallery : splitImageValues(product?.gallery)),
-  ].filter(Boolean);
+  ]);
 
 export const pickBestProductImage = (product, fallback = '') => {
   const candidates = [
@@ -51,7 +63,7 @@ export const pickBestProductImage = (product, fallback = '') => {
     product?.image,
     ...getProductImageList(product),
     fallback,
-  ].filter(Boolean);
+  ].filter((candidate) => candidate && !isKnownBrokenProductImage(candidate));
 
   if (!candidates.length) return fallback;
 
@@ -88,10 +100,10 @@ const getProductCategory = (product) =>
     .filter(Boolean)[0] || DEFAULT_CATEGORY;
 
 const getProductImage = (product) =>
-  firstNonEmpty(
+  usableImages([
     product?.heroImage,
     getProductImageList(product)[0]
-  );
+  ])[0] || '';
 
 export const buildProductSeoDraft = (product = {}) => {
   const name = getProductName(product);
