@@ -4738,6 +4738,10 @@ body[data-theme="light"] h6 {
   color: #111111 !important;
 }
 
+body[data-theme="light"] .partner-card-company-name {
+  color: #ffffff !important;
+}
+
 /* Hero always sits on a dark overlay — headings must stay white regardless of theme */
 body[data-theme="light"] .home-hero h1,
 body[data-theme="light"] .home-hero h2 {

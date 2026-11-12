@@ -24,20 +24,6 @@ const getPartnerAddress = (partner) => {
   return address;
 };
 
-const PartnerSkyline = () => (
-  <svg viewBox="0 0 900 250" preserveAspectRatio="xMidYMax meet" aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-20 w-full text-[#c8cad8] opacity-55 md:h-32">
-    <defs>
-      <linearGradient id="partner-skyline-fade" x1="0" x2="0" y1="0" y2="1">
-        <stop offset="0" stopColor="currentColor" stopOpacity="0.2" />
-        <stop offset="1" stopColor="currentColor" stopOpacity="0.9" />
-      </linearGradient>
-    </defs>
-    <path fill="url(#partner-skyline-fade)" d="M0 204h62v-25h8v-31h6v31h9v25h39v-45h7v-36h6v36h8v45h46v-27h9v-57h6v-24q7-18 14 0v24h6v57h8v27h51v-35h9v-58h5v-22q6-17 12 0v22h6v58h9v35h45v-21h10v-50h7v-20q8-21 16 0v20h6v50h10v21h45v-39h11v-52h6v-26q8-24 16 0v26h6v52h11v39h35v-31h9v-71h6v-28q8-25 16 0v28h6v71h9v31h33v-40h9v-89h6v-28q8-25 16 0v28h6v89h9v40h40v-28h10v-50h7v-19q7-19 14 0v19h7v50h10v28h34v-54h10v-43h8v-18q7-19 14 0v18h8v43h10v54h32v-27h12v-47h8v-22q8-20 16 0v22h8v47h12v27h59v46H0z" />
-    <path fill="currentColor" opacity=".62" d="M397 201a69 69 0 0 1 138 0zm55-4h28v-24l14 24h-56l14-24zm-35-10h12v-41h-12zm-5-41h22l-11-14zm88 41h12v-41h-12zm-5-41h22l-11-14z" />
-    <path d="M0 224c132-28 212-18 320-2 148 22 282-18 398-18 68 0 119 13 182 20v26H0z" fill="white" opacity=".58" />
-  </svg>
-);
-
 function PartnerDetailPage({ partnerSlug = '' }) {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -126,7 +112,6 @@ function PartnerDetailPage({ partnerSlug = '' }) {
                   {partner.contactName ? <div className="flex items-start gap-4 py-6"><UserRound size={23} fill="currentColor" className="mt-1 shrink-0 text-[#0f172a]" /><div><p className="text-sm text-[#6b7280] md:text-base">Contact Person</p><p className="mt-1 text-base font-medium text-[#0f172a] md:text-lg">{partner.contactName}</p></div></div> : null}
                   {location || partner.address ? <div className="flex items-start gap-4 py-6"><MapPin size={23} fill="currentColor" className="mt-1 shrink-0 text-[#0f172a]" /><div className="min-w-0 flex-1"><p className="text-sm text-[#6b7280] md:text-base">Location</p><p className="mt-1 text-base font-medium text-[#0f172a] md:text-lg">{location || partner.address}</p><div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100"><iframe title={`Map for ${companyName}`} src={`https://www.google.com/maps?q=${encodeURIComponent(address || location || partner.address)}&output=embed`} className="h-44 w-full md:h-52" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || location || partner.address)}`} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-sm font-semibold text-blue-700 underline underline-offset-2">Open in Google Maps</a></div></div> : null}
                 </div>
-                <PartnerSkyline />
               </div>
             </article>
 
