@@ -25,7 +25,7 @@ const getPartnerAddress = (partner) => {
 };
 
 const PartnerSkyline = () => (
-  <svg viewBox="0 0 900 250" preserveAspectRatio="xMidYMax meet" aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-52 w-full text-[#c8cad8] opacity-80">
+  <svg viewBox="0 0 900 250" preserveAspectRatio="xMidYMax meet" aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-20 w-full text-[#c8cad8] opacity-55 md:h-32">
     <defs>
       <linearGradient id="partner-skyline-fade" x1="0" x2="0" y1="0" y2="1">
         <stop offset="0" stopColor="currentColor" stopOpacity="0.2" />
@@ -102,12 +102,12 @@ function PartnerDetailPage({ partnerSlug = '' }) {
           </div>
         ) : (
           <div className="grid items-stretch gap-5 lg:grid-cols-[1.05fr_0.95fr]">
-            <article className="relative min-h-[610px] overflow-hidden rounded-[2rem] border border-[#e5e7eb] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.12)]">
-              <div className="absolute inset-x-0 top-0 h-[190px] overflow-hidden bg-gradient-to-br from-[#e10624] via-[#a00b28] to-[#0b0b0b]">
+            <article className="relative min-h-[430px] overflow-hidden rounded-[2rem] border border-[#e5e7eb] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.12)] md:min-h-[520px]">
+              <div className="absolute inset-x-0 top-0 h-[140px] overflow-hidden bg-gradient-to-br from-[#e10624] via-[#a00b28] to-[#0b0b0b] md:h-[175px]">
                 <div className="absolute -right-12 -top-32 h-72 w-72 rounded-full border-[38px] border-white/[0.035]" />
                 <div className="absolute right-20 -top-36 h-80 w-80 rounded-full border-[34px] border-black/[0.12]" />
-                <svg viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-x-0 bottom-[-1px] h-24 w-full">
-                  <path fill="white" d="M0 72C126 5 173 26 305 63c114 32 153 74 283 57 116-15 204-71 412-83v163H0z" />
+                <svg viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-x-0 bottom-[-1px] h-9 w-full md:h-14">
+                  <path fill="white" d="M0 105C170 66 250 78 390 96c130 17 215 27 330 7 110-19 175-35 280-40v137H0z" />
                 </svg>
               </div>
               <div className="relative z-10 flex items-center justify-between gap-3 px-6 pt-7 md:px-9">
@@ -117,14 +117,14 @@ function PartnerDetailPage({ partnerSlug = '' }) {
                   {partner.status || 'Listed'}
                 </span>
               </div>
-              <div className="relative z-10 px-6 pb-8 pt-14 md:px-9 md:pt-16">
-                <div className="flex min-h-[132px] items-center gap-5 border-b border-[#e5e7eb] pb-7">
+              <div className="relative z-10 px-5 pb-7 pt-20 md:px-9 md:pt-20">
+                <div className="flex min-h-[100px] items-center gap-4 border-b border-[#e5e7eb] pb-5 md:min-h-[125px] md:gap-5 md:pb-7">
                   <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#ffe6e9] md:h-24 md:w-24"><img src="/favicon.png" alt="" className="h-12 w-12 object-contain md:h-14 md:w-14" /></span>
                   <div className="min-w-0"><h2 className="break-words text-xl font-bold leading-tight text-[#0f172a] md:text-2xl">{companyName}</h2>{partner.name && partner.name !== companyName ? <p className="mt-1.5 text-base font-medium text-[#6b7280] md:text-lg">{partner.name}</p> : null}</div>
                 </div>
-                <div className="relative z-10 divide-y divide-[#e5e7eb] pb-24">
+                <div className="relative z-10 divide-y divide-[#e5e7eb] pb-20 md:pb-28">
                   {partner.contactName ? <div className="flex items-start gap-4 py-6"><UserRound size={23} fill="currentColor" className="mt-1 shrink-0 text-[#0f172a]" /><div><p className="text-sm text-[#6b7280] md:text-base">Contact Person</p><p className="mt-1 text-base font-medium text-[#0f172a] md:text-lg">{partner.contactName}</p></div></div> : null}
-                  {location || partner.address ? <div className="flex items-start gap-4 py-6"><MapPin size={23} fill="currentColor" className="mt-1 shrink-0 text-[#0f172a]" /><div><p className="text-sm text-[#6b7280] md:text-base">Location</p><p className="mt-1 text-base font-medium text-[#0f172a] md:text-lg">{location || partner.address}</p></div></div> : null}
+                  {location || partner.address ? <div className="flex items-start gap-4 py-6"><MapPin size={23} fill="currentColor" className="mt-1 shrink-0 text-[#0f172a]" /><div className="min-w-0 flex-1"><p className="text-sm text-[#6b7280] md:text-base">Location</p><p className="mt-1 text-base font-medium text-[#0f172a] md:text-lg">{location || partner.address}</p><div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100"><iframe title={`Map for ${companyName}`} src={`https://www.google.com/maps?q=${encodeURIComponent(address || location || partner.address)}&output=embed`} className="h-44 w-full md:h-52" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || location || partner.address)}`} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-sm font-semibold text-blue-700 underline underline-offset-2">Open in Google Maps</a></div></div> : null}
                 </div>
                 <PartnerSkyline />
               </div>
